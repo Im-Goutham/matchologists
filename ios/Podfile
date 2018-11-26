@@ -1,0 +1,13 @@
+
+# platform :ios, '9.0'
+
+target 'matchologists' do
+
+  # Pods for matchologists
+    pod 'OpenTok', '2.15.0'
+  pod 'RNI18n', :path => '../node_modules/react-native-i18n'
+
+  pod 'BVLinearGradient', :path => '../node_modules/react-native-linear-gradient'
+
+end
+
