@@ -3,6 +3,7 @@ package com.matchologists;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import com.oblador.vectoricons.VectorIconsPackage;
 import com.BV.LinearGradient.LinearGradientPackage;
 import com.AlexanderZaytsev.RNI18n.RNI18nPackage;
 import com.opentokreactnative.OTPackage;
@@ -26,6 +27,7 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
+            new VectorIconsPackage(),
             new LinearGradientPackage(),
             new RNI18nPackage(),
             new OTPackage()
