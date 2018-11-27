@@ -10,9 +10,6 @@ import { avenirheavy, primarybg } from '../../../global.json'
 import CustomButton from '../CustomButton'
 
 import metrics from '../../config/metrics'
-import Opening from './Opening'
-import SignupForm from './SignupForm'
-import LoginForm from './LoginForm'
 
 const IMAGE_WIDTH = metrics.DEVICE_WIDTH * 0.8
 const circle_WIDTH = metrics.DEVICE_WIDTH * 0.6
@@ -33,13 +30,18 @@ export default class AuthScreen extends Component {
                         justifyContent: 'center',
                         alignItems: "center"
                     }}>
-                        <Image
+                       <Image
                             animation={'bounceIn'}
                             duration={1200}
                             delay={200}
                             ref={(ref) => this.logoImgRef = ref}
                             source={appLogo}
-                            style={{}}
+                            style={{
+                                height: "30%",
+                                width: IMAGE_WIDTH,
+                                alignSelf: 'center',
+                                // backgroundColor:"blue"
+                            }}
                             resizeMode='contain'
                             resizeMethod='resize'
                         />
@@ -72,7 +74,7 @@ export default class AuthScreen extends Component {
                     <View animation={'zoomIn'} delay={600} duration={400} style={{ marginHorizontal: metrics.DEVICE_WIDTH * 0.1 }}>
                         <CustomButton
                             text={'SIGN UP'}
-                            onPress={this.props.onCreateAccountPress}
+                            onPress={()=>this.props.navigation.navigate('signup')}
                             buttonStyle={styles.createAccountButton}
                             textStyle={styles.createAccountButtonText}
                         />
@@ -95,7 +97,7 @@ export default class AuthScreen extends Component {
                                 end={{ x: 1, y: 1 }} style={styles.signInButton}>
                                 <CustomButton
                                     text={'SIGN IN'}
-                                    onPress={this.props.onSignInPress}
+                                    onPress={()=>this.props.navigation.navigate('login')}
                                     textStyle={styles.signInButtonText}
                                 />
                             </LinearGradient>

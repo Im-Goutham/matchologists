@@ -48,7 +48,7 @@ export default class SignupForm extends Component {
                             animation={'fadeIn'}
                             duration={600}
                             delay={400}>
-                            {I18n.t('welcometitle')}
+                            {I18n.t('welcomebacktitle')}
                         </Text>
                     </View>
                     <View style={{ flex: 1 }} />
