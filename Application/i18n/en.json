@@ -1,6 +1,6 @@
 {
     "welcometitle" : "Welcome to Metchologist.\n Find the most personalized \n matches just for you!",
-    "welcometitle": "Welcome back!",
+    "welcomebacktitle": "Welcome back!",
     "emaillabel" : "EMAIL",
     "passwordlabel" : "PASSWORD",
     "passwordplaceholder":"*********",

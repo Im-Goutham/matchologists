@@ -36,13 +36,13 @@ export default class Chatroom extends Component {
   }
 
   callapi=()=>{
-    ApiManager.callapi((success) => {
-      console.log("sessionId call back is", success.sessionId)
-      console.log("publisherToken call back is", success.publisherToken)
-      console.log("subscriberToken call back is", success.subscriberToken)
-    },(error)=>{
-      console.log("error call back is", error)
-    })
+    // ApiManager.callapi((success) => {
+    //   console.log("sessionId call back is", success.sessionId)
+    //   console.log("publisherToken call back is", success.publisherToken)
+    //   console.log("subscriberToken call back is", success.subscriberToken)
+    // },(error)=>{
+    //   console.log("error call back is", error)
+    // })
   }
 
   sendSignal() {

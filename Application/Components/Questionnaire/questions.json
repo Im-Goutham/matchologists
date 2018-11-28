@@ -1,6 +1,7 @@
 {
     "questionary": [
         {
+            "relatedto":"About Yourself",
             "question": "Are you an animal Lover",
             "type": "options",
             "options": [
@@ -47,54 +48,67 @@
             ]
         },
         {
+            "relatedto":"About Yourself",
             "question": "What is your Movie/TV and Reading material ?",
             "type": "checkbox",
             "options": [
                 {
+                    "key": 1,
                     "val": "Thriller",
                     "selected": false
                 },
                 {
+                    "key": 2,
                     "val": "Horror",
                     "selected": false
                 },
                 {
+                    "key": 3,
                     "val": "Sci-Fi",
                     "selected": false
                 },
                 {
+                    "key": 4,
                     "val": "Biography",
                     "selected": false
                 },
                 {
+                    "key": 5,
                     "val": "Philosophy",
                     "selected": false
                 },
                 {
+                    "key": 6,
                     "val": "Romance",
                     "selected": false
                 },
                 {
+                    "key": 7,
                     "val": "Exotic Pets",
                     "selected": false
                 },
                 {
+                    "key": 8,
                     "val": "Drama", 
                     "selected": false
                 },
                 {
+                    "key": 9,
                     "val": "History",
                     "selected": false
                 },
                 {
+                    "key": 10,
                     "val": "Spirituality",
                     "selected": false
                 },
                 {
+                    "key": 11,
                     "val": "Self Improvement",
                     "selected": false
                 },
                 {
+                    "key": 12,
                     "val": "Humor",
                     "selected": false
                 },
@@ -105,6 +119,7 @@
             ]
         },
         {
+            "relatedto":"About Yourself",
             "question": "How often do you exercise?",
             "type": "options",
             "options": [
@@ -121,6 +136,46 @@
                     "selected": false
                 }
             ]
-        }
+        },
+        {
+            "relatedto":"About Your Partner",
+            "question": "How tall are you?",
+            "type": "Measure_Height",
+            "heightTitle": "Select your height",
+            "options": [
+                {
+                    "val": "5'2\"",
+                    "selected": false
+                },
+                {
+                    "val": "5'3\"",
+                    "selected": false
+                },
+                {
+                    "val": "5'4\"",
+                    "selected": false
+                }
+            ]
+        },
+        {
+            "relatedto":"About Your Partner",
+            "question": "What is \"your height prefrence for your match ?" ,
+            "type": "matchprefrence",
+            "options": [
+                {
+                    "val": "5'2\"",
+                    "selected": false
+                },
+                {
+                    "val": "5'3\"",
+                    "selected": false
+                },
+                {
+                    "val": "5'4\"",
+                    "selected": false
+                }
+            ]
+        },
+
     ]
 }
