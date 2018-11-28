@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "984386186860",
+    "firebase_url": "https://webinar-b2902.firebaseio.com",
+    "project_id": "webinar-b2902",
+    "storage_bucket": "webinar-b2902.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:984386186860:android:b4cce635000cc93b",
+        "android_client_info": {
+          "package_name": "com.matchologists"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "984386186860-5qjdcsru407plus0i9cjgh3g0j8jtp4q.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBeZdT0KtjYT5MjeANYBYHEnEXpnJIJ15Q"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

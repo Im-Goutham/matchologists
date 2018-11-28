@@ -6,6 +6,8 @@ ios/Pods
 ios/Podfile.lock
 *.xcworkspacedata
 # Xcode
+# release folder
+clientshare
 #
 build/
 *.pbxuser

@@ -5,10 +5,6 @@ import { View } from 'react-native-animatable'
 const IS_ANDROID = Platform.OS === 'android'
 
 export default class AuthTextInput extends Component {
-  // static propTypes = {
-  //   isEnabled: PropTypes.bool
-  // }
-
   state = {
     isFocused: false
   }
@@ -28,7 +24,7 @@ export default class AuthTextInput extends Component {
             autoCapitalize={'none'}
             autoCorrect={false}
             style={[styles.textInput, { color }]}
-            maxLength={32}
+            // maxLength={32}
             underlineColorAndroid={'transparent'}
             placeholderTextColor={'#696969'}
             selectionColor={'#696969'}

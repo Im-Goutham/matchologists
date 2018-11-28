@@ -16,6 +16,18 @@
     "termsandservicelabel" : "Terms and Service",
     "andlabel": "and",
     "privacypolicylabel": "Privacy Policy",
-    "alreadyhaveanacount": "Already have an account ? "
-    
+    "alreadyhaveanacount": "Already have an account ? ",
+    "success_msg": "Congratulations !\n You've signed up successfully",
+    "answer_string": "Answer a list of questions to help us find \n the perfact match for you!",
+    "start_button": "START",
+    "dob_label": "DATE OF BIRTH",
+    "bio_label" : "BIO",
+    "gallary_label":"GALLARY",
+    "discover_label" : "Discover",
+    "match_label" : "Matches",
+    "top_label" : "Top 10",
+    "mycalender_label" : "My Calender",
+    "notification_label": "Notifications",
+    "setting_label": "Settings",
+    "logout_label":"LOGOUT"
 }

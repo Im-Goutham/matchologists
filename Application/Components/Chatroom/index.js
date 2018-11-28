@@ -32,7 +32,7 @@ export default class Chatroom extends Component {
   }
 
   componentDidMount(){
-    this.callapi()
+    // this.callapi()
   }
 
   callapi=()=>{

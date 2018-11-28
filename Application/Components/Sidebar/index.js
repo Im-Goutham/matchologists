@@ -4,23 +4,93 @@
  */
 
 import React, { Component } from 'react';
-import { Text, View } from 'react-native';
+import {
+    KeyboardAvoidingView,
+    LayoutAnimation,
+    Platform,
+    StyleSheet,
+    StatusBar,
+    SafeAreaView,
+    UIManager,
+    Text,
+    ScrollView,
+    View,
+    Image,
+    ListView,
+    TouchableOpacity,
+    TouchableWithoutFeedback
+} from 'react-native'
+import LinearGradient from 'react-native-linear-gradient';
+import Icons from 'react-native-vector-icons/AntDesign'
+import I18n from 'react-native-i18n';
+import { avenirheavy, primarybg } from '../../../global.json'
+import metrics from '../../config/metrics'
 import styles from './style'
 
+const IMAGE_WIDTH = metrics.DEVICE_WIDTH * 0.3
+const IMAGE_HEIGHT = metrics.DEVICE_HEIGHT * 0.15
+let IS_ANDROID = Platform.OS === 'android'
 export default class Sidebar extends Component {
     render() {
         const { navigate } = this.props.navigation;
         return (
-            <View style={styles.container}>
-                <Text>View Profile</Text>
-                <Text>View Matche</Text>
-                <Text>Favorites List</Text>
-                <Text>Change Password</Text>
-                <Text>About Us</Text>
-                <Text>Privacy</Text>
-                <Text>Terms&Conditions</Text>
-                <Text>Logout</Text>
-            </View>
+            <LinearGradient
+                colors={['#DB3D88', '#273174']}
+                // start={{ x: 0, y: 1 }}
+                // end={{ x: 1, y: 1 }}
+                style={{ flex: 1 }}
+            >
+                <SafeAreaView style={{ flex: 1 }}>
+                    <StatusBar barStyle="light-content" backgroundColor={ IS_ANDROID ? "#DB3D88" : undefined }/>
+                    <ScrollView contentContainerStyle={styles.container}>
+                        {/* <View style={styles.container}> */}
+                        <View style={styles.profile}>
+                            <TouchableOpacity 
+                            onPress={()=>this.props.navigation.closeDrawer()}
+                            style={{ height:50, alignSelf:"flex-start", justifyContent:"flex-end"}}>
+                                <Icons
+                                    name="close"
+                                    size={30}
+                                    color="#fff"
+                                    style={{
+                                        alignSelf: 'flex-start',
+                                        paddingHorizontal: 15
+                                    }}
+                                />
+                            </TouchableOpacity>
+                            <View style={{ flex: 1 , alignItems:"center", backgroundColor:"transparent", justifyContent:"space-around"}}>
+                                <Image
+                                    source={require('../../images/Oval.png')}
+                                    style={{
+                                        width: 100, //IMAGE_WIDTH, 
+                                        height: 100,//IMAGE_HEIGHT,
+                                        // height :"44%",
+                                        borderRadius: 50,
+                                        // backgroundColor:"#fff"
+                                    }}
+                                    resizeMethod="resize"
+                                    resizeMode="contain" />
+                                <Text style={styles.usertitle}>Addie Olson</Text>
+
+                            </View>
+
+                        </View>
+                        <View style={styles.menu}>
+                            <Text style={styles.label}>{I18n.t('discover_label')}</Text>
+                            <Text style={styles.label}>{I18n.t('match_label')}</Text>
+                            <Text style={styles.label}>{I18n.t('top_label')}</Text>
+                            <Text style={styles.label}>{I18n.t('mycalender_label')}</Text>
+                            <Text style={styles.label}>{I18n.t('notification_label')}</Text>
+                            <Text style={styles.label}>{I18n.t('setting_label')}</Text>
+                        </View>
+                        <View style={styles.logout}>
+                            <Text style={[styles.label, { color: "rgba(255, 255, 255, 0.4)", }]}>{I18n.t('logout_label')}</Text>
+                        </View>
+                        {/* </View> */}
+                    </ScrollView>
+                </SafeAreaView>
+            </LinearGradient>
+
         );
     }
 }
