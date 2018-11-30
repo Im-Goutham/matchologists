@@ -146,7 +146,7 @@ export default class Webinar extends Component {
                 <StatusBar
                     backgroundColor={Platform.OS === 'android' ? "#fff" : undefined}
                     barStyle="dark-content" />
-                    <View style={{flex: 1,backgroundColor: 'green'}}>
+                    <View style={{flex: 1}}>
                         <OTSession 
                           apiKey={apiKey} 
                           sessionId={sessionId}
