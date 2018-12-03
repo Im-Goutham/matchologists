@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { StyleSheet, SafeAreaView, StatusBar } from 'react-native';
 import { SocialIcon } from 'react-native-elements'
-
+import { LoginManager, AccessToken, GraphRequest, GraphRequestManager } from 'react-native-fbsdk'
 import LinearGradient from 'react-native-linear-gradient';
 import I18n from 'react-native-i18n';
 import { Image, View , Text} from 'react-native-animatable'
@@ -17,6 +17,56 @@ const loginHeight = metrics.DEVICE_HEIGHT * 0.45
 const IMAGE_WIDTH = metrics.DEVICE_WIDTH * 0.6
 
 export default class LoginForm extends Component {
+
+    handleFacebookLogin () {
+        var self = this;
+        LoginManager
+          .logInWithReadPermissions(['public_profile'])
+          .then(function (result) {
+            if (result.isCancelled) {
+              alert('Login cancelled');
+            } else {
+              AccessToken
+                .getCurrentAccessToken()
+                .then((data) => {
+                  console.log('token data is ',data);
+                //  alert(accessToken.toString())
+                  let user = {};
+                  user.accessToken = data.accessToken;
+                  user.expiresIn = data.expirationTime;
+                  const responseInfoCallback = (error, result) => {
+                    if (error) {
+                      console.log(error)
+                   //   alert('Error fetching data: ' + error.toString());
+                    } else {
+                      console.log('user data is ',result)
+                      user.name = result.name;
+                    //  self.facebookLogin(user);
+                  //    alert('Success fetching data: ' + result.toString());
+                    }
+                  }
+  
+                  const infoRequest = new GraphRequest('/me', {
+                    accessToken: data.accessToken,
+                    parameters: {
+                      fields: {
+                        string: 'email,name,first_name,middle_name,last_name'
+                      }
+                    }
+                  }, responseInfoCallback);
+  
+                  // Start the graph request.
+                  new GraphRequestManager()
+                    .addRequest(infoRequest)
+                    .start()
+  
+                })
+            }
+          }, function (error) {
+            alert('Login fail with error: ' + error);
+          });
+      }
+
     render() {
         const { isLoading, onLoginLinkPress, onSignupPress } = this.props
         return (
@@ -71,6 +121,7 @@ export default class LoginForm extends Component {
                             button
                             type='facebook'
                             style={{ borderRadius: 5, backgroundColor: "#2672CB" }}
+                            onPress={() => this.handleFacebookLogin()}
                         />
                         <SocialIcon
                             title={I18n.t('gmailLogintitle')}

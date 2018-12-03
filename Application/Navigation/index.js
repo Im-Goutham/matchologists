@@ -19,7 +19,7 @@ const App = createStackNavigator({
     webinar: { screen: Webinar }
 }, {
         index: 0,
-        initialRouteName: 'webinar',
+        initialRouteName: 'login',
         headerMode: 'none',
         navigationOptions: {
             gesturesEnabled: false
