@@ -1,11 +1,10 @@
 import React, { Component, PropTypes } from 'react';
 import { StyleSheet, SafeAreaView, StatusBar } from 'react-native';
-import { Text } from 'react-native-animatable';
 import { SocialIcon } from 'react-native-elements'
 
 import LinearGradient from 'react-native-linear-gradient';
 import I18n from 'react-native-i18n';
-import { Image, View } from 'react-native-animatable'
+import { Image, View , Text} from 'react-native-animatable'
 
 import { gradientprimary, gradientsecondry } from '../../../global.json'
 import CustomButton from '../CustomButton'

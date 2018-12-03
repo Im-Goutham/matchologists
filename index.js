@@ -7,7 +7,7 @@ import App from './Application/Navigation';
 import Auth from './Application/Components/Auth'
 import SignupForm from './Application/Components/AuthScreen/SignupForm'
 import Questionnaire from './Application/Components/Questionnaire'
-import  Sidebar from './Application/Components/Sidebar'
+import  Userprofile from './Application/Components/Userprofile'
 
 
 AppRegistry.registerComponent(appName, () => App);

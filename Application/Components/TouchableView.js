@@ -20,12 +20,4 @@ const TouchableView = ({ isRippleDisabled, rippleColor, children, style, ...prop
     )
   }
 }
-
-// TouchableView.propTypes = {
-//   isRippleDisabled: PropTypes.bool,
-//   rippleColor: PropTypes.string,
-//   children: PropTypes.any,
-//   style: View.propTypes.style
-// }
-
 export default TouchableView

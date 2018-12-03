@@ -23,24 +23,15 @@ target 'matchologists' do
 #'RCTLinkingIOS'
 #]
   # Pods for matchologists
-<<<<<<< HEAD
-    pod 'OpenTok', '2.15.0'
-#  pod 'RNI18n', :path => '../node_modules/react-native-i18n'
-
-  # pod 'BVLinearGradient', :path => '../node_modules/react-native-linear-gradient'
-
-#  pod 'RNVectorIcons', :path => '../node_modules/react-native-vector-icons'
-#  pod 'DoubleConversion', :podspec => '../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec'
-#  pod 'glog', :podspec => '../node_modules/react-native/third-party-podspecs/glog.podspec'
-#  pod 'Folly', :podspec => '../node_modules/react-native/third-party-podspecs/Folly.podspec'
-=======
   pod 'OpenTok', '2.14.0'
   # pod 'RNI18n', :path => '../node_modules/react-native-i18n'
 
   # pod 'BVLinearGradient', :path => '../node_modules/react-native-linear-gradient'
 
   # pod 'RNVectorIcons', :path => '../node_modules/react-native-vector-icons'
->>>>>>> 22c921f5a3aedd6fba3ecefd818124702127f7d3
+
+
+  pod 'react-native-fbsdk', :path => '../node_modules/react-native-fbsdk'
 
 end
 

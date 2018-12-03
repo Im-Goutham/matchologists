@@ -29,5 +29,8 @@
     "mycalender_label" : "My Calender",
     "notification_label": "Notifications",
     "setting_label": "Settings",
-    "logout_label":"LOGOUT"
+    "logout_label":"LOGOUT",
+    "userdetail" : "My name is Daisy Brady and I enjoy meeting new people and finding ways to help them have an uplifting experience. I enjoy reading, and the knowledge and perspective that my reading gives me has strengthened my teaching skills and presentation abilities.opportunities, through which I was able to have fewer returned products and increased repeat customers, when compared with co-workers.",
+    "mutualfriendsLabel":"Mutual Friends",
+    "basicprofileLabel":"Basic profile"
 }
