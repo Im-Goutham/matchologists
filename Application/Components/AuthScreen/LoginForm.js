@@ -1,10 +1,10 @@
 import React, { Component, PropTypes } from 'react';
-import { StyleSheet, SafeAreaView, StatusBar } from 'react-native';
+import { StyleSheet, SafeAreaView, StatusBar, TouchableOpacity } from 'react-native';
 import { SocialIcon } from 'react-native-elements'
 
 import LinearGradient from 'react-native-linear-gradient';
 import I18n from 'react-native-i18n';
-import { Image, View , Text} from 'react-native-animatable'
+import { Image, View, Text } from 'react-native-animatable'
 
 import { gradientprimary, gradientsecondry } from '../../../global.json'
 import CustomButton from '../CustomButton'
@@ -21,42 +21,39 @@ export default class LoginForm extends Component {
         const { isLoading, onLoginLinkPress, onSignupPress } = this.props
         return (
             <View style={styles.container}>
-                <StatusBar
-                    // backgroundColor="blue"
-                    // hidden={true}
-                    barStyle="light-content"
-                />
-                <SafeAreaView style={{ flex: 1, backgroundColor: '#DB3D88' }}>
-                    <LinearGradient colors={[gradientprimary, gradientsecondry]} style={{ flex: 1 }}>
-                        <View style={{ flex: 1, backgroundColor: "transparent", justifyContent: "space-around", alignItems: "center", padding: 30 }}>
-                            <Image
-                                animation={'bounceIn'}
-                                duration={1200}
-                                delay={200}
-                                ref={(ref) => this.logoImgRef = ref}
-                                source={appLogo}
-                                style={{
-                                    height: "30%",
-                                    width: IMAGE_WIDTH,
-                                    alignSelf: 'center',
-                                    // backgroundColor:"blue"
-                                }}
-                                resizeMode='contain'
-                                resizeMethod='resize'
-                            />
-                            <Text
-                                ref={(ref) => this.linkRef = ref}
-                                style={styles.welcomeText}
-                                animation={'fadeIn'}
-                                duration={600}
-                                delay={400}>
-                                {I18n.t('welcometitle')}
-                            </Text>
-                        </View>
-                        <View style={{ flex: 1 }} />
+                <StatusBar backgroundColor="#DB3D88" barStyle="light-content" />
 
-                    </LinearGradient>
-                </SafeAreaView>
+                <LinearGradient colors={[gradientprimary, gradientsecondry]} style={{ flex: 1 }}>
+                    <SafeAreaView />
+
+                    <View style={{ flex: 1, backgroundColor: "transparent", justifyContent: "space-around", alignItems: "center", padding: 30 }}>
+                        <Image
+                            animation={'bounceIn'}
+                            duration={1200}
+                            delay={200}
+                            ref={(ref) => this.logoImgRef = ref}
+                            source={appLogo}
+                            style={{
+                                height: "30%",
+                                width: IMAGE_WIDTH,
+                                alignSelf: 'center',
+                                // backgroundColor:"blue"
+                            }}
+                            resizeMode='contain'
+                            resizeMethod='resize'
+                        />
+                        <Text
+                            ref={(ref) => this.linkRef = ref}
+                            style={styles.welcomeText}
+                            animation={'fadeIn'}
+                            duration={600}
+                            delay={400}>
+                            {I18n.t('welcomebacktitle')}
+                        </Text>
+                    </View>
+                    <View style={{ flex: 1 }} />
+
+                </LinearGradient>
                 <View style={{ flex: 1, backgroundColor: "#fff" }}>
                     <View style={{
                         height: '48%',
@@ -78,11 +75,14 @@ export default class LoginForm extends Component {
                             type='google'
                             style={{ borderRadius: 5, backgroundColor: "#DD473B" }}
                         />
-                        <View style={{ justifyContent: "center", alignItems: "center" }}>
+                        <TouchableOpacity
+                            activeOpacity={1}
+                            onPress={() => this.props.navigation.navigate('signup')}
+                            style={{ justifyContent: "center", alignItems: "center" }}>
                             <Text style={{
                                 color: "#909096", fontWeight: 'bold',
                             }}>{I18n.t('notacounttitle')}<Text style={{ fontFamily: "Avenir-Heavy", color: '#5B357A' }}>{I18n.t('logintitle')}</Text> </Text>
-                        </View>
+                        </TouchableOpacity>
 
                     </View>
                 </View>
@@ -110,7 +110,7 @@ export default class LoginForm extends Component {
                             // backgroundColor : 'green' 
                         }}>
                             <Text style={{ color: "#D43C87", fontFamily: "Avenir-Medium", fontSize: 11 }}>
-                            {I18n.t('emaillabel')}</Text>
+                                {I18n.t('emaillabel')}</Text>
                             <CustomTextInput
                                 // style={{ backgroundColor : "#fff" }}
                                 name={'email'}
@@ -130,7 +130,7 @@ export default class LoginForm extends Component {
                             // backgroundColor : 'magenta' 
                         }}>
                             <Text style={{ color: "#D43C87", fontFamily: "Avenir-Medium", fontSize: 11 }}>
-                            {I18n.t('passwordlabel')}</Text>
+                                {I18n.t('passwordlabel')}</Text>
                             <CustomTextInput
                                 name={'password'}
                                 ref={(ref) => this.passwordInputRef = ref}
@@ -162,6 +162,7 @@ export default class LoginForm extends Component {
                                 start={{ x: 0, y: 1 }}
                                 end={{ x: 1, y: 1 }} style={styles.loginButton}>
                                 <CustomButton
+                                    onPress={() => this.props.navigation.navigate('profile')}
                                     // onPress={() => onLoginPress(email, password)}
                                     // isEnabled={isValid}
                                     isLoading={isLoading}
@@ -228,7 +229,7 @@ const styles = StyleSheet.create({
         fontSize: 25,
         bottom: 10,
         // backgroundColor: "blue",
-        lineHeight: 100
+        // lineHeight: 100
     }
 
 })

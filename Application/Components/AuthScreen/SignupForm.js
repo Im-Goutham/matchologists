@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import { StyleSheet, SafeAreaView, StatusBar, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
+import { StyleSheet, SafeAreaView, StatusBar, ScrollView, KeyboardAvoidingView, Platform, TouchableOpacity } from 'react-native';
 import { Text } from 'react-native-animatable';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 
@@ -12,6 +12,7 @@ import CustomButton from '../CustomButton'
 import CustomTextInput from '../CustomTextInput'
 import metrics from '../../config/metrics'
 import appLogo from '../../../assets/icons/MatchologistsLogoNEW.png'
+import TouchableView from '../TouchableView.js';
 
 const loginWIDTH = metrics.DEVICE_WIDTH * 0.9
 const loginHeight = metrics.DEVICE_HEIGHT * 0.7
@@ -20,10 +21,12 @@ const formStyle = { marginTop: 40 };
 
 export default class SignupForm extends Component {
     render() {
+        // const { navigate } = this.props.navigation;
+
         const { isLoading, onLoginLinkPress, onSignupPress } = this.props
         return (
-            <View style={styles.container}>
-                <StatusBar backgroundColor= "blue" barStyle="light-content" />
+            <ScrollView bounces={false} contentContainerStyle={styles.container}>
+                <StatusBar backgroundColor="#DB3D88" barStyle="light-content" />
                 <SafeAreaView style={{ backgroundColor: '#DB3D88' }} />
                 <LinearGradient colors={[gradientprimary, gradientsecondry]} style={{ flex: 1 }}>
                     <View style={{ flex: 1, backgroundColor: "transparent", justifyContent: "space-around", alignItems: "center", padding: 30 }}>
@@ -48,7 +51,7 @@ export default class SignupForm extends Component {
                             animation={'fadeIn'}
                             duration={600}
                             delay={400}>
-                            {I18n.t('welcomebacktitle')}
+                            {I18n.t('welcome')}
                         </Text>
                     </View>
                     <View style={{ flex: 1 }} />
@@ -64,11 +67,14 @@ export default class SignupForm extends Component {
                         justifyContent: "space-around",
                         // backgroundColor:"red"
                     }}>
-                        <View style={{ justifyContent: "center", alignItems: "center" }}>
+                        <TouchableOpacity
+                            activeOpacity={1}
+                            onPress={() => this.props.navigation.navigate('login')}
+                            style={{ justifyContent: "center", alignItems: "center" }}>
                             <Text style={{
                                 color: "#909096", fontWeight: 'bold',
                             }}>{I18n.t('alreadyhaveanacount')}<Text style={{ fontFamily: "Avenir-Heavy", color: '#5B357A' }}>{I18n.t('Signintitle')}</Text> </Text>
-                        </View>
+                        </TouchableOpacity>
 
                     </View>
                 </View>
@@ -77,7 +83,7 @@ export default class SignupForm extends Component {
                     style={{
                         // justifyContent: "center",
                         width: loginWIDTH,
-                        height: Platform.OS === 'ios'?  metrics.DEVICE_HEIGHT * 0.6: metrics.DEVICE_HEIGHT * 0.65,
+                        // height: Platform.OS === 'ios'?  metrics.DEVICE_HEIGHT * 0.6: metrics.DEVICE_HEIGHT * 0.65,
                         bottom: hp('12%'),
                         // bottom : metrics.DEVICE_HEIGHT * 0.1,
                         alignSelf: 'center',
@@ -93,9 +99,7 @@ export default class SignupForm extends Component {
                         // padding: 20
                     }}>
 
-                    <ScrollView
-                        showsVerticalScrollIndicator={false}
-                        contentContainerStyle={styles.head}>
+                    <View style={styles.head}>
                         <KeyboardAvoidingView
                             keyboardVerticalOffset={-100}
                             behavior={'padding'}
@@ -163,11 +167,12 @@ export default class SignupForm extends Component {
                                 isEnabled={!isLoading}
                             />
                         </KeyboardAvoidingView>
-                    </ScrollView>
+                    </View>
 
                     <View style={styles.footer}>
-                        <Text style={{ lineHeight: 26, color: "#909096", fontFamily: "Avenir-Medium", fontSize: 13 }}>{I18n.t('termslabel')}
-                            <Text style={{ color: "#71367D" }}>{I18n.t('termsandservicelabel')}</Text> {I18n.t('andlabel')}
+                        <Text style={{ lineHeight: 26, color: "#909096", fontFamily: "Avenir-Medium", fontSize: 13 }}>
+                        {I18n.t('termslabel')}
+                            <Text style={{ color: "#71367D" }}> {I18n.t('termsandservicelabel')}</Text> {I18n.t('andlabel')}
                             <Text style={{ color: "#71367D" }}> {I18n.t('privacypolicylabel')}</Text>
                         </Text>
                         <LinearGradient
@@ -175,7 +180,8 @@ export default class SignupForm extends Component {
                             start={{ x: 0, y: 1 }}
                             end={{ x: 1, y: 1 }} style={styles.loginButton}>
                             <CustomButton
-                                // onPress={() => onLoginPress(email, password)}
+                                    onPress={()=>this.props.navigation.navigate('profile')}
+                                    // onPress={() => onLoginPress(email, password)}
                                 // isEnabled={isValid}
                                 isLoading={isLoading}
                                 // buttonStyle={styles.loginButton}
@@ -187,7 +193,7 @@ export default class SignupForm extends Component {
                     </View>
                 </View>
                 <SafeAreaView />
-            </View>
+            </ScrollView>
         )
     }
 }

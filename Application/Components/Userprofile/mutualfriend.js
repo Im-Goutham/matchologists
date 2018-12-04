@@ -90,7 +90,7 @@ export default class MutualFriends extends Component {
                 data={this.state.data}
                 renderItem={({ item }) => this.renderRow(item)}
                 keyExtractor={(item,index)=>index.toString()}
-
+                showsHorizontalScrollIndicator={false}
                 // keyExtractor={item => item.id}
             />
         );

@@ -57,28 +57,35 @@ export default class UserProfile extends Component {
     }
     deletePost() {
     }
-    cancel(){  
+    cancel() {
     }
     render() {
+        const { goBack } = this.props.navigation;
         // alert(metrics.DEVICE_HEIGHT * 1.3)
         return (
             <View style={{ flex: 1 }}>
-                        <StatusBar
-                backgroundColor={Platform.OS === 'android' ? "#000" : undefined}
-                barStyle={Platform.OS === 'android' ? "light-content" : "light-content"} />
+                <StatusBar
+                    backgroundColor={Platform.OS === 'android' ? "#000" : undefined}
+                    barStyle={Platform.OS === 'android' ? "light-content" : "light-content"} />
 
                 <ScrollView contentContainerStyle={styles.container}
                     bounces={false}
                 >
-                {/* <SafeAreaView 
+                    {/* <SafeAreaView 
                 style={{backgroundColor:"#000"}}/> */}
                     <View style={styles.imageSlider}>
+                        <TouchableOpacity 
+                        onPress={()=>goBack()}
+                            style={styles.backicon}
+                            >
                         <Image
                             source={backbutton}
-                            style={styles.backicon}
-                            onClick={() => { console.warn("hello world") }}
+                            style={{        width: 22,
+                                height: 16,
+                        }}
                             resizeMethod="resize"
                             resizeMode="contain" />
+                            </TouchableOpacity>
                         <Swiper
                             loadMinimal
                             loadMinimalSize={1}
@@ -128,14 +135,14 @@ export default class UserProfile extends Component {
                         </Swiper>
                         <View style={styles.detail}>
                             <View style={styles.namefield}>
-                                <View style={{ flex: 1, backgroundColor: "transparent"}}>
+                                <View style={{ flex: 1, backgroundColor: "transparent" }}>
                                     <Text style={styles.username}> Daisy Brady</Text>
                                     <Text style={styles.location}>  Seattle, USA </Text>
                                 </View>
                                 <View style={styles.moreoptions}>
                                     <PopupMenu
                                         button={moreoptions}
-                                        buttonStyle={{ width: 5, height: 20, margin: 7.5, resizeMode: "contain" }}
+                                        buttonStyle={{ width: 20, height: 20, margin: 7.5, resizeMode: "contain" }}
                                         destructiveIndex={1}
                                         options={["Edit", "Delete", "Cancel"]}
                                         actions={[this.editPost, this.deletePost, this.cancel]}
@@ -149,12 +156,22 @@ export default class UserProfile extends Component {
                             }}>
                                 <Text style={styles.areainterest} numberOfLines={4}>{I18n.t('userdetail')} </Text>
                             </View>
-                            <View style={{ paddingLeft: 20, paddingVertical:20 }}>
-                                <Text style={styles.mutualfriendsLabel} numberOfLines={4}>{I18n.t('mutualfriendsLabel')} </Text>
-                                <MutualFriends />
+                            <View style={{
+                                paddingLeft: 20, paddingVertical: 20,
+                                // backgroundColor:"red"
+                            }}>
+                                <View style={{ height: 50 }}>
+                                    <Text style={styles.mutualfriendsLabel} numberOfLines={4}>{I18n.t('mutualfriendsLabel')} </Text>
+                                </View>
+                                <View style={{ height: 75 }}>
+                                    <MutualFriends />
+
+                                </View>
                             </View>
                             <View style={{ paddingLeft: 20 }}>
-                                <Text style={styles.mutualfriendsLabel} numberOfLines={4}>{I18n.t('basicprofileLabel')} </Text>
+                                <View style={{ height: 50 }}>
+                                    <Text style={styles.mutualfriendsLabel} >{I18n.t('basicprofileLabel')} </Text>
+                                </View>
                                 <Text style={styles.answercontains}>Animal Lover: Dogs</Text>
                                 <Text style={styles.answercontains}>Movie/TV and Reading: Sci-Fi</Text>
                                 <Text style={styles.answercontains}>Exercise: Never</Text>
@@ -164,37 +181,37 @@ export default class UserProfile extends Component {
                             </View>
                         </View>
                         <View style={styles.footer}>
-                        <TouchableOpacity style={styles.footerButtons}>
-                        <Image 
-                        source={require('../../images/icons/smily.png')}
-                        resizeMethod="resize"
-                        resizeMode="contain" 
-                        style={{
-                            width:31, 
-                            height:31,
-                            }}/>
+                            <TouchableOpacity style={styles.footerButtons}>
+                                <Image
+                                    source={require('../../images/icons/smily.png')}
+                                    resizeMethod="resize"
+                                    resizeMode="contain"
+                                    style={{
+                                        width: 31,
+                                        height: 31,
+                                    }} />
 
                             </TouchableOpacity>
                             <TouchableOpacity style={styles.footerButtons}>
-                        <Image 
-                        source={require('../../images/icons/favourate.png')} 
-                        resizeMethod="resize"
-                        resizeMode="contain"
-                        style={{
-                            width:31, 
-                            height:31,
-                            }}/>
+                                <Image
+                                    source={require('../../images/icons/favourate.png')}
+                                    resizeMethod="resize"
+                                    resizeMode="contain"
+                                    style={{
+                                        width: 31,
+                                        height: 31,
+                                    }} />
 
                             </TouchableOpacity>
                             <TouchableOpacity style={styles.footerButtons}>
-                        <Image 
-                        source={require('../../images/icons/msg.png')} 
-                        resizeMethod="resize"
-                        resizeMode="contain"
-                        style={{
-                            width:31, 
-                            height:31,
-                            }}/>
+                                <Image
+                                    source={require('../../images/icons/msg.png')}
+                                    resizeMethod="resize"
+                                    resizeMode="contain"
+                                    style={{
+                                        width: 31,
+                                        height: 31,
+                                    }} />
 
                             </TouchableOpacity>
                         </View>
@@ -236,7 +253,7 @@ const styles = StyleSheet.create({
         backgroundColor: "#fff"
     },
     imageSlider: {
-        height: 1024 //metrics.DEVICE_HEIGHT * 1.3,
+        height: IS_ANDROID ? 1024 :1100 //metrics.DEVICE_HEIGHT * 1.3,
     },
     detail: {
         backgroundColor: "#FFF"
@@ -287,7 +304,7 @@ const styles = StyleSheet.create({
         height: 100,
         paddingHorizontal: 20,
         // justifyContent:"center", 
-        backgroundColor: "#009933",
+        // backgroundColor: "#009933",
         flexDirection: "row",
         alignItems: "center"
     },
@@ -304,7 +321,7 @@ const styles = StyleSheet.create({
         color: "#909096",
         lineHeight: 22,
     },
-    answercontains:{
+    answercontains: {
         fontSize: 15,
         fontFamily: 'Avenir-Medium',
         color: "#909096",
@@ -321,24 +338,24 @@ const styles = StyleSheet.create({
         fontSize: 15,
         fontFamily: 'Avenir-Medium',
     },
-    footer:{
-        height:100,
-        flexDirection:"row",
-        justifyContent :"center",
-        alignItems:"center"
+    footer: {
+        height: 100,
+        flexDirection: "row",
+        justifyContent: "center",
+        alignItems: "center"
     },
-    footerButtons:{ 
-        width:50, 
-        height:50, 
-        borderRadius:25,
-        justifyContent:"center", 
-        alignItems:"center",
-        backgroundColor:"#fff",
+    footerButtons: {
+        width: 50,
+        height: 50,
+        borderRadius: 25,
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: "#fff",
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.2,
         shadowRadius: 2,
         elevation: 3,
-        marginHorizontal:10
-        }
+        marginHorizontal: 10
+    }
 })
 

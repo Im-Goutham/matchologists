@@ -11,7 +11,7 @@ import CustomButton from '../CustomButton'
 
 import metrics from '../../config/metrics'
 
-const IMAGE_WIDTH = metrics.DEVICE_WIDTH * 0.8
+const IMAGE_WIDTH = metrics.DEVICE_WIDTH * 0.6
 const circle_WIDTH = metrics.DEVICE_WIDTH * 0.6
 
 if (Platform.OS === 'android') UIManager.setLayoutAnimationEnabledExperimental(true)
@@ -30,7 +30,7 @@ export default class AuthScreen extends Component {
                         justifyContent: 'center',
                         alignItems: "center"
                     }}>
-                       <Image
+                        <Image
                             animation={'bounceIn'}
                             duration={1200}
                             delay={200}

@@ -22,7 +22,7 @@ import {
     heightPercentageToDP,
     listenOrientationChange,
     removeOrientationListener
-  } from 'react-native-responsive-screen';
+} from 'react-native-responsive-screen';
 
 const IMAGE_WIDTH = metrics.DEVICE_WIDTH * 0.6
 const IMAGE_HEIGHT = metrics.DEVICE_HEIGHT * 0.6
@@ -34,8 +34,8 @@ export default class ProfileScreen extends Component {
     render() {
         return (
             <SafeAreaView style={{ flex: 1, backgroundColor: "#fff" }}>
-            {Platform.OS==='android'? <StatusBar barStyle="dark-content" backgroundColor="#fff" /> : undefined }
-            
+                {Platform.OS === 'android' ? <StatusBar barStyle="dark-content" backgroundColor="#fff" /> : undefined}
+
                 <View style={styles.container}>
                     <View style={styles.imagecontainer}>
                         <Image
@@ -61,8 +61,8 @@ export default class ProfileScreen extends Component {
                                 end={{ x: 1, y: 1 }}
                                 style={styles.signInButton}>
                                 <CustomButton
+                                    onPress={() => this.props.navigation.navigate('questionnaire')}
                                     text={I18n.t('start_button')}
-                                    onPress={() => console.log("button")}
                                     textStyle={styles.signInButtonText}
                                 />
                             </LinearGradient>
@@ -90,7 +90,7 @@ const styles = StyleSheet.create({
     imagestyle: {
         // backgroundColor : "red",
         width: Platform.OS === 'ios' ? IMAGE_WIDTH : widthPercentageToDP('60%'),
-        height: Platform.OS === 'ios' ? IMAGE_HEIGHT : heightPercentageToDP('60%') 
+        height: Platform.OS === 'ios' ? IMAGE_HEIGHT : heightPercentageToDP('60%')
     },
     textContainer: {
         flex: 6,

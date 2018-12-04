@@ -4,10 +4,10 @@ import {AppRegistry} from 'react-native';
 import {name as appName} from './app.json';
 
 import App from './Application/Navigation';
-import Auth from './Application/Components/Auth'
-import SignupForm from './Application/Components/AuthScreen/SignupForm'
-import Questionnaire from './Application/Components/Questionnaire'
-import  Userprofile from './Application/Components/Userprofile'
-
+// import Auth from './Application/Components/Auth'
+// import SignupForm from './Application/Components/AuthScreen/SignupForm'
+// import Questionnaire from './Application/Components/Questionnaire'
+// import  Userprofile from './Application/Components/Userprofile'
+// import SearchMember from './Application/Components/SearchMember/index'
 
 AppRegistry.registerComponent(appName, () => App);

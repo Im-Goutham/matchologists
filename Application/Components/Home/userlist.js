@@ -41,9 +41,33 @@ let data = [
         "name": "Louise Marshall",
         "age": "Age, 29",
         "image": userImage4
+    },
+    {
+        "id":5,
+        "name": "Bettie Fleming",
+        "age": "Age, 29",
+        "image": userImage
+    },
+    {
+        "id":6,
+        "name": "Marie Watts",
+        "age": "Age, 29",
+        "image": userImage2
+    },
+    {
+        "id":7,
+        "name": "Ellen Miles",
+        "age": "Age, 29",
+        "image": userImage3
+    },
+    {
+        "id":8,
+        "name": "Louise Marshall",
+        "age": "Age, 29",
+        "image": userImage4
     }
 ]
-class Userlist extends Component {
+export default class Userlist extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -103,6 +127,7 @@ class Userlist extends Component {
                 shadowOpacity: 0.2,
                 shadowRadius: 2,
                 elevation: 3,
+                overflow:"hidden"
             }}>
 
                 <TouchableOpacity 
@@ -142,6 +167,7 @@ class Userlist extends Component {
         return (
 
             <FlatList
+            contentContainerStyle={{ paddingBottom: 150}}
                 // contentContainerStyle={styles.list}
                 data={this.state.data}
                 numColumns={2}
@@ -155,61 +181,6 @@ class Userlist extends Component {
         );
     }
 }
-class SearchHeader extends Component {
-    render() {
-        const { isLoading, onLoginLinkPress, onSignupPress } = this.props
-        return (
-            <TouchableOpacity style={{
-                shadowOffset: { width: 0, height: 2 },
-                shadowOpacity: 0.2,
-                shadowRadius: 2,
-                elevation: 3,
-                position: "absolute",
-                zIndex: 1,
-                top: IS_ANDROID ? metrics.DEVICE_HEIGHT * 0.08 : metrics.DEVICE_HEIGHT * 0.12,
-                width: metrics.DEVICE_WIDTH - 30,
-                alignItems: "center",
-                // justifyContent:"center",
-                alignSelf: "center",
-                // flex: 1,
-                backgroundColor: '#FFF',
-                borderRadius: 5,
-                // margin: IS_ANDROID ? -1 : 0,
-                height: 42,
-                padding: 7,
-                flexDirection: "row"
-
-            }} >
-                <Image
-                    source={require('../../images/icons/search.png')}
-                    style={{
-                        height: IS_ANDROID ? widthPercentageToDP('20%') : 25,
-                        width: IS_ANDROID ? widthPercentageToDP('7%') : 25,
-                        backgroundColor: 'transparent'
-                    }}
-                    resizeMethod="resize"
-                    resizeMode="contain" />
-                {/* <Icons  name="search" size={30} color="#FFF"/>          */}
-                <TextInput
-                    placeholder="Search ..."
-                    ref={(ref) => this.textInputRef = ref}
-                    autoCapitalize={'none'}
-                    autoCorrect={false}
-                    style={{
-                        height: 40,
-                        flex: 1,
-                        backgroundColor: 'transparent'
-                    }}
-                    underlineColorAndroid={'transparent'}
-                    placeholderTextColor={'#909096'}
-                    selectionColor={'#909096'}
-                    onFocus={() => this.setState({ isFocused: true })}
-                    onBlur={() => this.setState({ isFocused: false })}
-                />
-            </TouchableOpacity>
-        )
-    }
-}
 let styles = StyleSheet.create({
     row: {
         flexDirection: 'row',
@@ -220,7 +191,7 @@ let styles = StyleSheet.create({
     list: {
     }
 })
-module.exports = {
-    Userlist,
-    SearchHeader
-};
+// module.exports = {
+//     Userlist,
+//     SearchHeader
+// };

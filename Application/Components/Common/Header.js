@@ -15,7 +15,7 @@ export default class Header extends Component {
                 start={{ x: 0, y: 1 }}
                 end={{ x: 1, y: 1 }}
                 style={{ height: IS_ANDROID ? header_height : 74, }}>
-                <View style={{ height: 44, flexDirection: "row" }}>
+                <View style={{ height: 44, flexDirection: "row", alignContent:"center" }}>
                     {this.props.left}
                     {this.props.middle}
                     {this.props.right}

@@ -3,6 +3,7 @@ package com.matchologists;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import ca.jaysoo.extradimensions.ExtraDimensionsPackage;
 import com.facebook.reactnative.androidsdk.FBSDKPackage;
 import com.airbnb.android.react.lottie.LottiePackage;
 import io.invertase.firebase.RNFirebasePackage;
@@ -30,6 +31,7 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
+            new ExtraDimensionsPackage(),
             new LottiePackage(),
             new RNFirebasePackage(),
             new VectorIconsPackage(),
