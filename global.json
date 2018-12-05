@@ -4,5 +4,6 @@
   "avenirheavy": "Avenir-Heavy",
   "buttonFontSize": "20",
   "gradientprimary": "#DB3D88",
-  "gradientsecondry": "#273174"
+  "gradientsecondry": "#273174",
+  "buttonTextcolor":"#71367D"
 }

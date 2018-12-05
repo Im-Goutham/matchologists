@@ -6,6 +6,7 @@ import { createStackNavigator } from 'react-navigation';
 import AuthScreen from '../Components/AuthScreen'
 import LoginForm from '../Components/AuthScreen/LoginForm';
 import SignupForm from '../Components/AuthScreen/SignupForm';
+import ForgotPassword from '../Components/AuthScreen/ForgotPassword'
 import Webinar from '../Components/Webinar';
 import Questionnaire from '../Components/Questionnaire'
 import ProfileScreen from '../Components/Profile';
@@ -16,6 +17,7 @@ const App = createStackNavigator({
     Auth: { screen: AuthScreen },
     login: { screen: LoginForm },
     signup: { screen: SignupForm },
+    forgotpassword: { screen: ForgotPassword },
     profile: { screen: ProfileScreen },
     questionnaire: { screen: Questionnaire },
     webinar: { screen: Webinar }
