@@ -22,40 +22,43 @@ export default class SearchBar extends Component {
     render() {
         const { isLoading, onLoginLinkPress, onSignupPress, navigation } = this.props
         return (
-            <TouchableOpacity 
-            onPress={()=>navigation.navigate('searchmember')}
-            activeOpacity={1} 
-             style={{
-                shadowOffset: { width: 0, height: 2 },
-                shadowOpacity: 0.2,
-                shadowRadius: 2,
-                elevation: 3,
-                position: "absolute",
-                zIndex: 1,
-                top: IS_ANDROID ? metrics.DEVICE_HEIGHT * 0.08 : metrics.DEVICE_HEIGHT * 0.12,
-                width: metrics.DEVICE_WIDTH - 30,
-                alignItems: "center",
-                // justifyContent:"center",
-                alignSelf: "center",
-                // flex: 1,
-                backgroundColor: '#FFF',
-                borderRadius: 5,
-                // margin: IS_ANDROID ? -1 : 0,
-                height: 42,
-                padding: 7,
-                flexDirection: "row"
-
-            }} >
-                <Image
-                    source={require('../../images/icons/search.png')}
+            <View
+                style={{
+                    shadowOffset: { width: 0, height: 2 },
+                    shadowOpacity: 0.2,
+                    shadowRadius: 2,
+                    elevation: 3,
+                    position: "absolute",
+                    zIndex: 1,
+                    top: IS_ANDROID ? metrics.DEVICE_HEIGHT * 0.08 : metrics.DEVICE_HEIGHT * 0.12,
+                    width: metrics.DEVICE_WIDTH - 30,
+                    alignSelf: "center",
+                    backgroundColor: '#FFF',
+                    borderRadius: 5,
+                    height: 40,
+                    flexDirection: "row"
+                }} >
+                <View style={{
+                    paddingHorizontal: 15,
+                    justifyContent: "center",
+                    alignItems: "center",
+                }}>
+                    <Image
+                        source={require('../../images/icons/search.png')}
+                        style={{
+                            height: 26,
+                            width: 26,
+                            backgroundColor: 'transparent',
+                        }}
+                        resizeMethod="resize"
+                        resizeMode="contain" />
+                </View>
+                <View 
                     style={{
-                        height: IS_ANDROID ? widthPercentageToDP('20%') : 20,
-                        width: IS_ANDROID ? widthPercentageToDP('7%') : 20,
-                        backgroundColor: 'transparent'
-                    }}
-                    resizeMethod="resize"
-                    resizeMode="contain" />
-                <TextInput
+                        flex: 1,
+                        justifyContent: "center",
+                    }}>
+                     <TextInput
                     placeholder="Search ..."
                     ref={(ref) => this.textInputRef = ref}
                     autoCapitalize={'none'}
@@ -71,8 +74,8 @@ export default class SearchBar extends Component {
                     onFocus={() => this.setState({ isFocused: true })}
                     onBlur={() => this.setState({ isFocused: false })}
                 />
-                {/* <Text style={{ fontFamily:'Avenir-Light', fontSize:15, color:"#909096"}}> Search ...</Text> */}
-            </TouchableOpacity>
+                </View>
+            </View>
         )
     }
 }
