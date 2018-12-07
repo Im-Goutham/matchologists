@@ -65,7 +65,8 @@ export default class HomeScreen extends Component {
                         // marginBottom : IS_ANDROID ? 30 :20
                     }}>
                     <SafeAreaView>
-                        <Header
+                        <Header 
+                        isSearcrchbar={true}
                             left={
                                 <TouchableOpacity
                                     onPress={() => this.props.navigation.openDrawer()}
@@ -138,7 +139,7 @@ const styles = StyleSheet.create({
         flex: 1,
         // justifyContent: 'center',
         // alignItems: 'center',
-        backgroundColor: '#F5FCFF',
+        backgroundColor: 'rgba(255,255,255, 100)',
     },
     bottomModal: {
         justifyContent: "flex-end",

@@ -56,9 +56,8 @@ export default class Questionnaire extends Component {
     }
 
     skipQuestion() {
-        console.log('calleddd is  ');
         let { questionNum, questions } = this.state;
-        questionNum = questionNum + 1;
+         questionNum++ // + 1;
         console.log('question is  ', questionNum, 'total ', questions.length);
         if (questionNum <= questions.length) {
             this.setState({ questionNum }, () => {
@@ -319,7 +318,7 @@ export default class Questionnaire extends Component {
         console.log('questions are ', questionData);
 
         return (
-            <SafeAreaView style={{ flex: 1 }}>
+            <SafeAreaView style={{ flex: 1, backgroundColor:"rgba(255,255,255,100)"}}>
                 <StatusBar
                     backgroundColor={Platform.OS === 'android' ? "#fff" : undefined}
                     barStyle="dark-content" />
@@ -331,7 +330,7 @@ export default class Questionnaire extends Component {
                 </View>
 
                 <ScrollView
-                    style={styles.container}
+                    contentContainerStyle={styles.container}
                 >
                     <View style={{ paddingHorizontal: 10 }}>
                         <View style={styles.questionBox}>
@@ -367,7 +366,7 @@ export default class Questionnaire extends Component {
                                 resizeMode="contain"
                             /> : undefined}
 
-                            <LinearGradient
+                            {/* <LinearGradient
                                 colors={['rgb(220,57, 134)', 'rgb(40,40,120)']}
                                 start={{ x: 0, y: 1 }}
                                 end={{ x: 1, y: 1 }}
@@ -376,7 +375,7 @@ export default class Questionnaire extends Component {
                                 <TouchableOpacity style={{ height: 50, justifyContent: "center", alignItems: "center" }}>
                                     <Text style={{ color: "#fff", fontSize: 17, fontFamily: 'Avenir-Heavy' }}>SAVE</Text>
                                 </TouchableOpacity>
-                            </LinearGradient>
+                            </LinearGradient> */}
                         </View>
                     </View>
                     <TouchableOpacity onPress={() => this.skipQuestion()}>
@@ -435,6 +434,7 @@ export default class Questionnaire extends Component {
 } */
 const styles = StyleSheet.create({
     container: {
+        // backgroundColor:"rgba(255,255,255,100)",
         paddingHorizontal: 20,
     },
     totalProgress: {

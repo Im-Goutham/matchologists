@@ -29,7 +29,39 @@ import styles from './style'
 
 const IMAGE_WIDTH = metrics.DEVICE_WIDTH * 0.3
 const IMAGE_HEIGHT = metrics.DEVICE_HEIGHT * 0.15
-let IS_ANDROID = Platform.OS === 'android'
+let IS_ANDROID = Platform.OS === 'android',
+menu_array = [
+    {
+        "label": "discover_label",
+        "action_Page": "Home"
+    },
+    {
+        "label": "match_label",
+        "action_Page": "match_label"
+    },
+    {
+        "label": "top_label",
+        "action_Page": "topprofile"
+    },
+    {
+        "label": "mycalender_label",
+        "action_Page": "calender"
+    },
+    {
+        "label": "feedback_label",
+        "action_Page": "feedback"
+    },
+    {
+        "label": "setting_label",
+        "action_Page": "setting"
+    },
+    {
+        "label":"webinar_label",
+        "action_Page": "webinar"
+    }
+
+]
+
 export default class Sidebar extends Component {
     render() {
         const { navigate } = this.props.navigation;
@@ -76,12 +108,13 @@ export default class Sidebar extends Component {
 
                         </View>
                         <View style={styles.menu}>
-                            <Text style={styles.label}>{I18n.t('discover_label')}</Text>
-                            <Text style={styles.label}>{I18n.t('match_label')}</Text>
-                            <Text style={styles.label}>{I18n.t('top_label')}</Text>
-                            <Text style={styles.label}>{I18n.t('mycalender_label')}</Text>
-                            <Text style={styles.label}>{I18n.t('notification_label')}</Text>
-                            <Text style={styles.label}>{I18n.t('setting_label')}</Text>
+                        {
+                             menu_array.map((item, index)=>{
+                                return <TouchableOpacity key={index} onPress={() => this.props.navigation.navigate(item.action_Page)} >
+                                <Text style={styles.label}>{I18n.t(item.label)}</Text>
+                                </TouchableOpacity> 
+                            })
+                        }
                         </View>
                         <View style={styles.logout}>
                             <Text style={[styles.label, { color: "rgba(255, 255, 255, 0.4)", }]}>{I18n.t('logout_label')}</Text>

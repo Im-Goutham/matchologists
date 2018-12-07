@@ -104,6 +104,14 @@ export default class Filter extends Component {
                             selectedStyle={{
                                 backgroundColor: '#D43C87',
                             }}
+                            pressedMarkerStyle={{
+                                width: 36,
+                                height: 36,
+                                borderRadius: 18,
+                                backgroundColor: "#D43C87",
+                                borderWidth: 4,
+                                borderColor: "#FFF"
+                            }}
                             markerStyle={{
                                 width: 36,
                                 height: 36,
@@ -135,6 +143,14 @@ export default class Filter extends Component {
                             }}
                             selectedStyle={{
                                 backgroundColor: '#D43C87',
+                            }}
+                            pressedMarkerStyle={{
+                                width: 36,
+                                height: 36,
+                                borderRadius: 18,
+                                backgroundColor: "#D43C87",
+                                borderWidth: 4,
+                                borderColor: "#FFF"
                             }}
                             markerStyle={{
                                 width: 36,
