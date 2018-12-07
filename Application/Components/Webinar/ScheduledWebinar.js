@@ -17,16 +17,25 @@ import {
 import LinearGradient from 'react-native-linear-gradient';
 import i18n from 'react-native-i18n'
 import Header from '../Common/Header'
+import AllWebinarsList from './AllWebinarsList'
 const IS_ANDROID = Platform.OS === 'android'
 import metrics from '../../config/metrics';
-const IMAGE_WIDTH = metrics.DEVICE_WIDTH * 0.05
-const header_height = metrics.DEVICE_HEIGHT * 0.1
+const IMAGE_WIDTH = metrics.DEVICE_WIDTH * 0.05;
+const header_height = metrics.DEVICE_HEIGHT * 0.1;
+
+let tabOptions = ['Upcoming', 'All']
 
 export default class ScheduledWebinar extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            tabindex: 1
         }
+    }
+    changeTab(key) {
+        this.setState({
+            tabindex: key
+        })
     }
     render() {
         const { navigate } = this.props.navigation;
@@ -64,7 +73,7 @@ export default class ScheduledWebinar extends Component {
                             }
                             middle={
                                 <View style={{ width: "70%", backgroundColor: "transparent", alignItems: "center", justifyContent: "center" }}>
-                                    <Text style={{ fontFamily: "Avenir-Heavy", fontSize: 24, color: "#fff" }}>Top 10</Text>
+                                    <Text style={{ fontFamily: "Avenir-Heavy", fontSize: 24, color: "#fff" }}>Webinar</Text>
                                 </View>
                             }
                             right={
@@ -75,13 +84,39 @@ export default class ScheduledWebinar extends Component {
                                         backgroundColor: "transparent",
                                         justifyContent: "center",
                                         alignItems: "center"
-                                    }}>
-                                    <Text style={{ fontFamily: "Avenir-Heavy", fontSize: 13, color: "rgba(255,255,255,100)" }}>Done</Text>
-                                </TouchableOpacity>
+                                    }} />
+                            }
+                            tabbar={
+                                <View style={{ flexDirection: "row", justifyContent: "space-between", height: 30 }}>
+                                    {
+                                        tabOptions.map((data, index) => {
+                                            return (
+                                                <TouchableOpacity
+                                                    onPress={() => this.changeTab(index)}
+                                                    style={{
+                                                        borderBottomColor: this.state.tabindex === index ? "#FFF": "rgba(255,255,255, 0)",
+                                                        justifyContent: "center",
+                                                        alignItems: "center",
+                                                        // backgroundColor:"#000",
+                                                        flex: 1,
+                                                        borderBottomWidth: this.state.tabindex === index ? 3 : 3
+                                                    }}>
+                                                    <Text style={{ fontFamily: "Avenir-Heavy", fontSize: 17, lineHeight: 22, color: this.state.tabindex === index ? "#fff" : "rgba(255,255,255, 0.5)" }}>{data}</Text>
+                                                </TouchableOpacity>
+                                            )
+                                        })
+                                    }
+                                </View>
                             }
                         />
                     </SafeAreaView>
                 </LinearGradient>
+                <View style={{ paddingTop: 10}}>
+                {
+                    this.state.tabindex === 1 ? <AllWebinarsList /> : undefined
+                }
+                </View>
+
             </View>
         );
     }
@@ -89,12 +124,5 @@ export default class ScheduledWebinar extends Component {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        // justifyContent: 'center',
-        // alignItems: 'center',
-        // backgroundColor: "#009933" //'rgba(255,255,255, 100)',
-    },
-    bottomModal: {
-        justifyContent: "flex-end",
-        margin: 0
-    },
+    }
 });

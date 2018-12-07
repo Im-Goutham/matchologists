@@ -38,12 +38,12 @@ export default createDrawerNavigator(
         feedback : {
             screen : FeedbackStacknavigation
         },
-        Webinar : {
+        webinar : {
             screen : WebinarStackNavigation
         }
     },
     {
-        initialRouteName: 'notifications',
+        initialRouteName: 'homePage',
         contentComponent: Sidebar,
         drawerWidth: window_width
     });

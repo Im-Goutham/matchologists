@@ -115,53 +115,47 @@ export default class Userlist extends Component {
     renderRow = (item) => {
         // let {navigate } = this.props.navigation
         return (
-            <TouchableOpacity onPress={() => this.props.navigation.navigate('userprofile')}
+            <TouchableOpacity 
+            activeOpacity={0.7}
+            onPress={() => this.props.navigation.navigate('userprofile')}
                 style={{
                     flex: 1,
                     justifyContent: 'flex-start',
                     marginHorizontal: '1.5%',
-                    marginVertical: '3%',
+                    marginVertical: 11,//'2.5%',
                     borderRadius: 5,
                     height: IS_ANDROID ? heightPercentageToDP('38%') : metrics.DEVICE_HEIGHT * 0.351,
-                    backgroundColor: 'rgba(255, 255, 255, 100)',
+                    backgroundColor:'#FFF',
                     shadowOffset: { width: 0, height: 2 },
                     shadowOpacity: 0.2,
                     shadowRadius: 2,
                     elevation: 3,
-                    overflow: "hidden"
+                    // overflow: "hidden"
                 }}>
-
                 <View
                     style={{
-                        flex: 7,
+                        flex: 7.5,
                         backgroundColor: "transparent",
-                        flexBasis: 50
+                        flexBasis: 50,
+                        borderTopLeftRadius: 5,
+                        borderTopRightRadius: 5,
+                        overflow: "hidden"
                     }}>
                     <Image source={item.image}
                         style={{
                             flex: 1,
                             width: null,
                             height: null,
-                            borderTopLeftRadius: 5,
-                            borderTopRightRadius: 5,
-                            // resizeMode: 'contain',
-                            // aspectRatio: metrics.DEVICE_WIDTH/metrics.DEVICE_WIDTH *0.89,
-                            // width: IMAGE_WIDTH,
-                            // backgroundColor:"red", 
-                            // height: metrics.DEVICE_WIDTH  //IMAGE_HEIGHT
                         }}
                         resizeMethod="resize"
                     />
-
                 </View>
                 <View style={{
-                    flex: 3,
-                    // height: 55,
-                    // backgroundColor:"red", 
+                    flex: 2.5,
                     justifyContent: "space-around", paddingHorizontal: 10
                 }}>
-                    <Text style={{ color: "#3E3E47", fontSize: 15, fontFamily: "Avenir-Heavy", lineHeight: 30 }}>{item.name}</Text>
-                    <Text style={{ color: "#909096", fontSize: 13, fontFamily: "Avenir-Book", lineHeight: 26 }}>{item.age}</Text>
+                    <Text style={{ color: "#3E3E47", fontSize: 15, fontFamily: "Avenir-Heavy", lineHeight: 22 }}>{item.name}</Text>
+                    <Text style={{ color: "#909096", fontSize: 13, fontFamily: "Avenir-Book", lineHeight: 22 }}>{item.age}</Text>
                 </View>
             </TouchableOpacity>
         )
