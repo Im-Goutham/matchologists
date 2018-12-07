@@ -5,6 +5,7 @@
 	};
 	objectVersion = 46;
 	objects = {
+
 /* Begin PBXBuildFile section */
 		00C302E51ABCBA2D00DB3ED1 /* libRCTActionSheet.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C302AC1ABCB8CE00DB3ED1 /* libRCTActionSheet.a */; };
 		00C302E71ABCBA2D00DB3ED1 /* libRCTGeolocation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C302BA1ABCB90400DB3ED1 /* libRCTGeolocation.a */; };
@@ -31,6 +32,8 @@
 		810EBA6CE79A08611DC96D67 /* libPods-matchologists.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FB68730E5514B3156DA36B1C /* libPods-matchologists.a */; };
 		832341BD1AAA6AB300B99B32 /* libRCTText.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 832341B51AAA6A8300B99B32 /* libRCTText.a */; };
 		924A811B51EE41079D21087C /* MaterialIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F0A0AF39627A43128F2D193E /* MaterialIcons.ttf */; };
+		A909887A21BA427100F67569 /* libRNGoogleSignin.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A909887521BA426900F67569 /* libRNGoogleSignin.a */; };
+		A90988D621BA431A00F67569 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = A90988A321BA431A00F67569 /* GoogleService-Info.plist */; };
 		A92F8F9821A6AF5700236408 /* OTInstall.swift in Sources */ = {isa = PBXBuildFile; fileRef = A92F8F9721A6AF5700236408 /* OTInstall.swift */; };
 		A93ADC5521AC2B14008134C0 /* libBVLinearGradient.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A93ADC4221AC2AC8008134C0 /* libBVLinearGradient.a */; };
 		A94F5F8421AD15C90020ACFA /* OTSubscriber.m in Sources */ = {isa = PBXBuildFile; fileRef = A94F5F7721AD15C70020ACFA /* OTSubscriber.m */; };
@@ -319,6 +322,13 @@
 			remoteGlobalIDString = 58B5119B1A9E6C1200147676;
 			remoteInfo = RCTText;
 		};
+		A909887421BA426900F67569 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A909884321BA426900F67569 /* RNGoogleSignin.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 9FD355121D3E4A2900D06170;
+			remoteInfo = RNGoogleSignin;
+		};
 		A92F8F9421A6AEC300236408 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 595F942D384F4EA9BAB693F8 /* OpenTokReactNative.xcodeproj */;
@@ -475,6 +485,8 @@
 		78C398B01ACF4ADC00677621 /* RCTLinking.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTLinking.xcodeproj; path = "../node_modules/react-native/Libraries/LinkingIOS/RCTLinking.xcodeproj"; sourceTree = "<group>"; };
 		832341B01AAA6A8300B99B32 /* RCTText.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTText.xcodeproj; path = "../node_modules/react-native/Libraries/Text/RCTText.xcodeproj"; sourceTree = "<group>"; };
 		8EA1C4634ECA43CBBC1FF7D5 /* Entypo.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Entypo.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Entypo.ttf"; sourceTree = "<group>"; };
+		A909884321BA426900F67569 /* RNGoogleSignin.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RNGoogleSignin.xcodeproj; path = "../node_modules/react-native-google-signin/ios/RNGoogleSignin.xcodeproj"; sourceTree = "<group>"; };
+		A90988A321BA431A00F67569 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "matchologists/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		A91F2A53D52F59913CF8CB48 /* Pods-matchologists.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-matchologists.release.xcconfig"; path = "Pods/Target Support Files/Pods-matchologists/Pods-matchologists.release.xcconfig"; sourceTree = "<group>"; };
 		A92F8F9621A6AF5700236408 /* matchologists-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "matchologists-Bridging-Header.h"; sourceTree = "<group>"; };
 		A92F8F9721A6AF5700236408 /* OTInstall.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OTInstall.swift; sourceTree = "<group>"; };
@@ -517,6 +529,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A909887A21BA427100F67569 /* libRNGoogleSignin.a in Frameworks */,
 				A9D4642D21B790B30035153B /* libRCTFBSDK.a in Frameworks */,
 				A998F75221B0F8FE000A0D12 /* libLottieReactNative.a in Frameworks */,
 				A998F74B21B02093000A0D12 /* libLottie.a in Frameworks */,
@@ -720,6 +733,7 @@
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
+				A909884321BA426900F67569 /* RNGoogleSignin.xcodeproj */,
 				A9D4642721B790A80035153B /* RCTFBSDK.xcodeproj */,
 				A998F74C21B0F81C000A0D12 /* LottieReactNative.xcodeproj */,
 				A998F71021B02079000A0D12 /* Lottie.xcodeproj */,
@@ -755,6 +769,7 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
+				A90988A321BA431A00F67569 /* GoogleService-Info.plist */,
 				13B07FAE1A68108700A75B9A /* matchologists */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				83CBBA001A601CBA00E9B192 /* Products */,
@@ -776,11 +791,18 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		A909884421BA426900F67569 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A909887521BA426900F67569 /* libRNGoogleSignin.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		A92F8F6B21A6AEC200236408 /* Recovered References */ = {
 			isa = PBXGroup;
 			children = (
 				B7B41A106DFD4795ADE55BE4 /* libOpenTokReactNative.a */,
-				22CC074F4AE3493AB55F603D /* libRNFirebase.a */,
 			);
 			name = "Recovered References";
 			sourceTree = "<group>";
@@ -878,6 +900,7 @@
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
 				A9D4643221B794690035153B /* Embed Frameworks */,
+				96E5DB0560480ECCDAED9A0A /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -984,6 +1007,10 @@
 				{
 					ProductGroup = 146834001AC3E56700842450 /* Products */;
 					ProjectRef = 146833FF1AC3E56700842450 /* React.xcodeproj */;
+				},
+				{
+					ProductGroup = A909884421BA426900F67569 /* Products */;
+					ProjectRef = A909884321BA426900F67569 /* RNGoogleSignin.xcodeproj */;
 				},
 				{
 					ProductGroup = A94F60AB21AD4A8D0020ACFA /* Products */;
@@ -1254,6 +1281,13 @@
 			remoteRef = 832341B41AAA6A8300B99B32 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
+		A909887521BA426900F67569 /* libRNGoogleSignin.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libRNGoogleSignin.a;
+			remoteRef = A909887421BA426900F67569 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		A92F8F9521A6AEC300236408 /* libOpenTokReactNative.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
@@ -1376,6 +1410,7 @@
 				E1905441CA7B4EF7BB132C03 /* Octicons.ttf in Resources */,
 				C64A54D247CE463B91CB4780 /* SimpleLineIcons.ttf in Resources */,
 				D7BAFC1B6E6C4BF3A59A4BBD /* Zocial.ttf in Resources */,
+				A90988D621BA431A00F67569 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1412,6 +1447,26 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		96E5DB0560480ECCDAED9A0A /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${SRCROOT}/Pods/Target Support Files/Pods-matchologists/Pods-matchologists-resources.sh",
+				"${PODS_ROOT}/GTMOAuth2/Source/Touch/GTMOAuth2ViewTouch.xib",
+				"${PODS_ROOT}/GoogleSignIn/Resources/GoogleSignIn.bundle",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/GTMOAuth2ViewTouch.nib",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/GoogleSignIn.bundle",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-matchologists/Pods-matchologists-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -1485,9 +1540,7 @@
 				);
 				INFOPLIST_FILE = matchologists/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-				);
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -1525,9 +1578,7 @@
 				);
 				INFOPLIST_FILE = matchologists/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-				);
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
