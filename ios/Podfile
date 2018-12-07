@@ -2,36 +2,11 @@
  platform :ios, '9.0'
 
 target 'matchologists' do
-#  pod 'yoga', :path => '../node_modules/react-native/ReactCommon/yoga/Yoga.podspec'
-#  pod 'React', :path => '../node_modules/react-native'
-#pod 'React', path: '../node_modules/react-native', subspecs: [
-# Comment out any unneeded subspecs to reduce bundle size.
-#'Core',
-#'DevSupport',
-#'RCTActionSheet',
-#'RCTAnimation',
-#'RCTBlob',
-#'RCTCameraRoll',
-#'RCTGeolocation',
-#'RCTImage',
-#'RCTNetwork',
-#'RCTPushNotification',
-#'RCTSettings',
-#'RCTText',
-#'RCTVibration',
-#'RCTWebSocket',
-#'RCTLinkingIOS'
-#]
-  # Pods for matchologists
+
+
+
   pod 'OpenTok', '2.14.0'
-  # pod 'RNI18n', :path => '../node_modules/react-native-i18n'
-
-  # pod 'BVLinearGradient', :path => '../node_modules/react-native-linear-gradient'
-
-  # pod 'RNVectorIcons', :path => '../node_modules/react-native-vector-icons'
-
-
-  # pod 'react-native-fbsdk', :path => '../node_modules/react-native-fbsdk'
+  pod 'GoogleSignIn'
 
 end
 

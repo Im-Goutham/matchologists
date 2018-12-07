@@ -2,6 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { StyleSheet, SafeAreaView, StatusBar, TouchableOpacity } from 'react-native';
 import { SocialIcon } from 'react-native-elements'
 import { LoginManager, AccessToken, GraphRequest, GraphRequestManager } from 'react-native-fbsdk'
+import { GoogleSignin } from 'react-native-google-signin';
 import LinearGradient from 'react-native-linear-gradient';
 import I18n from 'react-native-i18n';
 import { Image, View, Text } from 'react-native-animatable'
@@ -17,6 +18,44 @@ const loginHeight = metrics.DEVICE_HEIGHT * 0.45
 const IMAGE_WIDTH = metrics.DEVICE_WIDTH * 0.6
 
 export default class LoginForm extends Component {
+
+
+    async componentDidMount() {
+        await this._configureGoogleSignIn();
+        await this._getCurrentUser();
+      }
+    
+      async _configureGoogleSignIn() {
+        // await GoogleSignin.hasPlayServices({ autoResolve: true });
+        // const configPlatform = {
+        //   ...Platform.select({
+        //     ios: {
+        //       iosClientId: '954330942455-5742nq1qk0aifalcs26h3ee1kc7b216b.apps.googleusercontent.com',
+        //     },
+        //     android: {},
+        //   }),
+        // };
+    
+        // await GoogleSignin.configure({
+        //   ...configPlatform,
+        //   webClientId: '905637758517-8b69ud9v71gboqq1fer1eomn61ne4t95.apps.googleusercontent.com',
+        //   offlineAccess: false,
+        // });
+        await GoogleSignin.configure();
+      }
+    
+      async _getCurrentUser() {
+        try {
+          const user = await GoogleSignin.currentUserAsync();
+          this.setState({ user, error: null });
+        } catch (error) {
+          this.setState({
+            error,
+          });
+        }
+      }
+
+
 
     handleFacebookLogin () {
         var self = this;
@@ -66,6 +105,24 @@ export default class LoginForm extends Component {
             alert('Login fail with error: ' + error);
           });
       }
+
+      googleSignIn = async () => {
+        console.log('_signIn is ');
+            try {
+            const user = await GoogleSignin.signIn();
+            console.log('user is ',user);
+            this.setState({ user, error: null });
+            this.googleSignIn(user);
+
+            } catch (error) {
+            if (error.code === 'CANCELED') {
+                error.message = 'user canceled the login flow';
+            }
+            this.setState({
+                error,
+            });
+            }
+      };
 
     render() {
         const { isLoading, onLoginLinkPress, onSignupPress } = this.props
@@ -125,6 +182,7 @@ export default class LoginForm extends Component {
                             button
                             type='google'
                             style={{ borderRadius: 5, backgroundColor: "#DD473B" }}
+                            onPress={()=> this.googleSignIn()}
                         />
                         <TouchableOpacity
                             activeOpacity={1}

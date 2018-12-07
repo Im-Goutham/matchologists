@@ -10,6 +10,7 @@
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTRootView.h>
 #import <FBSDKCoreKit/FBSDKCoreKit.h>
+#import <RNGoogleSignin/RNGoogleSignin.h>
 
 @implementation AppDelegate
 
@@ -39,14 +40,18 @@
 }
 
 
-- (BOOL)application:(UIApplication *)application
-            openURL:(NSURL *)url
-  sourceApplication:(NSString *)sourceApplication
-         annotation:(id)annotation {
-  return [[FBSDKApplicationDelegate sharedInstance] application:application
-                                                        openURL:url
-                                              sourceApplication:sourceApplication
-                                                     annotation:annotation];
+- (BOOL)application:(UIApplication *)application openURL:(nonnull NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options {
+
+  BOOL handled = [[FBSDKApplicationDelegate sharedInstance]
+                  application:application openURL:url sourceApplication:options[UIApplicationOpenURLOptionsSourceApplicationKey]
+                  annotation:options[UIApplicationOpenURLOptionsAnnotationKey]
+                  ];
+  // Add any custom logic here.
+  BOOL googlehandle = [RNGoogleSignin application:application
+                                          openURL:url
+                                sourceApplication:options[UIApplicationOpenURLOptionsSourceApplicationKey]
+                                       annotation:options[UIApplicationOpenURLOptionsAnnotationKey]];
+  return handled || googlehandle;
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
