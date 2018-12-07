@@ -10,8 +10,7 @@ import  SearchMember from '../Components/SearchMember'
 const HomestackNavigation = createStackNavigator({
     Home: { screen: HomeScreen },
     userprofile: {screen: Userprofile},
-    searchmember: {screen: SearchMember},
-
+    searchmember: {screen: SearchMember}
 }, {
         index: 0,
         initialRouteName: 'Home',

@@ -11,11 +11,15 @@ import CalenderStacknavigation from './CalenderStacknavigation'
 import NotificationStacknavigation from './NotificationStacknavigation'
 import FeedbackStacknavigation from './FeedbackStacknavigation';
 import WebinarStackNavigation from './WebinarStackNavigation';
+import Notifications from '../Components/Notifications';
 
 const window_width = metrics.DEVICE_WIDTH
 
 export default createDrawerNavigator(
     {
+        notifications: {
+            screen: Notifications
+        },
         homePage: {
             screen: HomestackNavigation
         },
@@ -39,7 +43,7 @@ export default createDrawerNavigator(
         }
     },
     {
-        initialRouteName: 'Webinar',
+        initialRouteName: 'notifications',
         contentComponent: Sidebar,
         drawerWidth: window_width
     });

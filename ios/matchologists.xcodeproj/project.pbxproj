@@ -5,6 +5,7 @@
 	};
 	objectVersion = 46;
 	objects = {
+
 /* Begin PBXBuildFile section */
 		00C302E51ABCBA2D00DB3ED1 /* libRCTActionSheet.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C302AC1ABCB8CE00DB3ED1 /* libRCTActionSheet.a */; };
 		00C302E71ABCBA2D00DB3ED1 /* libRCTGeolocation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C302BA1ABCB90400DB3ED1 /* libRCTGeolocation.a */; };
@@ -33,6 +34,7 @@
 		924A811B51EE41079D21087C /* MaterialIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F0A0AF39627A43128F2D193E /* MaterialIcons.ttf */; };
 		A909887A21BA427100F67569 /* libRNGoogleSignin.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A909887521BA426900F67569 /* libRNGoogleSignin.a */; };
 		A90988D621BA431A00F67569 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = A90988A321BA431A00F67569 /* GoogleService-Info.plist */; };
+		A909892621BA862400F67569 /* libRCTPushNotification.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A909890521BA861300F67569 /* libRCTPushNotification.a */; };
 		A92F8F9821A6AF5700236408 /* OTInstall.swift in Sources */ = {isa = PBXBuildFile; fileRef = A92F8F9721A6AF5700236408 /* OTInstall.swift */; };
 		A93ADC5521AC2B14008134C0 /* libBVLinearGradient.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A93ADC4221AC2AC8008134C0 /* libBVLinearGradient.a */; };
 		A94F5F8421AD15C90020ACFA /* OTSubscriber.m in Sources */ = {isa = PBXBuildFile; fileRef = A94F5F7721AD15C70020ACFA /* OTSubscriber.m */; };
@@ -328,6 +330,20 @@
 			remoteGlobalIDString = 9FD355121D3E4A2900D06170;
 			remoteInfo = RNGoogleSignin;
 		};
+		A909890421BA861300F67569 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A90988EB21BA861200F67569 /* RCTPushNotification.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 134814201AA4EA6300B7C361;
+			remoteInfo = RCTPushNotification;
+		};
+		A909890621BA861300F67569 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A90988EB21BA861200F67569 /* RCTPushNotification.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 3D05745F1DE6004600184BB4;
+			remoteInfo = "RCTPushNotification-tvOS";
+		};
 		A92F8F9421A6AEC300236408 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 595F942D384F4EA9BAB693F8 /* OpenTokReactNative.xcodeproj */;
@@ -486,6 +502,7 @@
 		8EA1C4634ECA43CBBC1FF7D5 /* Entypo.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Entypo.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Entypo.ttf"; sourceTree = "<group>"; };
 		A909884321BA426900F67569 /* RNGoogleSignin.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RNGoogleSignin.xcodeproj; path = "../node_modules/react-native-google-signin/ios/RNGoogleSignin.xcodeproj"; sourceTree = "<group>"; };
 		A90988A321BA431A00F67569 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "matchologists/GoogleService-Info.plist"; sourceTree = "<group>"; };
+		A90988EB21BA861200F67569 /* RCTPushNotification.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTPushNotification.xcodeproj; path = "../node_modules/react-native/Libraries/PushNotificationIOS/RCTPushNotification.xcodeproj"; sourceTree = "<group>"; };
 		A91F2A53D52F59913CF8CB48 /* Pods-matchologists.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-matchologists.release.xcconfig"; path = "Pods/Target Support Files/Pods-matchologists/Pods-matchologists.release.xcconfig"; sourceTree = "<group>"; };
 		A92F8F9621A6AF5700236408 /* matchologists-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "matchologists-Bridging-Header.h"; sourceTree = "<group>"; };
 		A92F8F9721A6AF5700236408 /* OTInstall.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OTInstall.swift; sourceTree = "<group>"; };
@@ -528,6 +545,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A909892621BA862400F67569 /* libRCTPushNotification.a in Frameworks */,
 				A909887A21BA427100F67569 /* libRNGoogleSignin.a in Frameworks */,
 				A9D4642D21B790B30035153B /* libRCTFBSDK.a in Frameworks */,
 				A998F75221B0F8FE000A0D12 /* libLottieReactNative.a in Frameworks */,
@@ -732,6 +750,7 @@
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
+				A90988EB21BA861200F67569 /* RCTPushNotification.xcodeproj */,
 				A909884321BA426900F67569 /* RNGoogleSignin.xcodeproj */,
 				A9D4642721B790A80035153B /* RCTFBSDK.xcodeproj */,
 				A998F74C21B0F81C000A0D12 /* LottieReactNative.xcodeproj */,
@@ -794,6 +813,15 @@
 			isa = PBXGroup;
 			children = (
 				A909887521BA426900F67569 /* libRNGoogleSignin.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		A90988EC21BA861200F67569 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A909890521BA861300F67569 /* libRCTPushNotification.a */,
+				A909890721BA861300F67569 /* libRCTPushNotification-tvOS.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -986,6 +1014,10 @@
 				{
 					ProductGroup = 00C302D41ABCB9D200DB3ED1 /* Products */;
 					ProjectRef = 00C302D31ABCB9D200DB3ED1 /* RCTNetwork.xcodeproj */;
+				},
+				{
+					ProductGroup = A90988EC21BA861200F67569 /* Products */;
+					ProjectRef = A90988EB21BA861200F67569 /* RCTPushNotification.xcodeproj */;
 				},
 				{
 					ProductGroup = 139105B71AF99BAD00B5F7CC /* Products */;
@@ -1285,6 +1317,20 @@
 			fileType = archive.ar;
 			path = libRNGoogleSignin.a;
 			remoteRef = A909887421BA426900F67569 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		A909890521BA861300F67569 /* libRCTPushNotification.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libRCTPushNotification.a;
+			remoteRef = A909890421BA861300F67569 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		A909890721BA861300F67569 /* libRCTPushNotification-tvOS.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = "libRCTPushNotification-tvOS.a";
+			remoteRef = A909890621BA861300F67569 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		A92F8F9521A6AEC300236408 /* libOpenTokReactNative.a */ = {
