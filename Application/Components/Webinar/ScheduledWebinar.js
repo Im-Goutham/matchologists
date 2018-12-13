@@ -113,7 +113,7 @@ export default class ScheduledWebinar extends Component {
                 </LinearGradient>
                 <View style={{ paddingTop: 10}}>
                 {
-                    this.state.tabindex === 1 ? <AllWebinarsList /> : undefined
+                    this.state.tabindex === 1 ? <AllWebinarsList navigation={this.props.navigation} /> : undefined
                 }
                 </View>
 

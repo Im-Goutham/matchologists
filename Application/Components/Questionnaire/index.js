@@ -63,6 +63,8 @@ export default class Questionnaire extends Component {
             this.setState({ questionNum }, () => {
                 this.calculateProgressWidth();
             });
+        } else if(questionNum >= questions.length){
+            this.props.navigation.navigate("Home")
         }
     }
 
@@ -281,10 +283,26 @@ export default class Questionnaire extends Component {
                                 colors={['rgb(220,57, 134)', 'rgb(40,40,120)']}
                                 start={{ x: 0, y: 1 }}
                                 end={{ x: 1, y: 1 }}
-                                style={[styles.answerBtn, { backgroundColor: 'white' }]}
+                                style={{ 
+                                     flex: 1,
+                                    height: 52,
+                                    borderRadius: 26,
+                                    justifyContent: 'center',
+                                    // alignItems: 'center',
+                                    // marginHorizontal: 10,
+                                    // marginVertical: 5,
+                                }}
+                                // style={[styles.answerBtn, { backgroundColor: 'white' }]}
                             >
-                                <TouchableOpacity
-                                    style={[styles.answerBtn, { backgroundColor: 'white', width: metrics.DEVICE_WIDTH - 60 - 2, height: 50, marginHorizontal: 5 }]}
+                                <TouchableOpacity style={{
+                                    flex: 1,
+                                    borderRadius: 26,
+                                    justifyContent: 'center',
+                                    alignItems: 'center',
+                                    backgroundColor:'rgb(233,233,234)',
+                                    marginHorizontal: 1,
+                                    marginVertical: 1,
+                                }}
                                     onPress={() => this.selectAnswer(key)}
                                 >
                                     <Text style={[styles.answerTxt, { color: '#313138', fontFamily: 'Avenir-Heavy' }]}>{answer.val}</Text>

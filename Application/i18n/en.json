@@ -25,6 +25,7 @@
     "start_button" : "START",
     "dob_label" : "DATE OF BIRTH",
     "bio_label" : "BIO",
+    "gender_label": "SELECT GENDER",
     "gallary_label" : "GALLARY",
     "discover_label" : "Discover",
     "match_label" : "Matches",
@@ -45,6 +46,8 @@
     "notificationsettingsLabel":"Notification Settings",
     "privacysettingsLabel" : "Privacy Settings",
     "accountsettings" : "Account Settings",
-    "warningmsg" :"When your account is private, people will only see your Name and one image."
+    "warningmsg" :"When your account is private, people will only see your Name and one image.",
+    "webinar_access_label" : "One time webinar access",
+    "subscribe_label":"Pay a one time fee - $3.99 only \n Watch the webinar live \n Rewatch the same webinar anytime"
 
 }

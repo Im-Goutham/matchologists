@@ -61,7 +61,7 @@ export default class SettingsList extends Component {
                             onToggle={state => this.newWink(state)}
                         />
                     </View>
-                    <View style={{ height: 45, justifyContent: "flex-end" }}>
+                    <View style={{ height: 45, justifyContent: "flex-end", paddingHorizontal:15 }}>
                         <Text style={{ fontFamily: "Avenir-Medium", fontSize: 15, color: "#909096" }}>{i18n.t('privacysettingsLabel')}</Text>
 
                     </View>

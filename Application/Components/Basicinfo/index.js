@@ -15,10 +15,9 @@ import {
     TouchableOpacity,
     TouchableWithoutFeedback
 } from 'react-native'
-// import { Image } from 'react-native-animatable'
 import LinearGradient from 'react-native-linear-gradient';
 import I18n from 'react-native-i18n';
-import { avenirheavy, primarybg } from '../../../global.json'
+import DateTimePicker from 'react-native-modal-datetime-picker';
 import CustomButton from '../CustomButton'
 import metrics from '../../config/metrics'
 import CustomTextInput from '../CustomTextInput';
@@ -32,21 +31,40 @@ import image6 from '../../images/Photo_6.png';
 let images_arr = [
     image1,
     image2,
-    // image3,
-    // image4,
-    // image5,
-    // image6
 ];
+let gender_arr = ["MALE", "FEMALE", "BOTH"];
 const IS_ANDROID = Platform.OS === 'android'
 
 if (IS_ANDROID) UIManager.setLayoutAnimationEnabledExperimental(true)
 const formStyle = { marginTop: 40 };
-
 export default class Basicinfo extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            selectedgender: 0,
+            isDateTimePickerVisible: false,
+            selectedDate: "Select Date",
+        }
+    }
+    _showDateTimePicker = () => this.setState({ isDateTimePickerVisible: true });
+
+    _hideDateTimePicker = () => this.setState({ isDateTimePickerVisible: false });
+
+    _handleDatePicked = date => {
+        let today =  date, //new Date('Thu Dec 12 2018 19:08:04 GMT+0530 (IST)')
+        currentdate= today.getFullYear() +'-'+ parseInt(today.getMonth()+1) + '-'+ today.getDate() ;
+        this.setState({ 
+            selectedDate: currentdate //date.toString() 
+        });
+        this._hideDateTimePicker();
+    };
+
     render() {
+        const { isDateTimePickerVisible, selectedDate, selectedgender } = this.state;
+        const { navigate } = this.props.navigation;
         const { isLoading, onLoginLinkPress, onSignupPress } = this.props
         return (
-            <SafeAreaView style={{ flex: 1 }}>
+            <SafeAreaView style={{ flex: 1, backgroundColor: "#FFF" }}>
                 {Platform.OS === 'android' ? <StatusBar barStyle="dark-content" backgroundColor="#fff" /> : undefined}
                 <ScrollView style={styles.container}>
                     <View style={styles.questionBox}>
@@ -70,7 +88,7 @@ export default class Basicinfo extends Component {
                                     returnKeyType={'next'}
                                     blurOnSubmit={false}
                                     withRef={true}
-                                    onSubmitEditing={() => this.phonenumberInputRef.focus()}
+                                    onSubmitEditing={() => this.bioInputRef.focus()}
                                     onChangeText={(value) => this.setState({ email: value })}
                                     isEnabled={!isLoading}
                                 />
@@ -78,37 +96,96 @@ export default class Basicinfo extends Component {
                             <View style={styles.formgroup}>
                                 <Text style={styles.label}>
                                     {I18n.t('dob_label')}</Text>
-                                <CustomTextInput
-                                    name={'name'}
-                                    ref={(ref) => this.nameInputRef = ref}
-                                    // placeholder={I18n.t('namelabel')}
-                                    keyboardType={'default'}
-                                    editable={!isLoading}
-                                    returnKeyType={'next'}
-                                    blurOnSubmit={false}
-                                    withRef={true}
-                                    onSubmitEditing={() => this.phonenumberInputRef.focus()}
-                                    onChangeText={(value) => this.setState({ email: value })}
-                                    isEnabled={!isLoading}
-                                />
+                                <TouchableOpacity onPress={this._showDateTimePicker}
+                                    style={{
+                                        height: 52,
+                                        backgroundColor: "rgba(245,245,245,100)", flexDirection: "row", alignItems: "center"
+                                    }}>
+                                    <Text style={{
+                                        paddingLeft:10,
+                                        width: metrics.DEVICE_WIDTH * 0.73,
+                                        fontFamily: "Avenir-Medium",
+                                        fontSize: 17,
+                                        color: "#909096"
+                                    }}>{selectedDate}</Text>
+
+                                    <Image style={{ width: 19, height: 21 }}
+                                        source={require('../../images/icons/calender_button.png')}
+                                        resizeMethod="resize"
+                                        resizeMode="contain" />
+                                </TouchableOpacity>
                             </View>
                             <View style={styles.formgroup}>
                                 <Text style={styles.label}>
+                                    {I18n.t('gender_label')}
+                                </Text>
+                                <View style={{
+                                    height: 42,
+                                    borderWidth: 1,
+                                    borderColor: "#F5F5F5",
+                                    borderRadius: 21,
+                                    flexDirection: "row",
+                                    // justifyContent: "space-between",
+                                    // alignItems: "center"
+                                }}>
+                                    {
+                                        gender_arr.map((value, key) => {
+                                            return (
+                                                selectedgender === key ?
+                                                    <LinearGradient key={key}
+                                                        colors={['#DB3D88', '#273174']}
+                                                        start={{ x: 0, y: 1 }}
+                                                        end={{ x: 1, y: 1 }}
+                                                        style={{ flex: 1, alignItems: "center", justifyContent: "center", backgroundColor: "red", borderRadius: 21 }}
+                                                    >
+
+                                                        <Text style={{
+                                                            fontFamily: "Avenir-Heavy",
+                                                            fontSize: 17,
+                                                            color: "#FFF"
+                                                        }}>{value}</Text>
+                                                    </LinearGradient>
+                                                    :
+                                                    <TouchableOpacity key={key} onPress={() => this.setState({ selectedgender: key })}
+                                                        style={{ flex: 1, alignItems: "center", justifyContent: "center", backgroundColor: "#FFF", borderRadius: 21 }}
+                                                    >
+                                                        <Text style={{
+                                                            fontFamily: "Avenir-Heavy",
+                                                            fontSize: 17,
+                                                            color: "#909096"
+                                                        }}>{value}</Text>
+                                                    </TouchableOpacity>
+                                            )
+                                        })
+                                    }
+                                </View>
+                            </View>
+
+                            <View style={styles.formgroup}>
+                                <Text style={styles.label}>
                                     {I18n.t('bio_label')}</Text>
-                                <CustomTextInput
-                                    style={{
+                                    <View   style={{
                                         // flex: 1,
-                                        backgroundColor: 'rgb(245,245,245)',
+                                        backgroundColor: 'rgba(245,245,245, 100)',
                                         borderRadius: 5,
                                         margin: IS_ANDROID ? -1 : 0,
-                                        height: 42,
-                                        // height: 100,
+                                        height: 100,
                                         padding: 7
-                                    }}
+                                    }}>
+                                    <CustomTextInput
+                                    // style={{
+                                    //     // flex: 1,
+                                    //     backgroundColor: 'rgba(245,245,245, 100)',
+                                    //     borderRadius: 5,
+                                    //     margin: IS_ANDROID ? -1 : 0,
+                                    //     height: 42,
+                                    //     // height: 100,
+                                    //     padding: 7
+                                    // }}
                                     numberOfLines={4}
                                     multiline={true}
                                     name={'name'}
-                                    ref={(ref) => this.nameInputRef = ref}
+                                    ref={(ref) => this.bioInputRef = ref}
                                     keyboardType={'default'}
                                     editable={!isLoading}
                                     returnKeyType={'next'}
@@ -118,12 +195,13 @@ export default class Basicinfo extends Component {
                                     onChangeText={(value) => this.setState({ email: value })}
                                     isEnabled={!isLoading}
                                 />
-                            </View>
 
+                                        </View>
+                            </View>
                         </KeyboardAvoidingView>
                         <View style={styles.formgroup}>
                             <Text style={styles.label}>{I18n.t('gallary_label')}</Text>
-                            {/* <Gallary /> */}
+                            <Gallary />
                         </View>
                         <LinearGradient
                             colors={['#DB3D88', '#273174']}
@@ -132,13 +210,17 @@ export default class Basicinfo extends Component {
                             style={styles.signInButton}>
                             <CustomButton
                                 text={I18n.t('start_button')}
-                                onPress={() => console.log("button")}
+                                onPress={() => navigate('questionnaire')}
                                 textStyle={styles.signInButtonText}
                             />
                         </LinearGradient>
                     </View>
-
                 </ScrollView>
+                <DateTimePicker
+                    isVisible={isDateTimePickerVisible}
+                    onConfirm={this._handleDatePicked}
+                    onCancel={this._hideDateTimePicker}
+                />
             </SafeAreaView>
         )
     }
@@ -151,218 +233,89 @@ class Gallary extends Component {
             dataSource: ds.cloneWithRows(images_arr),
         };
     }
-
-    renderimages() {
-        return (
-            <View style={{
-                justifyContent: 'center',
-                flexDirection: 'row',
-                flexWrap: 'wrap',
-                flex: 1,
-                backgroundColor: "red",
-            }}>
-                {
-                    images_arr.map((val, index) => {
-                        return <Image
-                            key={index}
-                            source={val}
-                            style={{
-                                width: '50%',// metrics.DEVICE_WIDTH * 0.51,
-                                // height: metrics.DEVICE_HEIGHT * 0.3,
-                                backgroundColor: "red",
-                            }}
-                            resizeMethod="resize"
-                            resizeMode="contain"
-                        />
-                    })
-                }
-            </View>
-        )
-
-    }
-    rendermoreImages() {
-        return (
-            <View style={{
-                justifyContent: 'center',
-                //    flexDirection: 'row',
-                flexWrap: 'wrap',
-                // flex: 1,
-                backgroundColor: "red",
-            }}>
-                {
-                    images_arr.map((val, index) => {
-                        return <Image
-                            source={val}
-                            style={{
-                                width: metrics.DEVICE_WIDTH * 0.3,
-                                height: metrics.DEVICE_HEIGHT * 0.1,
-                            }}
-                            resizeMethod="resize"
-                            resizeMode="contain"
-                        />
-                    })
-                }
-                <ListView
-                    contentContainerStyle={styles.grid}
-                    dataSource={this.state.dataSource}
-                    renderRow={(item) => this.renderGridItem(item)}
-
-                />
-            </View>)
-
-    }
-    renderGridItem(item) {
-        return (
-            <Image
-                source={item}
-                style={{
-                    width: '30%',// metrics.DEVICE_WIDTH * 0.51,
-                    height: metrics.DEVICE_HEIGHT * 0.3,
-                    paddingHorizontal: 10,//'1.5%'
-                    marginHorizontal: '1.55%'
-                    // backgroundColor:"red",
-                }}
-                resizeMethod="resize"
-                resizeMode="contain"
-            />
-        )
-    }
     render() {
         return (
-            <View style={{
-                flexWrap: "wrap",
-                backgroundColor: "blue",
-                flex: 1,
-            }}>
-
-              
+            <View style={{ flex: 1 }}>
+                <View style={{ flexDirection: "row" }}>
+                    <TouchableOpacity style={{ flex: 6.5, borderRadius: 10, overflow: "hidden" }}>
+                        <Image
+                            source={require('../../images/Photo_1.png')}
+                            style={{
+                                flex: 1,
+                                width: null,
+                                height: null,
+                            }}
+                            resizeMethod="resize"
+                        // resizeMode="contain"
+                        />
+                    </TouchableOpacity>
+                    <View style={{ justifyContent: "space-between", alignItems: 'center', flex: 3.5, }}>
+                        <Image
+                            source={image2}
+                            style={{
+                                marginVertical:5,
+                                width: metrics.DEVICE_WIDTH * 0.25,
+                                height: metrics.DEVICE_WIDTH * 0.25,
+                            }}
+                            resizeMethod="resize"
+                            resizeMode="contain"
+                        />
+                        <Image
+                            source={image3}
+                            style={{
+                                marginVertical:5,
+                                width: metrics.DEVICE_WIDTH * 0.25,
+                                height: metrics.DEVICE_WIDTH * 0.25,
+                            }}
+                            resizeMethod="resize"
+                            resizeMode="contain"
+                        />
+                    </View>
+                </View>
+                <View style={{
+                    height: metrics.DEVICE_WIDTH * 0.28,
+                    flexDirection: "row", justifyContent: "space-around", alignItems: 'center'
+                }}>
                     <Image
-                        source={require('../../images/Photo_1.png')}
+                        source={image4}
                         style={{
-                            width: '50%', //metrics.DEVICE_WIDTH * 0.51,
-                            height: '30%'// metrics.DEVICE_HEIGHT * 0.3,
-                            // backgroundColor:"red"
+                            width: metrics.DEVICE_WIDTH * 0.25,
+                            height: metrics.DEVICE_WIDTH * 0.25,
                         }}
                         resizeMethod="resize"
                         resizeMode="contain"
                     />
-                <View style={{
-                    // flexWrap: "wrap",
-                    flex: 4,
-                }}>
-                    {
-                        images_arr.length <= 1 ? this.renderimages() : this.rendermoreImages()
-                    }
-                </View>
-
-
-                {/* <ListView 
-                contentContainerStyle={styles.grid}
-                dataSource={this.state.dataSource}
-                renderRow={(item) => this.renderGridItem(item)}
-
-                /> */}
-                {/* <View style={{ 
-                    flex: 5, 
-                    flexDirection: "row", backgroundColor: "#009933",  }}>
-                    <View style={{ 
-                        flex: 6,
-                        justifyContent : "center",
-                        alignItems:"center",
-                        //  backgroundColor: "#009933", 
-                         }}>
-                        <Image
-                            source={require('../../images/Photo_1.png')}
-                            style={{
-                                width: '100%', //metrics.DEVICE_WIDTH * 0.51,
-                                height: '100%'// metrics.DEVICE_HEIGHT * 0.3,
-                                // backgroundColor:"red"
-                            }}
-                            resizeMethod="resize"
-                            resizeMode="contain"
-                        />
-                    </View>
-                    <View style={{ 
-                        justifyContent: "space-between", 
-                        flex: 4,
-                        justifyContent : "center",
-                        alignItems:"center"}}>
-                        <Image source={require('../../images/Photo_2.png')}
-                            style={{
-                                width:'100%',// metrics.DEVICE_WIDTH * 0.30,
-                                height: 100//metrics.DEVICE_HEIGHT * 0.17,
-                                // backgroundColor:"blue"
-
-                            }}
-                            resizeMethod="resize"
-                            resizeMode="contain"
-                        />
-                        <Image source={require('../../images/Photo_3.png')}
-                            style={{
-                                width:'100%',// metrics.DEVICE_WIDTH * 0.30,
-                                height: 100//metrics.DEVICE_HEIGHT * 0.17,
-                                // backgroundColor:"green"
-
-                            }}
-                            resizeMethod="resize"
-                            resizeMode="contain"
-                        />
-                    </View>
-                </View>
-                <View style={{ 
-                    flex:4, 
-                    flexDirection : "row", 
-                    justifyContent:"space-between", 
-                    alignItems:"center",
-                    // backgroundColor:"red"
-                    }}>
-                <Image source={require('../../images/Photo_4.png')} 
-                 style={{
-                    width:'30%', //metrics.DEVICE_WIDTH * 0.25,
-                    height: metrics.DEVICE_HEIGHT * 0.15,
-                    // backgroundColor:"red"
-                }}
-                resizeMethod="resize"
-                resizeMode="contain" 
-                />
-                <Image source={require('../../images/Photo_5.png')}  
-                style={{
-                    width:'30%', //metrics.DEVICE_WIDTH * 0.25,
-                        height: metrics.DEVICE_HEIGHT * 0.15,
-                        // backgroundColor:"green"
-                    }}
-                    resizeMethod="resize"
-                    resizeMode="contain" 
+                    <Image
+                        source={image5}
+                        style={{
+                            width: metrics.DEVICE_WIDTH * 0.25,
+                            height: metrics.DEVICE_WIDTH * 0.25,
+                        }}
+                        resizeMethod="resize"
+                        resizeMode="contain"
                     />
-                <Image source={require('../../images/Photo_6.png')}
-                 style={{
-                    width:'30%', //metrics.DEVICE_WIDTH * 0.25,
-                    height: metrics.DEVICE_HEIGHT * 0.15,
-                    // backgroundColor:"blue"
-
-                }}
-                resizeMethod="resize"
-                resizeMode="contain" 
-                />
-
-                </View> */}
+                    <Image
+                        source={image6}
+                        style={{
+                            width: metrics.DEVICE_WIDTH * 0.25,
+                            height: metrics.DEVICE_WIDTH * 0.25,
+                        }}
+                        resizeMethod="resize"
+                        resizeMode="contain"
+                    />
+                </View>
             </View>
         )
     }
 }
 const styles = StyleSheet.create({
     container: {
-        // paddingVertical: 50,
         marginVertical: 20
-
     },
     grid: {
-        // flex:1,
         flexDirection: "row",
-        // paddingHorizontal :'1.5%'
     },
     questionBox: {
-        // backgroundColor: 'rgb(233,233,234)',
         paddingHorizontal: 30
     },
     questionTitle: {
@@ -377,16 +330,10 @@ const styles = StyleSheet.create({
         fontSize: 11
     },
     answerBox: {
-        // backgroundColor: 'rgb(233,233,234)',
-
-        // backgroundColor:"red",
         paddingHorizontal: 32,
-        // paddingVertical: 10
     },
     formgroup: {
-        // backgroundColor:"red",
         paddingVertical: 9
-        // paddingTop: 4
     },
     signInButton: {
         borderRadius: 5,
@@ -396,5 +343,4 @@ const styles = StyleSheet.create({
         fontSize: 17,
         color: "#fff"
     }
-
 });

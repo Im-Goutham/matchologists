@@ -30,7 +30,7 @@ export default class SearchBar extends Component {
                     elevation: 3,
                     position: "absolute",
                     zIndex: 1,
-                    top: IS_ANDROID ? metrics.DEVICE_HEIGHT * 0.08 : metrics.DEVICE_HEIGHT * 0.12,
+                    top: IS_ANDROID ? metrics.DEVICE_HEIGHT * 0.08 : (Platform.Version <= '10.3.3' ?  metrics.DEVICE_HEIGHT * 0.1 : metrics.DEVICE_HEIGHT * 0.12),
                     width: metrics.DEVICE_WIDTH - 30,
                     alignSelf: "center",
                     backgroundColor: '#FFF',
@@ -39,16 +39,18 @@ export default class SearchBar extends Component {
                     flexDirection: "row"
                 }} >
                 <View style={{
-                    paddingHorizontal: 15,
+                    paddingHorizontal: 10,
                     justifyContent: "center",
                     alignItems: "center",
+                    // backgroundColor: '#009933',
+
                 }}>
                     <Image
                         source={require('../../images/icons/search.png')}
                         style={{
                             height: 26,
                             width: 26,
-                            backgroundColor: 'transparent',
+                            // backgroundColor: 'red',
                         }}
                         resizeMethod="resize"
                         resizeMode="contain" />
@@ -57,6 +59,7 @@ export default class SearchBar extends Component {
                     style={{
                         flex: 1,
                         justifyContent: "center",
+                        // backgroundColor:"#009933"
                     }}>
                      <TextInput
                     placeholder="Search ..."
@@ -66,7 +69,7 @@ export default class SearchBar extends Component {
                     style={{
                         height: 40,
                         flex: 1,
-                        paddingHorizontal:10
+                        // paddingHorizontal:10
                     }}
                     underlineColorAndroid={'transparent'}
                     placeholderTextColor={'#909096'}

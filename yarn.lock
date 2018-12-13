@@ -5011,6 +5011,11 @@ react-native-fbsdk@^0.8.0:
     pump "^1.0.2"
     xcode "^0.9.3"
 
+react-native-flags@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/react-native-flags/-/react-native-flags-1.0.0.tgz#8bf99b58e125ca6057d7923549132b3579754ed3"
+  integrity sha1-i/mbWOElymBX15I1SRMrNXl1TtM=
+
 react-native-google-signin@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/react-native-google-signin/-/react-native-google-signin-1.0.1.tgz#1736f08b921f9ae30d66b86887ef086aee767c99"
@@ -5027,6 +5032,22 @@ react-native-linear-gradient@^2.5.2:
   version "2.5.2"
   resolved "https://registry.yarnpkg.com/react-native-linear-gradient/-/react-native-linear-gradient-2.5.2.tgz#e00312997661ef99d76d5fb902fef3d04bc6b5d5"
   integrity sha512-G16njRgPi52iB5gggpVvI8qJaAT2ZbIyNKXZtrdYoDKp7oOAq3w5F7qwuIz6tdxKMcF6LGYhouFsmuD8cTI/JA==
+
+react-native-modal-datetime-picker@^6.0.0:
+  version "6.0.0"
+  resolved "https://registry.yarnpkg.com/react-native-modal-datetime-picker/-/react-native-modal-datetime-picker-6.0.0.tgz#8018994524122ad48fd6bc66f26f623c75a49fb3"
+  integrity sha512-O8brvSXgvRtfHzAyCNSrPcylE05cyK30D8/7rM0kjXLnlDcoiXtEl62qDQw8wnJOAL6kQFGn/iQ8H4mGXptiHw==
+  dependencies:
+    prop-types "^15.6.1"
+    react-native-modal "^6.2.0"
+
+react-native-modal@^6.2.0:
+  version "6.5.0"
+  resolved "https://registry.yarnpkg.com/react-native-modal/-/react-native-modal-6.5.0.tgz#46220b2289a41597d344c1db17454611b426a758"
+  integrity sha512-ewchdETAGd32xLGLK93NETEGkRcePtN7ZwjmLSQnNW1Zd0SRUYE8NqftjamPyfKvK0i2DZjX4YAghGZTqaRUbA==
+  dependencies:
+    prop-types "^15.6.1"
+    react-native-animatable "^1.2.4"
 
 react-native-modal@^7.0.1:
   version "7.0.1"

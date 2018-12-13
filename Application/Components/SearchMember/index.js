@@ -66,12 +66,13 @@ export default class SearchMember extends Component {
                     }}>
                     <SafeAreaView/>
                         <Header
+                        isSearcrchbar={true}
                             left={
                                 <TouchableOpacity
                                     onPress={() => goBack()}
                                     style={{
                                         width: "15%",
-                                        backgroundColor: "transparent",
+                                        // backgroundColor: "red",
                                         justifyContent: "center",
                                         alignItems: "center"
                                     }}>
@@ -93,7 +94,7 @@ export default class SearchMember extends Component {
                             right={
                                 <View style={{
                                     width: "15%",
-                                    backgroundColor: "transparent",
+                                    // backgroundColor: "red",
                                     justifyContent: "center",
                                     alignItems: "center"
                                 }}/>

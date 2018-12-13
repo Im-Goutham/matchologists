@@ -21,7 +21,8 @@ var styles = StyleSheet.create({
         // backgroundColor: '#000',
     },
     logout: {
-        flex: 2,
+        // flex: 2,
+        height: '15%',
         justifyContent: 'center',
         alignItems: 'center',
         // backgroundColor: 'blue',

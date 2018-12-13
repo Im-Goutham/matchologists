@@ -11,6 +11,7 @@ import Questionnaire from '../Components/Questionnaire'
 import ProfileScreen from '../Components/Profile';
 import AppDrawerNavigator from './Appdrawer';
 import I18n from '../i18n/I18n';
+import Basicinfo from '../Components/Basicinfo'
 const App = createStackNavigator({
     home: { screen: AppDrawerNavigator },
     auth: { screen: AuthScreen },
@@ -19,9 +20,10 @@ const App = createStackNavigator({
     forgotpassword: { screen: ForgotPassword },
     profile: { screen: ProfileScreen },
     questionnaire: { screen: Questionnaire },
+    basicinfo : {screen :Basicinfo}
 }, {
         index: 0,
-        initialRouteName: 'home',
+        initialRouteName: 'auth',
         headerMode: 'none',
         navigationOptions: {
             gesturesEnabled: false

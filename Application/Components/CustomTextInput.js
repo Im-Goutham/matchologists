@@ -4,7 +4,7 @@ import { View } from 'react-native-animatable'
 
 const IS_ANDROID = Platform.OS === 'android'
 
-export default class AuthTextInput extends Component {
+export default class CustomTextInput extends Component {
   state = {
     isFocused: false
   }
@@ -12,7 +12,7 @@ export default class AuthTextInput extends Component {
   focus = () => this.textInputRef.focus()
 
   render () {
-    const { isEnabled, ...otherProps } = this.props
+    const { isEnabled, style, ...otherProps } = this.props
     const { isFocused } = this.state
     const color = "#909096"//isEnabled ? 'white' : 'rgba(255,255,255,0.4)'
     const borderColor = isFocused ? 'white' : 'rgba(255,255,255,0.4)'
@@ -23,7 +23,7 @@ export default class AuthTextInput extends Component {
             ref={(ref) => this.textInputRef = ref}
             autoCapitalize={'none'}
             autoCorrect={false}
-            style={[styles.textInput, { color }]}
+            style={[styles.textInput, style, { color }]}
             // maxLength={32}
             underlineColorAndroid={'transparent'}
             placeholderTextColor={'#696969'}

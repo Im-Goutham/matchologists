@@ -61,7 +61,7 @@ export default class ProfileScreen extends Component {
                                 end={{ x: 1, y: 1 }}
                                 style={styles.signInButton}>
                                 <CustomButton
-                                    onPress={() => this.props.navigation.navigate('questionnaire')}
+                                    onPress={() => this.props.navigation.navigate('basicinfo')}
                                     text={I18n.t('start_button')}
                                     textStyle={styles.signInButtonText}
                                 />

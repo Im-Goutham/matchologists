@@ -5,8 +5,10 @@ author : abhishekkalia
 import { createStackNavigator } from 'react-navigation';
 import Webinar from '../Components/Webinar';
 import ScheduledWebinar from '../Components/Webinar/ScheduledWebinar'
+import SubscribeScreen from '../Components/Webinar/SubscribeScreen'
 const WebinarStackNavigation = createStackNavigator({
-    list: {screen:ScheduledWebinar},
+    subscribe: { screen: SubscribeScreen },
+    list: { screen: ScheduledWebinar },
     golive: { screen: Webinar },
 
 }, {

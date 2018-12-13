@@ -9,13 +9,13 @@ import {
     TouchableOpacity
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import photo_1 from '../../images/search_result.png'
-import Photo_7 from '../../images/Photo_7.png'
-import Photo_8 from '../../images/Photo_8.png'
-import Photo_9 from '../../images/Photo_9.png'
-import Photo_10 from '../../images/Photo_10.png'
-import Photo_11 from '../../images/Photo_11.png'
-import Photo_12 from '../../images/Photo_12.png'
+import webinar_1 from '../../images/webinar_1.png'
+import webinar_2 from '../../images/webinar_2.png'
+import webinar_3 from '../../images/webinar_3.png'
+import webinar_4 from '../../images/webinar_4.png'
+import webinar_5 from '../../images/webinar_5.png'
+import webinar_6 from '../../images/webinar_6.png'
+import webinar_7 from '../../images/webinar_7.png'
 import noun_live from '../../images/icons/noun_live.png'
 let data = [
     {
@@ -23,7 +23,7 @@ let data = [
         "title": "Webinar Name 1",
         "date": "Date: Oct 12, 2018",
         "time": "Duration: 2:30 Hours",
-        "picture": photo_1,
+        "picture": webinar_1,
         "is_live": true,
         "status": true
     },
@@ -32,7 +32,7 @@ let data = [
         "title": "Webinar Name 2",
         "date": "Date: Oct 12, 2018",
         "time": "Duration: 2:30 Hours",
-        "picture": Photo_7,
+        "picture": webinar_2,
         "is_live": false,
         "status": false
     },
@@ -41,7 +41,7 @@ let data = [
         "title": "Webinar Name 3",
         "date": "Date: Oct 12, 2018",
         "time": "Duration: 2:30 Hours",
-        "picture": Photo_8,
+        "picture": webinar_3,
         "is_live": false,
         "status": true
     },
@@ -50,7 +50,7 @@ let data = [
         "title": "Webinar Name 4",
         "date": "Date: Oct 12, 2018",
         "time": "Duration: 2:30 Hours",
-        "picture": Photo_9,
+        "picture": webinar_4,
         "is_live": false,
         "status": true
     },
@@ -59,7 +59,7 @@ let data = [
         "title": "Webinar Name 5",
         "date": "Date: Oct 12, 2018",
         "time": "Duration: 2:30 Hours",
-        "picture": Photo_10,
+        "picture": webinar_5,
         "is_live": false,
         "status": true
     },
@@ -68,7 +68,7 @@ let data = [
         "title": "Webinar Name 6",
         "date": "Date: Oct 12, 2018",
         "time": "Duration: 2:30 Hours",
-        "picture": Photo_11,
+        "picture": webinar_6,
         "is_live": false,
         "status": true
     },
@@ -77,7 +77,7 @@ let data = [
         "title": "Webinar Name 7",
         "date": "Date: Oct 12, 2018",
         "time": "Duration: 2:30 Hours",
-        "picture": Photo_12,
+        "picture": webinar_7,
         "is_live": false,
         "status": true
     },
@@ -86,7 +86,7 @@ let data = [
         "title": "Webinar Name 8",
         "date": "Date: Oct 12, 2018",
         "time": "Duration: 2:30 Hours",
-        "picture": Photo_11,
+        "picture": webinar_1,
         "is_live": false,
         "status": true
     }
@@ -122,7 +122,10 @@ export default class AllWebinarsList extends Component {
     }
     renderRow(item) {
         return (
-            <View style={{ backgroundColor: "#FFF", height: 97, flexDirection: "row", paddingHorizontal: 10 }}>
+            <TouchableOpacity 
+            activeOpacity={0.7}
+            onPress={() => this.props.navigation.navigate('subscribe')}
+            style={{ backgroundColor: "#FFF", height: 90, flexDirection: "row", paddingHorizontal: 15 }}>
                 <View style={{ flex: 2.1, justifyContent: "center", alignItems: "center", backgroundColor: "transparent" }}>
                     <Image source={item.picture} style={{ width: 60, height: 60, borderRadius: 30 }} />
                 </View>
@@ -131,17 +134,19 @@ export default class AllWebinarsList extends Component {
                     justifyContent: "center",
                     // paddingHorizontal: 15
                 }}>
-                    <Text style={{ color: "#3E3E47", fontSize: 17, fontFamily: "Avenir-Heavy", lineHeight: 22 }}>{item.title}
+                    <View style={{ backgroundColor: "transparent", height : 40, justifyContent: "space-between", flexDirection: "row", alignItems: "center" }}>
+                        <Text style={{ color: "#3E3E47", fontSize: 17, fontFamily: "Avenir-Heavy", lineHeight: 22 }}>{item.title}</Text>
                         {
-                           item.is_live 
-                           ?<Image source={noun_live} style={{ width: 22, height: 19 , alignSelf:"flex-end"}} /> 
-                           : item.status ? undefined  
-                           : <Text style={{ color: "#FE8E9B", fontSize: 15, fontFamily: "Avenir-Medium", lineHeight: 22 }}>CANCELLED</Text>
+                            item.is_live
+                                ? <Image source={noun_live} style={{ width: 22, height: 19 }} />
+                                : item.status ? undefined
+                                    : <Text style={{ color: "#FE8E9B", fontSize: 15, fontFamily: "Avenir-Medium", lineHeight: 22 }}>CANCELLED</Text>
                         }
-                    </Text>
-                    <Text style={{ color: "#909096", fontSize: 15, fontFamily: "Avenir-Medium", lineHeight: 22 }}>{item.date + " | " + item.time}</Text>
+                    </View>
+
+                    <Text style={{color: "#909096", fontSize: 14, fontFamily: "Avenir-Medium", lineHeight: 22 }}>{item.date + " | " + item.time}</Text>
                 </View>
-            </View>
+            </TouchableOpacity>
         )
     }
     onDayPress(day) {
