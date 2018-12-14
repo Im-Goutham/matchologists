@@ -16,7 +16,7 @@ import CustomButton from '../CustomButton';
 import I18n from 'react-native-i18n'
 export default class SubscribeScreen extends Component {
     render() {
-        const { goBack } = this.props.navigation;
+        const { goBack , navigate} = this.props.navigation;
         return (
             // <StatusBar barStyle = "dark-content" hidden = {false} backgroundColor = "#00BCD4" translucent = {true}/>
             <View style={styles.container}>
@@ -49,6 +49,7 @@ export default class SubscribeScreen extends Component {
                     </View>
                     <View style={styles.buttoncontainer}>
                         <CustomButton
+                        onPress={()=>navigate('golive')}
                             textStyle={{
                                 color: "#2C3174",
                                 fontSize: 17,

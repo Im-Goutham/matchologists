@@ -124,7 +124,7 @@ export default class AllWebinarsList extends Component {
         return (
             <TouchableOpacity 
             activeOpacity={0.7}
-            onPress={() => this.props.navigation.navigate('subscribe')}
+            onPress={() => this.props.navigation.navigate('upcomingwebinar')}
             style={{ backgroundColor: "#FFF", height: 90, flexDirection: "row", paddingHorizontal: 15 }}>
                 <View style={{ flex: 2.1, justifyContent: "center", alignItems: "center", backgroundColor: "transparent" }}>
                     <Image source={item.picture} style={{ width: 60, height: 60, borderRadius: 30 }} />
