@@ -7,21 +7,21 @@
 	<key>AD_UNIT_ID_FOR_INTERSTITIAL_TEST</key>
 	<string>ca-app-pub-3940256099942544/4411468910</string>
 	<key>CLIENT_ID</key>
-	<string>905637758517-15pfmurvms600ctfk0vqip0kg8lm4i2p.apps.googleusercontent.com</string>
+	<string>984386186860-qv2koo0b98mp88uihgnu3hba37mbnjl3.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.905637758517-15pfmurvms600ctfk0vqip0kg8lm4i2p</string>
+	<string>com.googleusercontent.apps.984386186860-qv2koo0b98mp88uihgnu3hba37mbnjl3</string>
 	<key>API_KEY</key>
-	<string>AIzaSyAEugFT06MfWDl4HGQ25t7KHdG4hzRIbmE</string>
+	<string>AIzaSyAtD_L_Vayn3_KB-fOFL1BWYGDX7jvdlsQ</string>
 	<key>GCM_SENDER_ID</key>
-	<string>905637758517</string>
+	<string>984386186860</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.matchologists</string>
+	<string>com.iOSPushIndiaNIC</string>
 	<key>PROJECT_ID</key>
-	<string>webinar-fc544</string>
+	<string>webinar-b2902</string>
 	<key>STORAGE_BUCKET</key>
-	<string>webinar-fc544.appspot.com</string>
+	<string>webinar-b2902.appspot.com</string>
 	<key>IS_ADS_ENABLED</key>
 	<true></true>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -33,8 +33,8 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:905637758517:ios:b4cce635000cc93b</string>
+	<string>1:984386186860:ios:7a6073d30fffce2c</string>
 	<key>DATABASE_URL</key>
-	<string>https://webinar-fc544.firebaseio.com</string>
+	<string>https://webinar-b2902.firebaseio.com</string>
 </dict>
 </plist>

@@ -14,145 +14,155 @@ import {
 import Modal from 'react-native-modal';
 import Flag from 'react-native-flags';
 const arr_list = [
+    // {
+    //     c_name: "AFGHANISTAN",
+    //     flag: "AF",
+    //     code: "+93"
+    // },
+    // {
+    //     c_name: "ALBANIA",
+    //     flag: "AL",
+    //     code: "+355"
+    // },
+    // {
+    //     c_name: "ALGERIA",
+    //     flag: "DZ",
+    //     code: "+213"
+    // },
+    // {
+    //     c_name: "ANDORRA",
+    //     flag: "AD",
+    //     code: "+376"
+    // },
+    // {
+    //     c_name: "ANGOLA",
+    //     flag: "AO",
+    //     code: "+244"
+    // },
+    // {
+    //     c_name: "ANTIGUA & BARBUDA",
+    //     flag: "AG",
+    //     code: "+1"
+    // },
+    // {
+    //     c_name: "ARGENTINA",
+    //     flag: "AR",
+    //     code: "+54"
+    // },
+    // {
+    //     c_name: "ARMENIA",
+    //     flag: "AM",
+    //     code: "+374"
+    // },
+    // {
+    //     c_name: "AUSTRALIA",
+    //     flag: "AU",
+    //     code: "+61"
+    // },
+    // {
+    //     c_name: "AUSTRIA",
+    //     flag: "AT",
+    //     code: "+43"
+    // },
+    // {
+    //     c_name: "AZERBAIJAN",
+    //     flag: "AZ",
+    //     code: "+994"
+    // },
+    // {
+    //     c_name: "BAHAMAS, THE",
+    //     flag: "BS",
+    //     code: "+1"
+    // },
+    // {
+    //     c_name: "BAHRAIN",
+    //     flag: "BH",
+    //     code: "+973"
+    // },
+    // {
+    //     c_name: "BANGLADESH",
+    //     flag: "BD",
+    //     code: "+880"
+    // },
+    // {
+    //     c_name: "BARBADOS",
+    //     flag: "BB",
+    //     code: "+1"
+    // },
+    // {
+    //     c_name: "BELARUS",
+    //     flag: "BY",
+    //     code: "+375"
+    // },
+    // {
+    //     c_name: "BELGIUM",
+    //     flag: "BE",
+    //     code: "+32"
+    // },
+    // {
+    //     c_name: "BELIZE",
+    //     flag: "BZ",
+    //     code: "+501"
+    // },
+    // {
+    //     c_name: "BENIN",
+    //     flag: "BJ",
+    //     code: "+229"
+    // },
+    // {
+    //     c_name: "BHUTAN",
+    //     flag: "BT",
+    //     code: "+975"
+    // },
+    // {
+    //     c_name: "BOLIVIA",
+    //     flag: "BO",
+    //     code: "+591"
+    // },
+    // {
+    //     c_name: "BOSNIA & HERZEGOVINA",
+    //     flag: "BA",
+    //     code: "+387"
+    // },
+    // {
+    //     c_name: "BOTSWANA",
+    //     flag: "BW",
+    //     code: "+267"
+    // },
+    // {
+    //     c_name: "BRAZIL",
+    //     flag: "BR",
+    //     code: "+55"
+    // },
+    // {
+    //     c_name: "BRUNEI",
+    //     flag: "BN",
+    //     code: "+673"
+    // },
+    // {
+    //     c_name: "BULGARIA",
+    //     flag: "BG",
+    //     code: "+359"
+    // },
+    // {
+    //     c_name: "BURKINA FASO",
+    //     flag: "BF",
+    //     code: "+226"
+    // },
+    // {
+    //     c_name: "BURUNDI",
+    //     flag: "BL",
+    //     code: "+257"
+    // },
     {
-        c_name: "AFGHANISTAN",
-        flag: "AF",
+        c_name: "INDIA",
+        flag: "IN",
         code: "+91"
     },
     {
-        c_name: "ALBANIA",
-        flag: "AL",
-        code: "+91"
-    },
-    {
-        c_name: "ALGERIA",
-        flag: "DZ",
-        code: "+91"
-    },
-    {
-        c_name: "ANDORRA",
-        flag: "AD",
-        code: "+91"
-    },
-    {
-        c_name: "ANGOLA",
-        flag: "AO",
-        code: "+91"
-    },
-    {
-        c_name: "ANTIGUA & BARBUDA",
-        flag: "AG",
-        code: "+91"
-    },
-    {
-        c_name: "ARGENTINA",
-        flag: "AR",
-        code: "+91"
-    },
-    {
-        c_name: "ARMENIA",
-        flag: "AM",
-        code: "+91"
-    },
-    {
-        c_name: "AUSTRALIA",
-        flag: "AU",
-        code: "+91"
-    },
-    {
-        c_name: "AUSTRIA",
-        flag: "AT",
-        code: "+91"
-    },
-    {
-        c_name: "AZERBAIJAN",
-        flag: "AZ",
-        code: "+91"
-    },
-    {
-        c_name: "BAHAMAS, THE",
-        flag: "BS",
-        code: "+91"
-    },
-    {
-        c_name: "BAHRAIN",
-        flag: "BH",
-        code: "+91"
-    },
-    {
-        c_name: "BANGLADESH",
-        flag: "BD",
-        code: "+91"
-    },
-    {
-        c_name: "BARBADOS",
-        flag: "BB",
-        code: "+91"
-    },
-    {
-        c_name: "BELARUS",
-        flag: "BY",
-        code: "+91"
-    },
-    {
-        c_name: "BELGIUM",
-        flag: "BE",
-        code: "+91"
-    },
-    {
-        c_name: "BELIZE",
-        flag: "BZ",
-        code: "+91"
-    },
-    {
-        c_name: "BENIN",
-        flag: "BJ",
-        code: "+91"
-    },
-    {
-        c_name: "BHUTAN",
-        flag: "BT",
-        code: "+7898411321"
-    },
-    {
-        c_name: "BOLIVIA",
-        flag: "BO",
-        code: "+91"
-    },
-    {
-        c_name: "BOSNIA & HERZEGOVINA",
-        flag: "BA",
-        code: "+91"
-    },
-    {
-        c_name: "BOTSWANA",
-        flag: "BW",
-        code: "+91"
-    },
-    {
-        c_name: "BRAZIL",
-        flag: "BR",
-        code: "+91"
-    },
-    {
-        c_name: "BRUNEI",
-        flag: "BN",
-        code: "+91"
-    },
-    {
-        c_name: "BULGARIA",
-        flag: "BG",
-        code: "+91"
-    },
-    {
-        c_name: "BURKINA FASO",
-        flag: "BF",
-        code: "+7898411321"
-    },
-    {
-        c_name: "BURUNDI",
-        flag: "BL",
-        code: "+7898411321"
+        c_name: "USA",
+        flag: "US",
+        code: "+1"
     }
 ];
 export default class CountrySelection extends Component {
@@ -178,7 +188,6 @@ export default class CountrySelection extends Component {
             />
         );
     };
-
     renderRow(item) {
         return (
             <TouchableOpacity style={styles.selectcountry} onPress={() => this.props.selectCode(item)}>
@@ -226,9 +235,11 @@ export default class CountrySelection extends Component {
                             contentContainerStyle={styles.countryScroll}
                             data={this.state.countryList}
                             renderItem={({ item }) => this.renderRow(item)}
+                            keyExtractor = { (item, index) => index.toString()}
                             // ItemSeparatorComponent={this.renderSeparator}
                             ListHeaderComponent={
                                 <View style={{
+                                    marginVertical:20,
                                     paddingHorizontal: 10,
                                     height: 40,
                                 }}>

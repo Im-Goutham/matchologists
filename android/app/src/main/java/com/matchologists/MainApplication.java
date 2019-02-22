@@ -3,12 +3,22 @@ package com.matchologists;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
-import com.dieam.reactnativepushnotification.ReactNativePushNotificationPackage;
+import com.henninghall.date_picker.DatePickerPackage;
+import io.branch.rnbranch.RNBranchPackage;
+import com.RNFetchBlob.RNFetchBlobPackage;
+import cl.json.RNSharePackage;
+import com.imagepicker.ImagePickerPackage;
+import org.devio.rn.splashscreen.SplashScreenReactPackage;
+import com.evollu.react.fcm.FIRMessagingPackage;
+import com.actionsheet.ActionSheetPackage;
+import com.microsoft.appcenter.reactnative.push.AppCenterReactNativePushPackage;
+import com.microsoft.appcenter.reactnative.crashes.AppCenterReactNativeCrashesPackage;
+import com.microsoft.appcenter.reactnative.analytics.AppCenterReactNativeAnalyticsPackage;
+import com.microsoft.appcenter.reactnative.appcenter.AppCenterReactNativePackage;
 import ca.jaysoo.extradimensions.ExtraDimensionsPackage;
 import co.apptailor.googlesignin.RNGoogleSigninPackage;
 import com.facebook.reactnative.androidsdk.FBSDKPackage;
 import com.airbnb.android.react.lottie.LottiePackage;
-import com.oblador.vectoricons.VectorIconsPackage;
 import com.BV.LinearGradient.LinearGradientPackage;
 import com.AlexanderZaytsev.RNI18n.RNI18nPackage;
 import com.opentokreactnative.OTPackage;
@@ -21,7 +31,6 @@ import com.facebook.CallbackManager;
 import com.facebook.FacebookSdk;
 import com.facebook.reactnative.androidsdk.FBSDKPackage;
 import com.facebook.appevents.AppEventsLogger;
-
 
 import java.util.Arrays;
 import java.util.List;
@@ -44,11 +53,21 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
-            new ReactNativePushNotificationPackage(),
+            new DatePickerPackage(),
+            new RNBranchPackage(),
+            new RNFetchBlobPackage(),
+            new RNSharePackage(),
+            new ImagePickerPackage(),
+            new SplashScreenReactPackage(),
+            new FIRMessagingPackage(),
+            new ActionSheetPackage(),
+            new AppCenterReactNativePushPackage(MainApplication.this),
+            new AppCenterReactNativeCrashesPackage(MainApplication.this, getResources().getString(R.string.appCenterCrashes_whenToSendCrashes)),
+            new AppCenterReactNativeAnalyticsPackage(MainApplication.this, getResources().getString(R.string.appCenterAnalytics_whenToEnableAnalytics)),
+            new AppCenterReactNativePackage(MainApplication.this),
             new ExtraDimensionsPackage(),
             new RNGoogleSigninPackage(),
             new LottiePackage(),
-            new VectorIconsPackage(),
             new LinearGradientPackage(),
             new RNI18nPackage(),
             new OTPackage(),

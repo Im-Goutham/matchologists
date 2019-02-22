@@ -178,7 +178,7 @@ class SuggestionList extends Component {
                 }}
                 data={this.state.data}
                 renderItem={({ item }) => this.renderRow(item)}
-                keyExtractor={item => item.id}
+                keyExtractor = { (item, index) => index.toString() }
                 ItemSeparatorComponent={this.renderSeparator}
             />
         );

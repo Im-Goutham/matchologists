@@ -1,14 +1,13 @@
 /* 
-navigation
-author : abhishekkalia
+FeedbackStacknavigation
+author : abhishek kalia
  */
 import { createStackNavigator } from 'react-navigation';
 import FeedBackInbox from '../Components/FeedBackInbox';
 import FeedBackDetail from '../Components/FeedBackInbox/FeedBackDetail'
 const FeedbackStacknavigation = createStackNavigator({
     feedBackinbox: { screen: FeedBackInbox },
-    feedbackdetail:{screen:FeedBackDetail}
-
+    feedbackdetail: { screen: FeedBackDetail }
 }, {
         index: 0,
         initialRouteName: 'feedBackinbox',

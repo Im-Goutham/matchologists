@@ -1,8 +1,9 @@
-import {createDrawerNavigator,createStackNavigator} from 'react-navigation';
-
-import HomeScreen from '../Components/Home'
+/* 
+createDrawerNavigator
+author : abhishek kalia
+ */
+import { createDrawerNavigator } from 'react-navigation';
 import Sidebar from '../Components/Sidebar'
-import Chatroom from '../Components/Chatroom'
 import metrics from '../config/metrics'
 import HomestackNavigation from './HomestackNavigation'
 import SettingStacknavigation from './SettingStacknavigation'
@@ -11,39 +12,44 @@ import CalenderStacknavigation from './CalenderStacknavigation'
 import NotificationStacknavigation from './NotificationStacknavigation'
 import FeedbackStacknavigation from './FeedbackStacknavigation';
 import WebinarStackNavigation from './WebinarStackNavigation';
+import MessageStackNavigation from './MessageStackNavigation';
 import Notifications from '../Components/Notifications';
 
 const window_width = metrics.DEVICE_WIDTH
 
 export default createDrawerNavigator(
     {
-        notifications: {
-            screen: Notifications
-        },
         homePage: {
             screen: HomestackNavigation
         },
-        topprofile:{
-            screen:TopProfilestackNavigation
+        notifications: {
+            screen: Notifications
         },
-        setting:{
-            screen:SettingStacknavigation
+        topprofile: {
+            screen: TopProfilestackNavigation
         },
-        calender:{
-            screen : CalenderStacknavigation
+        setting: {
+            screen: SettingStacknavigation
         },
-        notification:{
-            screen : NotificationStacknavigation
+        calender: {
+            screen: CalenderStacknavigation
         },
-        feedback : {
-            screen : FeedbackStacknavigation
+        notification: {
+            screen: NotificationStacknavigation
         },
-        webinar : {
-            screen : WebinarStackNavigation
+        feedback: {
+            screen: FeedbackStacknavigation
+        },
+        webinar: {
+            screen: WebinarStackNavigation
+        },
+        message: {
+            screen: MessageStackNavigation
         }
     },
     {
         initialRouteName: 'homePage',
         contentComponent: Sidebar,
         drawerWidth: window_width
-    });
+    }
+);

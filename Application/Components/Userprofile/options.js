@@ -16,7 +16,6 @@ export default class PopupMenu extends React.Component {
     super(props);
     this.state = { open: false };
   }
-
   handleClick = index => {
     let options = this.props.options;
     for (var i = 0; i < options.length; i++) {

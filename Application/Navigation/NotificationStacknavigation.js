@@ -1,6 +1,6 @@
 /* 
-navigation
-author : abhishekkalia
+NotificationStacknavigation
+author : abhishek kalia
  */
 import { createStackNavigator } from 'react-navigation';
 import Notification from '../Components/Notification'

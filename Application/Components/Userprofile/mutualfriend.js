@@ -2,7 +2,7 @@
 import React, { Component } from "react";
 import { View, Text, FlatList, Image, StyleSheet, TextInput, Platform, TouchableOpacity } from "react-native";
 import metrics from '../../config/metrics';
-import Icons from 'react-native-vector-icons/Feather'
+// import Icons from 'react-native-vector-icons/Feather'
 import {
     widthPercentageToDP,
     heightPercentageToDP,
@@ -55,22 +55,9 @@ export default class MutualFriends extends Component {
 
     renderRow = (item) => {
         return (
-            <View style={{
-                margin:5,
-                width: 64,
-                height: 64,
-                borderRadius: 32,
-                alignItems:"center",
-                justifyContent:"center",
-                backgroundColor: '#009966',
-                shadowOffset: { width: 0, height: 2 },
-                shadowOpacity: 0.2,
-                shadowRadius: 2,
-                elevation: 3,
-            }}
-            key={item.item}>
-
-                <Image source={item.image}
+            <View style={[styles.row, styles.elevated_shdow]} key={item.item}>
+                <Image 
+                source={item.image}
                     style={{
                         width: 64,
                         height: 64,
@@ -78,32 +65,39 @@ export default class MutualFriends extends Component {
                     resizeMethod="resize"
                     resizeMode="contain"
                 />
-
             </View>
         )
     }
     render() {
         return (
-            <FlatList
+            <FlatList contentContainerStyle ={{paddingHorizontal:8 }}
                 horizontal={true}
                 style={{ flexGrow: 1}}
                 data={this.state.data}
                 renderItem={({ item }) => this.renderRow(item)}
                 keyExtractor={(item,index)=>index.toString()}
                 showsHorizontalScrollIndicator={false}
-                // keyExtractor={item => item.id}
             />
         );
     }
 }
 let styles = StyleSheet.create({
     row: {
-        flexDirection: 'row',
-        // flexWrap: 'wrap',
-        backgroundColor: "#009933",
-        borderColor: '#CCC',
+        // margin:5,
+        marginHorizontal:8,
+        width: 64,
+        height: 64,
+        borderRadius: 32,
+        alignItems:"center",
+        justifyContent:"center",
+        // backgroundColor: '#009966',
     },
-    list: {
+    elevated_shdow: {
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.5,
+        shadowRadius: 2,
+        elevation: 3,
+        shadowColor: 'black',
     }
 })
 // module.exports = {

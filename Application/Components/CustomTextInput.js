@@ -11,7 +11,7 @@ export default class CustomTextInput extends Component {
 
   focus = () => this.textInputRef.focus()
 
-  render () {
+  render() {
     const { isEnabled, style, ...otherProps } = this.props
     const { isFocused } = this.state
     const color = "#909096"//isEnabled ? 'white' : 'rgba(255,255,255,0.4)'
@@ -40,22 +40,24 @@ export default class CustomTextInput extends Component {
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: 2,
-    marginBottom: 10
+    // marginTop: 2,
+    // marginBottom: 10
   },
   textInputWrapper: {
-    height: 42,
+    marginTop: 8,
+    height: (Platform.OS === 'ios') ? 42 : undefined,
     // marginBottom: 2,
     // borderBottomWidth: 1
   },
   textInput: {
     flex: 1,
-    backgroundColor:"#F5F5F5", //'rgb(245,245,245)',
-    borderRadius:5,
+    backgroundColor: "#F5F5F5", //'rgb(245,245,245)',
+    borderRadius: 5,
     margin: IS_ANDROID ? -1 : 0,
     height: 42,
-    padding: 7,
-    fontSize:17,
-    fontFamily:"Avenir-Medium"
+    paddingVertical: 7,
+    paddingHorizontal:IS_ANDROID ? 5 : 5,
+    fontSize: 17,
+    fontFamily: "Avenir-Medium"
   }
 })

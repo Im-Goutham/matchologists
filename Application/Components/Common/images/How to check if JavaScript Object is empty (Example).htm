@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<!-- saved from url=(0073)https://coderwall.com/p/_g3x9q/how-to-check-if-javascript-object-is-empty -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta property="current_user:id">
+
+<title>How to check if JavaScript Object is empty (Example)</title>
+<meta name="description" content="A protip by kyleross about objects, prototype, javascript, and isempty.">
+<meta name="keywords" content="objects, prototype, javascript, isempty">
+<link rel="canonical" href="https://coderwall.com/p/_g3x9q/how-to-check-if-javascript-object-is-empty">
+<meta property="og:title" content="How to check if JavaScript Object is empty (Example)">
+<meta property="og:url" content="https://coderwall.com/p/_g3x9q/how-to-check-if-javascript-object-is-empty">
+<meta property="og:site_name" content="Coderwall">
+<meta property="og:description" content="A protip by kyleross about objects, prototype, javascript, and isempty.">
+<meta property="og:type" content="website">
+<meta name="twitter:title" content="How to check if JavaScript Object is empty (Example)">
+<meta name="twitter:url" content="https://coderwall.com/p/_g3x9q/how-to-check-if-javascript-object-is-empty">
+<meta name="twitter:site_name" content="Coderwall">
+<meta name="twitter:site" content="@coderwall">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:creator:id" content="386960620">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="author" content="https://coderwall.com/kyleross">
+<link rel="stylesheet" media="all" href="./How to check if JavaScript Object is empty (Example)_files/application-54f7673f1ed7f75562492f4b4324231699bd0cf048e9a352cb9cd645d201ffa1.css">
+<script async="" src="./How to check if JavaScript Object is empty (Example)_files/analytics.js"></script><script src="./How to check if JavaScript Object is empty (Example)_files/application-90b724d425659c8f3679f11817ab960cb2530b1861e5d0b669eb42a87f1732e1.js"></script><script type="text/javascript" async="" src="./How to check if JavaScript Object is empty (Example)_files/bsa.js"></script>
+<script src="./How to check if JavaScript Object is empty (Example)_files/pEaCoeG7.js"></script>
+<script src="./How to check if JavaScript Object is empty (Example)_files/application-ab79f51b2ef92a7ee106.js"></script>
+<meta name="csrf-param" content="authenticity_token">
+<meta name="csrf-token" content="IYCOi5v8ddYMox0z1aoSfkbULzJUo5NU5WzEWAOOJ1cFmacUnYpePoN7QBkXBz10F9ZTj5n/LmSSTYQqjzmS8A==">
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-797907-8', 'auto', {'cookieExpires': 0});
+    ga('set', 'anonymizeIp', true);
+  </script>
+
+<script>
+  document.addEventListener('turbolinks:load', function() {
+    _native.init("CVADL5QU", {
+      targetClass: 'native-js'
+    });
+  });
+</script>
+
+
+
+<link rel="stylesheet" type="text/css" href="./How to check if JavaScript Object is empty (Example)_files/prettify.css"><script src="./How to check if JavaScript Object is empty (Example)_files/CVADL5QU.json"></script><script type="text/javascript" id="_bsap_js_74f50e679004d8f4d62fec4b0f74ccf1" src="./How to check if JavaScript Object is empty (Example)_files/s_74f50e679004d8f4d62fec4b0f74ccf1.js" async="async"></script><script type="text/javascript" src="./How to check if JavaScript Object is empty (Example)_files/pro.js" id="_bsap_premium_pro"></script><script type="text/javascript" id="_bsaPRO_js" src="./How to check if JavaScript Object is empty (Example)_files/saved_resource" async="async"></script></head>
+<body>
+<div class="clearfix">
+<header class="border-bottom">
+<nav class="clearfix py2">
+<div class="col col-4 sm-col-3 md-col-2">
+<div class="sm-ml1">
+<a class="btn logo relative" href="https://coderwall.com/">
+<div class="absolute" style="top: 2px">
+<svg version="1.1" viewBox="0 0 20 20" width="30" height="30" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="5" cy="5" r="1.4142" fill="#A26FF9"></circle>
+  <circle cx="10" cy="5" r="1.4142" fill="#A26FF9"></circle>
+  <circle cx="15" cy="5" r="1.4142" fill="#A26FF9"></circle>
+  <circle cx="10" cy="10" r="1.4142" fill="#A26FF9"></circle>
+  <circle cx="15" cy="10" r="1.4142" fill="#A26FF9"></circle>
+  <circle cx="15" cy="15" r="1.4142" fill="#A26FF9"></circle>
+</svg>
+
+</div>
+<div class="left font-x-lg" style="padding-left: 35px;">
+Coderwall
+</div>
+</a>
+</div>
+</div>
+<div class="col col-3 sm-col-6 md-col-8 h6">
+<a class="btn muted-until-hover xs-hide sm-mr1" href="https://coderwall.com/t/ruby/popular">Ruby</a>
+<a class="btn muted-until-hover xs-hide" href="https://coderwall.com/t/python/popular">Python</a>
+<a class="btn muted-until-hover xs-hide" href="https://coderwall.com/t/javascript/popular">JavaScript</a>
+<a class="btn muted-until-hover xs-hide sm-only-hide" href="https://coderwall.com/t/web/popular">Front-End</a>
+<a class="btn muted-until-hover xs-hide sm-only-hide" href="https://coderwall.com/t/tools/popular">Tools</a>
+<a class="btn muted-until-hover xs-hide sm-only-hide" href="https://coderwall.com/t/ios/popular">iOS</a>
+<div class="btn dropdown" style="margin-top: -3px;">
+<span class="h3 muted-until-hover">
+<i class="fa fa-sort-down relative xs-hide" style="top: -2px; margin-right: 2px;"></i>
+</span>
+<span class="muted-until-hover xs-ml3">
+<span class="xs-hide">More</span>
+Tips
+</span>
+<div class="dropdown-content bg-white mt1 py1 border z4" style="left:0">
+<a class="btn py1 muted-until-hover sm-hide" href="https://coderwall.com/t/ruby/popular">Ruby</a>
+<a class="btn py1 muted-until-hover sm-hide" href="https://coderwall.com/t/python/popular">Python</a>
+<a class="btn py1 muted-until-hover sm-hide" href="https://coderwall.com/t/javascript/popular">JavaScript</a>
+<a class="btn py1 muted-until-hover md-hide nowrap" href="https://coderwall.com/t/web/popular">Front-End</a>
+<a class="btn py1 muted-until-hover md-hide" href="https://coderwall.com/t/tools/popular">Tools</a>
+<a class="btn py1 muted-until-hover md-hide" href="https://coderwall.com/t/ios/popular">iOS</a>
+<a class="btn py1 muted-until-hover" href="https://coderwall.com/t/php/popular">PHP</a>
+<a class="btn py1 muted-until-hover" href="https://coderwall.com/t/android/popular">Android</a>
+<a class="btn py1 muted-until-hover" href="https://coderwall.com/t/dot-net/popular">.NET</a>
+<a class="btn py1 muted-until-hover" href="https://coderwall.com/t/java/popular">Java</a>
+<a class="btn py1 muted-until-hover green md-hide" href="https://coderwall.com/jobs">Jobs</a>
+</div>
+</div>
+<a class="btn border-left xs-hide sm-only-hide" href="https://coderwall.com/jobs">
+<div class="green">Jobs</div>
+</a>
+</div>
+<div class="col col-5 sm-col-3 md-col-2">
+<div class="right pr2">
+<a class="btn btn-primary bg-purple white ml1" href="https://coderwall.com/signin">Sign In or Up</a>
+</div>
+</div>
+</nav>
+</header>
+
+
+<div class="mt1 px3">
+
+</div>
+<main>
+<div class="py2 px3"><div class="container protip" id="protip_83038" itemid="how-to-check-if-javascript-object-is-empty" itemscope="">
+<div class="hide"><time datetime="2019-01-23T14:07:37Z" itemprop="dateModified">January 23, 2019 14:07</time></div>
+<div class="hide" itemprop="name">_g3x9q</div>
+<div class="clearfix">
+<div class="sm-col sm-col sm-col-12 md-col-8">
+<div class="clearfix mt0 mb1">
+<div class="sm-right">
+<div class="diminish inline mr1">Last Updated: January 23, 2019</div>
+<span class="xs-hide">
+·
+<div class="diminish inline mx1">
+<i class="fa fa-eye"></i>
+383K
+</div>
+</span>
+·
+<span class="mx1"><a href="https://coderwall.com/kyleross">kyleross</a></span>
+<div class="avatar" itemprop="image" style="background-color: #af3c4b;"></div>
+</div>
+</div>
+<div class="card p1" style="border-top:solid 5px #af3c4b">
+<h1 class="mt4 mb2 center" itemprop="headline">How to check if JavaScript Object is empty</h1>
+<div class="center mr1" itemprop="keywords">
+<h6 class="diminish inline px1"><a href="https://coderwall.com/t/objects/popular">objects</a></h6>
+<h6 class="diminish inline px1"><a href="https://coderwall.com/t/prototype/popular">prototype</a></h6>
+<h6 class="diminish inline px1"><a href="https://coderwall.com/t/javascript/popular">javascript</a></h6>
+<h6 class="diminish inline px1"><a href="https://coderwall.com/t/isempty/popular">isempty</a></h6>
+</div>
+<div class="content p3 mt4" itemprop="articleBody">
+<p>With JavaScript, it can be difficult to check whether an object is empty. With Arrays, you can easily check with <strong>myArray.length</strong>, but on the other hand, objects do not work that way.</p>
+
+<p>The best way to check if an object is empty is by using a utility function like the one below.</p>
+
+<pre><code class="prettyprint prettyprinted" style=""><span class="kwd">function</span><span class="pln"> isEmpty</span><span class="pun">(</span><span class="pln">obj</span><span class="pun">)</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+    </span><span class="kwd">for</span><span class="pun">(</span><span class="kwd">var</span><span class="pln"> key </span><span class="kwd">in</span><span class="pln"> obj</span><span class="pun">)</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+        </span><span class="kwd">if</span><span class="pun">(</span><span class="pln">obj</span><span class="pun">.</span><span class="pln">hasOwnProperty</span><span class="pun">(</span><span class="pln">key</span><span class="pun">))</span><span class="pln">
+            </span><span class="kwd">return</span><span class="pln"> </span><span class="kwd">false</span><span class="pun">;</span><span class="pln">
+    </span><span class="pun">}</span><span class="pln">
+    </span><span class="kwd">return</span><span class="pln"> </span><span class="kwd">true</span><span class="pun">;</span><span class="pln">
+</span><span class="pun">}</span></code></pre>
+
+<p>So if you have an empty object, you can check whether it is empty by using the above function.</p>
+
+<pre><code class="prettyprint prettyprinted" style=""><span class="kwd">var</span><span class="pln"> myObj </span><span class="pun">=</span><span class="pln"> </span><span class="pun">{};</span><span class="pln"> </span><span class="com">// Empty Object</span><span class="pln">
+</span><span class="kwd">if</span><span class="pun">(</span><span class="pln">isEmpty</span><span class="pun">(</span><span class="pln">myObj</span><span class="pun">))</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+    </span><span class="com">// Object is empty (Would return true in this example)</span><span class="pln">
+</span><span class="pun">}</span><span class="pln"> </span><span class="kwd">else</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+    </span><span class="com">// Object is NOT empty</span><span class="pln">
+</span><span class="pun">}</span></code></pre>
+
+<p>Alternatively, you can write the isEmpty function on the Object prototype.</p>
+
+<pre><code class="prettyprint prettyprinted" style=""><span class="typ">Object</span><span class="pun">.</span><span class="pln">prototype</span><span class="pun">.</span><span class="pln">isEmpty </span><span class="pun">=</span><span class="pln"> </span><span class="kwd">function</span><span class="pun">()</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+    </span><span class="kwd">for</span><span class="pun">(</span><span class="kwd">var</span><span class="pln"> key </span><span class="kwd">in</span><span class="pln"> </span><span class="kwd">this</span><span class="pun">)</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+        </span><span class="kwd">if</span><span class="pun">(</span><span class="kwd">this</span><span class="pun">.</span><span class="pln">hasOwnProperty</span><span class="pun">(</span><span class="pln">key</span><span class="pun">))</span><span class="pln">
+            </span><span class="kwd">return</span><span class="pln"> </span><span class="kwd">false</span><span class="pun">;</span><span class="pln">
+    </span><span class="pun">}</span><span class="pln">
+    </span><span class="kwd">return</span><span class="pln"> </span><span class="kwd">true</span><span class="pun">;</span><span class="pln">
+</span><span class="pun">}</span></code></pre>
+
+<p>Then you can easily check if the object is empty like so.</p>
+
+<pre><code class="prettyprint prettyprinted" style=""><span class="kwd">var</span><span class="pln"> myObj </span><span class="pun">=</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+    myKey</span><span class="pun">:</span><span class="pln"> </span><span class="str">"Some Value"</span><span class="pln">
+</span><span class="pun">}</span><span class="pln">
+
+</span><span class="kwd">if</span><span class="pun">(</span><span class="pln">myObj</span><span class="pun">.</span><span class="pln">isEmpty</span><span class="pun">())</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+    </span><span class="com">// Object is empty</span><span class="pln">
+</span><span class="pun">}</span><span class="pln"> </span><span class="kwd">else</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+    </span><span class="com">// Object is NOT empty (would return false in this example)</span><span class="pln">
+</span><span class="pun">}</span></code></pre>
+
+<p>Extending the object prototype is not the best thing to do as it can cause some browser issues and other issues with certain frameworks (it's also not always reliable in certain environments). The example I gave is pretty much framework agnostic although.</p>
+
+<p>This is one of those utility functions that will always be useful, especially if you deal with a lot of objects on a daily basis (like I do).</p>
+</div>
+<div class="clearfix mt1 mb3 mx2 py2">
+<div class="clearfix border-bottom" itemprop="author">
+<h4>
+Written by
+<a class="bold user" href="https://coderwall.com/kyleross" id="user_44618" itemid="44618" itemscope="" itemtype="http://schema.org/Person">
+<span class="blue" itemprop="name">Kyle Ross</span>
+</a>
+</h4>
+</div>
+<div class="clearfix mt1">
+<div class="btn btn-small pl0 mr1 mb1 xs-block">
+<div data="{&quot;heartableId&quot;:&quot;protip_83038&quot;,&quot;href&quot;:&quot;/p/_g3x9q/likes&quot;,&quot;labels&quot;:[&quot;Recommend&quot;,&quot;Recommended&quot;]}" id="react-heart-button-protip_83038"><div class="inline pointer center purple"><span class="fixed-space-4"><i class="fa fa-heart-o purple h5"></i></span><span class="black ml1">Recommend</span></div></div>
+</div>
+<a class="btn btn-small pl0 mb1 mr1 xs-block" href="http://twitter.com/home?status=How+to+check+if+JavaScript+Object+is+empty+by+%40kylerross%0A%0Ahttps%3A%2F%2Fcoderwall.com%2Fp%2F_g3x9q" target="twitter">
+<span class="fixed-space-4"><i class="fa fa-twitter aqua h4"></i></span>
+<span>Say Thanks</span>
+</a>
+<div class="btn btn-small pl0 mb1 mr1 xs-block">
+<div id="react-protip-subscribe-button"><div class="inline pointer"><span class="fixed-space-4"><i class="fa fa-bell-slash-o"></i></span>Update Notifications Off</div></div>
+</div>
+<a class="btn btn-small pl0 mb1 mr1 xs-block" href="https://coderwall.com/signup">
+<span class="fixed-space-4"><i class="fa fa-comment-o black h4"></i></span>
+Respond
+</a>
+</div>
+</div>
+<div class="clearfix">
+<div class="clearfix mt3 px2">
+<h4>
+14 Responses
+<div class="right hide">
+<div class="btn btn-small green">Add your response</div>
+</div>
+</h4>
+<div class="border-top comment inline-block mb1 py1" id="comment_1088" itemid="1088" itemscope="" itemtype="http://schema.org/Comment" style="width: 100%">
+<div class="hide"><time datetime="2012-11-02T06:46:15Z" itemprop="datePublished">November 02, 2012 06:46</time></div>
+<div class="hide" itemprop="name">1088</div>
+<div class="left mt1 mr2 avatar small" style="background-color: #c05a73;">
+
+</div>
+<div class="overflow-hidden py0 mt0">
+<div class="clearfix">
+<div class="author" itemprop="author">
+<a class="bold black no-hover" href="https://coderwall.com/avenger7x" itemprop="alternateName">
+avenger7x
+</a>
+</div>
+<div class="content small" itemprop="text"><pre><code class="prettyprint prettyprinted" style=""><span class="kwd">var</span><span class="pln"> isMyObjectEmpty </span><span class="pun">=</span><span class="pln"> </span><span class="pun">!</span><span class="typ">Object</span><span class="pun">.</span><span class="pln">keys</span><span class="pun">(</span><span class="pln">myObject</span><span class="pun">).</span><span class="pln">length</span><span class="pun">;</span></code></pre></div>
+<div class="diminish mt1">
+over 1 year ago
+·
+<div data="{&quot;heartableId&quot;:&quot;comment_1088&quot;,&quot;href&quot;:&quot;/comments/1088/likes&quot;,&quot;labels&quot;:[&quot;&quot;,&quot;&quot;]}" id="react-heart-button-comment_1088" style="display:inline-block"><div class="inline pointer center purple"><span class="fixed-space-4"><i class="fa fa-heart-o purple h5"></i></span><span class="black ml1"></span></div></div>
+</div>
+</div>
+</div>
+</div>
+<div class="border-top comment inline-block mb1 py1" id="comment_1096" itemid="1096" itemscope="" itemtype="http://schema.org/Comment" style="width: 100%">
+<div class="hide"><time datetime="2012-11-02T15:24:58Z" itemprop="datePublished">November 02, 2012 15:24</time></div>
+<div class="hide" itemprop="name">1096</div>
+<div class="left mt1 mr2 avatar small" style="background-color: #28bb1a;">
+
+</div>
+<div class="overflow-hidden py0 mt0">
+<div class="clearfix">
+<div class="author" itemprop="author">
+<a class="bold black no-hover" href="https://coderwall.com/develoser" itemprop="alternateName">
+develoser
+</a>
+</div>
+<div class="content small" itemprop="text"><p>Nice tip. Seems like the Underscore.js implementation --&gt;<br>
+<a href="http://documentcloud.github.com/underscore/#isEmpty" rel="nofollow">http://documentcloud.github.com/underscore/#isEmpty</a></p>
+
+<p>Just that those guys are checking for Arrays and String in the same function like this:</p>
+
+<pre><code class="prettyprint prettyprinted" style=""><span class="pln">_</span><span class="pun">.</span><span class="pln">isEmpty </span><span class="pun">=</span><span class="pln"> </span><span class="kwd">function</span><span class="pun">(</span><span class="pln">obj</span><span class="pun">)</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+   </span><span class="kwd">if</span><span class="pln"> </span><span class="pun">(</span><span class="pln">obj </span><span class="pun">==</span><span class="pln"> </span><span class="kwd">null</span><span class="pun">)</span><span class="pln"> </span><span class="kwd">return</span><span class="pln"> </span><span class="kwd">true</span><span class="pun">;</span><span class="pln">
+   </span><span class="kwd">if</span><span class="pln"> </span><span class="pun">(</span><span class="pln">_</span><span class="pun">.</span><span class="pln">isArray</span><span class="pun">(</span><span class="pln">obj</span><span class="pun">)</span><span class="pln"> </span><span class="pun">||</span><span class="pln"> _</span><span class="pun">.</span><span class="pln">isString</span><span class="pun">(</span><span class="pln">obj</span><span class="pun">))</span><span class="pln"> </span><span class="kwd">return</span><span class="pln"> obj</span><span class="pun">.</span><span class="pln">length </span><span class="pun">===</span><span class="pln"> </span><span class="lit">0</span><span class="pun">;</span><span class="pln">
+   </span><span class="kwd">for</span><span class="pln"> </span><span class="pun">(</span><span class="kwd">var</span><span class="pln"> key </span><span class="kwd">in</span><span class="pln"> obj</span><span class="pun">)</span><span class="pln"> </span><span class="kwd">if</span><span class="pln"> </span><span class="pun">(</span><span class="pln">_</span><span class="pun">.</span><span class="pln">has</span><span class="pun">(</span><span class="pln">obj</span><span class="pun">,</span><span class="pln"> key</span><span class="pun">))</span><span class="pln"> </span><span class="kwd">return</span><span class="pln"> </span><span class="kwd">false</span><span class="pun">;</span><span class="pln">
+   </span><span class="kwd">return</span><span class="pln"> </span><span class="kwd">true</span><span class="pun">;</span><span class="pln">
+ </span><span class="pun">};</span></code></pre></div>
+<div class="diminish mt1">
+over 1 year ago
+·
+<div data="{&quot;heartableId&quot;:&quot;comment_1096&quot;,&quot;href&quot;:&quot;/comments/1096/likes&quot;,&quot;labels&quot;:[&quot;&quot;,&quot;&quot;]}" id="react-heart-button-comment_1096" style="display:inline-block"><div class="inline pointer center purple"><span class="fixed-space-4"><i class="fa fa-heart-o purple h5"></i></span><span class="black ml1"></span></div></div>
+</div>
+</div>
+</div>
+</div>
+<div class="border-top comment inline-block mb1 py1" id="comment_1111" itemid="1111" itemscope="" itemtype="http://schema.org/Comment" style="width: 100%">
+<div class="hide"><time datetime="2012-11-03T00:26:26Z" itemprop="datePublished">November 03, 2012 00:26</time></div>
+<div class="hide" itemprop="name">1111</div>
+<div class="left mt1 mr2 avatar small" style="background-color: #af3c4b;">
+
+</div>
+<div class="overflow-hidden py0 mt0">
+<div class="clearfix">
+<div class="author" itemprop="author">
+<a class="bold black no-hover" href="https://coderwall.com/kyleross" itemprop="alternateName">
+kyleross
+</a>
+</div>
+<div class="content small" itemprop="text"><p><a href="https://coderwall.com/avenger7x">@avenger7x</a> Yes, that certainly works although it is not supported in some older browsers such as Firefox &lt; 4 and IE &lt; 9. It's a new addition under ECMAScript 5.</p></div>
+<div class="diminish mt1">
+over 1 year ago
+·
+<div data="{&quot;heartableId&quot;:&quot;comment_1111&quot;,&quot;href&quot;:&quot;/comments/1111/likes&quot;,&quot;labels&quot;:[&quot;&quot;,&quot;&quot;]}" id="react-heart-button-comment_1111" style="display:inline-block"><div class="inline pointer center purple"><span class="fixed-space-4"><i class="fa fa-heart-o purple h5"></i></span><span class="black ml1"></span></div></div>
+</div>
+</div>
+</div>
+</div>
+<div class="border-top comment inline-block mb1 py1" id="comment_1112" itemid="1112" itemscope="" itemtype="http://schema.org/Comment" style="width: 100%">
+<div class="hide"><time datetime="2012-11-03T00:26:26Z" itemprop="datePublished">November 03, 2012 00:26</time></div>
+<div class="hide" itemprop="name">1112</div>
+<div class="left mt1 mr2 avatar small" style="background-color: #af3c4b;">
+
+</div>
+<div class="overflow-hidden py0 mt0">
+<div class="clearfix">
+<div class="author" itemprop="author">
+<a class="bold black no-hover" href="https://coderwall.com/kyleross" itemprop="alternateName">
+kyleross
+</a>
+</div>
+<div class="content small" itemprop="text"><p><a href="https://coderwall.com/develoser">@develoser</a> Underscore is just one of those overly useful tools out there and I agree and suggest that others check it out. Thanks for you input!</p></div>
+<div class="diminish mt1">
+over 1 year ago
+·
+<div data="{&quot;heartableId&quot;:&quot;comment_1112&quot;,&quot;href&quot;:&quot;/comments/1112/likes&quot;,&quot;labels&quot;:[&quot;&quot;,&quot;&quot;]}" id="react-heart-button-comment_1112" style="display:inline-block"><div class="inline pointer center purple"><span class="fixed-space-4"><i class="fa fa-heart-o purple h5"></i></span><span class="black ml1"></span></div></div>
+</div>
+</div>
+</div>
+</div>
+<div class="border-top comment inline-block mb1 py1" id="comment_12463" itemid="12463" itemscope="" itemtype="http://schema.org/Comment" style="width: 100%">
+<div class="hide"><time datetime="2014-02-03T15:42:01Z" itemprop="datePublished">February 03, 2014 15:42</time></div>
+<div class="hide" itemprop="name">12463</div>
+<div class="left mt1 mr2 avatar small" style="background-color: #9d05ad;">
+<img src="./How to check if JavaScript Object is empty (Example)_files/56c449f1a408dba893793094599f7fb5.jpeg">
+</div>
+<div class="overflow-hidden py0 mt0">
+<div class="clearfix">
+<div class="author" itemprop="author">
+<a class="bold black no-hover" href="https://coderwall.com/denisjacquemin" itemprop="alternateName">
+denisjacquemin
+</a>
+</div>
+<div class="content small" itemprop="text"><p>Hi, I'm wondering why the use of hasOwnProperty is required?</p>
+
+<pre><code class="prettyprint prettyprinted" style=""><span class="kwd">function</span><span class="pln"> isEmpty</span><span class="pun">(</span><span class="pln">arg</span><span class="pun">)</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+  </span><span class="kwd">for</span><span class="pln"> </span><span class="pun">(</span><span class="kwd">var</span><span class="pln"> item </span><span class="kwd">in</span><span class="pln"> arg</span><span class="pun">)</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+    </span><span class="kwd">return</span><span class="pln"> </span><span class="kwd">false</span><span class="pun">;</span><span class="pln">
+  </span><span class="pun">}</span><span class="pln">
+  </span><span class="kwd">return</span><span class="pln"> </span><span class="kwd">true</span><span class="pun">;</span><span class="pln">
+</span><span class="pun">}</span></code></pre></div>
+<div class="diminish mt1">
+over 1 year ago
+·
+<div data="{&quot;heartableId&quot;:&quot;comment_12463&quot;,&quot;href&quot;:&quot;/comments/12463/likes&quot;,&quot;labels&quot;:[&quot;&quot;,&quot;&quot;]}" id="react-heart-button-comment_12463" style="display:inline-block"><div class="inline pointer center purple"><span class="fixed-space-4"><i class="fa fa-heart-o purple h5"></i></span><span class="black ml1"></span></div></div>
+</div>
+</div>
+</div>
+</div>
+<div class="border-top comment inline-block mb1 py1" id="comment_12874" itemid="12874" itemscope="" itemtype="http://schema.org/Comment" style="width: 100%">
+<div class="hide"><time datetime="2014-02-19T15:54:43Z" itemprop="datePublished">February 19, 2014 15:54</time></div>
+<div class="hide" itemprop="name">12874</div>
+<div class="left mt1 mr2 avatar small" style="background-color: #536606;">
+<img src="./How to check if JavaScript Object is empty (Example)_files/990aab042d81755e54ab60c4b5f64887.png">
+</div>
+<div class="overflow-hidden py0 mt0">
+<div class="clearfix">
+<div class="author" itemprop="author">
+<a class="bold black no-hover" href="https://coderwall.com/thegleep" itemprop="alternateName">
+thegleep
+</a>
+</div>
+<div class="content small" itemprop="text"><p><a href="https://coderwall.com/denisjacquemin">@denisjacquemin</a>: historically, for(x in y) will show "toString" as a value of "x".  using hasOwnProperty allows for skipping over "built in" or "metadata" properties, and just evaluate "value" properties.</p></div>
+<div class="diminish mt1">
+over 1 year ago
+·
+<div data="{&quot;heartableId&quot;:&quot;comment_12874&quot;,&quot;href&quot;:&quot;/comments/12874/likes&quot;,&quot;labels&quot;:[&quot;&quot;,&quot;&quot;]}" id="react-heart-button-comment_12874" style="display:inline-block"><div class="inline pointer center purple"><span class="fixed-space-4"><i class="fa fa-heart-o purple h5"></i></span><span class="black ml1"></span></div></div>
+</div>
+</div>
+</div>
+</div>
+<div class="border-top comment inline-block mb1 py1" id="comment_28927" itemid="28927" itemscope="" itemtype="http://schema.org/Comment" style="width: 100%">
+<div class="hide"><time datetime="2017-05-16T10:37:02Z" itemprop="datePublished">May 16, 2017 10:37</time></div>
+<div class="hide" itemprop="name">28927</div>
+<div class="left mt1 mr2 avatar small" style="background-color: #7fff9f;">
+
+</div>
+<div class="overflow-hidden py0 mt0">
+<div class="clearfix">
+<div class="author" itemprop="author">
+<a class="bold black no-hover" href="https://coderwall.com/Codi" itemprop="alternateName">
+Codi
+</a>
+</div>
+<div class="content small" itemprop="text"><p>If you don't want to copy-paste this all over your different repositories, you can also try <a href="https://www.npmjs.com/package/is-empty-object" rel="nofollow">this NPM package</a> or <a href="https://bitsrc.io/bit/utils/global/empty" rel="nofollow">this Bit component</a>.</p>
+
+<p>They should work just fine and make it useable anywhere you need.</p></div>
+<div class="diminish mt1">
+over 1 year ago
+·
+<div data="{&quot;heartableId&quot;:&quot;comment_28927&quot;,&quot;href&quot;:&quot;/comments/28927/likes&quot;,&quot;labels&quot;:[&quot;&quot;,&quot;&quot;]}" id="react-heart-button-comment_28927" style="display:inline-block"><div class="inline pointer center purple"><span class="fixed-space-4"><i class="fa fa-heart-o purple h5"></i></span><span class="black ml1"></span></div></div>
+</div>
+</div>
+</div>
+</div>
+<div class="border-top comment inline-block mb1 py1" id="comment_29788" itemid="29788" itemscope="" itemtype="http://schema.org/Comment" style="width: 100%">
+<div class="hide"><time datetime="2018-03-31T12:48:31Z" itemprop="datePublished">March 31, 2018 12:48</time></div>
+<div class="hide" itemprop="name">29788</div>
+<div class="left mt1 mr2 avatar small" style="background-color: #3d55ce;">
+<img src="./How to check if JavaScript Object is empty (Example)_files/IMG_20180319_191124_795.jpg">
+</div>
+<div class="overflow-hidden py0 mt0">
+<div class="clearfix">
+<div class="author" itemprop="author">
+<a class="bold black no-hover" href="https://coderwall.com/pitter" itemprop="alternateName">
+pitter
+</a>
+</div>
+<div class="content small" itemprop="text"><pre><code class="prettyprint prettyprinted" style=""><span class="kwd">const</span><span class="pln"> isEmpty </span><span class="pun">=</span><span class="pln"> </span><span class="kwd">function</span><span class="pln"> </span><span class="pun">(</span><span class="pln">input</span><span class="pun">)</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+  </span><span class="kwd">if</span><span class="pln"> </span><span class="pun">(</span><span class="kwd">typeof</span><span class="pln"> input </span><span class="pun">===</span><span class="pln"> </span><span class="str">'array'</span><span class="pun">)</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
+    </span><span class="kwd">return</span><span class="pln"> input</span><span class="pun">.</span><span class="pln">length </span><span class="pun">===</span><span class="pln"> </span><span class="lit">0</span><span class="pun">;</span><span class="pln">
+  </span><span class="pun">}</span><span class="pln">
+
+  </span><span class="kwd">return</span><span class="pln"> </span><span class="pun">!</span><span class="pln">input </span><span class="pun">||</span><span class="pln"> </span><span class="typ">Object</span><span class="pun">.</span><span class="pln">keys</span><span class="pun">(</span><span class="pln">input</span><span class="pun">).</span><span class="pln">length </span><span class="pun">===</span><span class="pln"> </span><span class="lit">0</span><span class="pun">;</span><span class="pln">
+</span><span class="pun">}</span></code></pre></div>
+<div class="diminish mt1">
+10 months ago
+·
+<div data="{&quot;heartableId&quot;:&quot;comment_29788&quot;,&quot;href&quot;:&quot;/comments/29788/likes&quot;,&quot;labels&quot;:[&quot;&quot;,&quot;&quot;]}" id="react-heart-button-comment_29788" style="display:inline-block"><div class="inline pointer center purple"><span class="fixed-space-4"><i class="fa fa-heart-o purple h5"></i></span><span class="black ml1"></span></div></div>
+</div>
+</div>
+</div>
+</div>
+<div class="border-top comment inline-block mb1 py1" id="comment_29822" itemid="29822" itemscope="" itemtype="http://schema.org/Comment" style="width: 100%">
+<div class="hide"><time datetime="2018-04-18T18:30:58Z" itemprop="datePublished">April 18, 2018 18:30</time></div>
+<div class="hide" itemprop="name">29822</div>
+<div class="left mt1 mr2 avatar small" style="background-color: #e458aa;">
+
+</div>
+<div class="overflow-hidden py0 mt0">
+<div class="clearfix">
+<div class="author" itemprop="author">
+<a class="bold black no-hover" href="https://coderwall.com/maspai" itemprop="alternateName">
+maspai
+</a>
+</div>
+<div class="content small" itemprop="text"><p>JSON.stringify(myObj) == "{}"</p></div>
+<div class="diminish mt1">
+9 months ago
+·
+<div data="{&quot;heartableId&quot;:&quot;comment_29822&quot;,&quot;href&quot;:&quot;/comments/29822/likes&quot;,&quot;labels&quot;:[&quot;&quot;,&quot;&quot;]}" id="react-heart-button-comment_29822" style="display:inline-block"><div class="inline pointer center purple"><span class="fixed-space-4"><i class="fa fa-heart-o purple h5"></i></span><span class="black ml1"></span></div></div>
+</div>
+</div>
+</div>
+</div>
+<div class="border-top comment inline-block mb1 py1" id="comment_30518" itemid="30518" itemscope="" itemtype="http://schema.org/Comment" style="width: 100%">
+<div class="hide"><time datetime="2018-08-29T07:53:02Z" itemprop="datePublished">August 29, 2018 07:53</time></div>
+<div class="hide" itemprop="name">30518</div>
+<div class="left mt1 mr2 avatar small" style="background-color: #4f4fad;">
+
+</div>
+<div class="overflow-hidden py0 mt0">
+<div class="clearfix">
+<div class="author" itemprop="author">
+<a class="bold black no-hover" href="https://coderwall.com/DesmondMan" itemprop="alternateName">
+DesmondMan
+</a>
+</div>
+<div class="content small" itemprop="text"><p>Hey! I am from <a href="https://floridaessay.com/" rel="nofollow">https://floridaessay.com/</a> and I was ordered similar topic essay. Can I use this information for my work? Thanks!</p></div>
+<div class="diminish mt1">
+5 months ago
+·
+<div data="{&quot;heartableId&quot;:&quot;comment_30518&quot;,&quot;href&quot;:&quot;/comments/30518/likes&quot;,&quot;labels&quot;:[&quot;&quot;,&quot;&quot;]}" id="react-heart-button-comment_30518" style="display:inline-block"><div class="inline pointer center purple"><span class="fixed-space-4"><i class="fa fa-heart-o purple h5"></i></span><span class="black ml1"></span></div></div>
+</div>
+</div>
+</div>
+</div>
+<div class="border-top comment inline-block mb1 py1" id="comment_30940" itemid="30940" itemscope="" itemtype="http://schema.org/Comment" style="width: 100%">
+<div class="hide"><time datetime="2018-10-11T10:42:55Z" itemprop="datePublished">October 11, 2018 10:42</time></div>
+<div class="hide" itemprop="name">30940</div>
+<div class="left mt1 mr2 avatar small" style="background-color: #4e80e1;">
+
+</div>
+<div class="overflow-hidden py0 mt0">
+<div class="clearfix">
+<div class="author" itemprop="author">
+<a class="bold black no-hover" href="https://coderwall.com/James112" itemprop="alternateName">
+James112
+</a>
+</div>
+<div class="content small" itemprop="text"><p>Where taking a lunchtime jog or doing an area <a href="https://www.theodysseyonline.com/summer-heat-wave-thoughts" rel="nofollow">https://www.theodysseyonline.com/summer-heat-wave-thoughts</a> of horticulture can pose a dangerous risk Climate modification is spurring.</p></div>
+<div class="diminish mt1">
+4 months ago
+·
+<div data="{&quot;heartableId&quot;:&quot;comment_30940&quot;,&quot;href&quot;:&quot;/comments/30940/likes&quot;,&quot;labels&quot;:[&quot;&quot;,&quot;&quot;]}" id="react-heart-button-comment_30940" style="display:inline-block"><div class="inline pointer center purple"><span class="fixed-space-4"><i class="fa fa-heart-o purple h5"></i></span><span class="black ml1"></span></div></div>
+</div>
+</div>
+</div>
+</div>
+<div class="border-top comment inline-block mb1 py1" id="comment_31237" itemid="31237" itemscope="" itemtype="http://schema.org/Comment" style="width: 100%">
+<div class="hide"><time datetime="2018-11-14T13:45:45Z" itemprop="datePublished">November 14, 2018 13:45</time></div>
+<div class="hide" itemprop="name">31237</div>
+<div class="left mt1 mr2 avatar small" style="background-color: #792bc2;">
+
+</div>
+<div class="overflow-hidden py0 mt0">
+<div class="clearfix">
+<div class="author" itemprop="author">
+<a class="bold black no-hover" href="https://coderwall.com/JhonHoll" itemprop="alternateName">
+JhonHoll
+</a>
+</div>
+<div class="content small" itemprop="text"><p>Nice post thanks for sharing. :)</p></div>
+<div class="diminish mt1">
+2 months ago
+·
+<div data="{&quot;heartableId&quot;:&quot;comment_31237&quot;,&quot;href&quot;:&quot;/comments/31237/likes&quot;,&quot;labels&quot;:[&quot;&quot;,&quot;&quot;]}" id="react-heart-button-comment_31237" style="display:inline-block"><div class="inline pointer center purple"><span class="fixed-space-4"><i class="fa fa-heart-o purple h5"></i></span><span class="black ml1"></span></div></div>
+</div>
+</div>
+</div>
+</div>
+<div class="border-top comment inline-block mb1 py1" id="comment_31464" itemid="31464" itemscope="" itemtype="http://schema.org/Comment" style="width: 100%">
+<div class="hide"><time datetime="2018-12-21T21:37:40Z" itemprop="datePublished">December 21, 2018 21:37</time></div>
+<div class="hide" itemprop="name">31464</div>
+<div class="left mt1 mr2 avatar small" style="background-color: #f4097e;">
+
+</div>
+<div class="overflow-hidden py0 mt0">
+<div class="clearfix">
+<div class="author" itemprop="author">
+<a class="bold black no-hover" href="https://coderwall.com/dthung1602" itemprop="alternateName">
+dthung1602
+</a>
+</div>
+<div class="content small" itemprop="text"><p>The Object.prototype.isEmpty approach shouldn't be used. <br>
+I used that with jQuery and it made $.ajax failed.<br>
+Took me more than an hour to solve it.</p></div>
+<div class="diminish mt1">
+28 days ago
+·
+<div data="{&quot;heartableId&quot;:&quot;comment_31464&quot;,&quot;href&quot;:&quot;/comments/31464/likes&quot;,&quot;labels&quot;:[&quot;&quot;,&quot;&quot;]}" id="react-heart-button-comment_31464" style="display:inline-block"><div class="inline pointer center purple"><span class="fixed-space-4"><i class="fa fa-heart-o purple h5"></i></span><span class="black ml1"></span></div></div>
+</div>
+</div>
+</div>
+</div>
+<div class="border-top comment inline-block mb1 py1" id="comment_31632" itemid="31632" itemscope="" itemtype="http://schema.org/Comment" style="width: 100%">
+<div class="hide"><time datetime="2019-01-15T03:36:17Z" itemprop="datePublished">January 15, 2019 03:36</time></div>
+<div class="hide" itemprop="name">31632</div>
+<div class="left mt1 mr2 avatar small" style="background-color: #64f587;">
+
+</div>
+<div class="overflow-hidden py0 mt0">
+<div class="clearfix">
+<div class="author" itemprop="author">
+<a class="bold black no-hover" href="https://coderwall.com/RagedPanda" itemprop="alternateName">
+RagedPanda
+</a>
+</div>
+<div class="content small" itemprop="text"><p>if(myObj.hasOwnProperty(key)) {<br>
+    // true;<br>
+} else {<br>
+   // false<br>
+}</p></div>
+<div class="diminish mt1">
+7 days ago
+·
+<div data="{&quot;heartableId&quot;:&quot;comment_31632&quot;,&quot;href&quot;:&quot;/comments/31632/likes&quot;,&quot;labels&quot;:[&quot;&quot;,&quot;&quot;]}" id="react-heart-button-comment_31632" style="display:inline-block"><div class="inline pointer center purple"><span class="fixed-space-4"><i class="fa fa-heart-o purple h5"></i></span><span class="black ml1"></span></div></div>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+</div>
+</div>
+<div class="sm-col sm-col sm-col-12 md-col-4">
+<div class="native-js clearfix ml3 md-show _300x250"></div>
+
+<div class="clearfix sm-ml3 mt3 p1 pb3">
+<h5 class="mt0 mb1">
+<i class="fa fa-folder-o mr1"></i>
+Filed Under
+</h5>
+<hr>
+<div class="topic clearfix py1">
+<a href="https://coderwall.com/t/front-end/popular">
+<div class="bold">Javascript Tips to Beat the DOM Into Submission</div>
+</a>
+</div>
+</div>
+<div class="clearfix sm-ml3 mt3 p1">
+<div class="clearfix">
+<div class="col col-7">
+<h5 class="mt0">
+<i class="fa fa-diamond mr1"></i>
+Awesome Job
+</h5>
+</div>
+<div class="col col-5">
+<div class="right font-sm bold">
+<a class="block" href="https://coderwall.com/jobs">
+See All Jobs
+<i class="fa fa-arrow-right"></i>
+</a>
+</div>
+</div>
+</div>
+<hr>
+<div class="mt2 font-sm">
+<a class="border--green green bold" href="https://coderwall.com/jobs/new">
+Post a job for only
+$299
+</a>
+</div>
+</div>
+<div class="clearfix ml3 mt4">
+<a target="_blank" class="link no-hover" href="https://coderwall.com/r/25/click"><img class="mt-third" src="./How to check if JavaScript Object is empty (Example)_files/25">
+</a>
+</div>
+<div class="clearfix ml3 mt4" ga-location="Protip Sidebar">
+<div class="bsap bsap_1305410" id="bsap_1305410" data-serve="CVADVK7E"><iframe width="300" height="250" id="ad_8148653_frame" src="./How to check if JavaScript Object is empty (Example)_files/raw_a5e3a5edc0fe60b8bfba2108727cc171.html" frameborder="0" class="bsap_adframe" scrolling="no"></iframe>
+
+<script type="text/javascript" id="auto_1" class="ignoreme"> if (typeof(_bsap_serving_callback) !== 'undefined') _bsap_serving_callback(80746, 'CVADVK7E', ''); </script>
+<script type="text/javascript" id="auto_2" class="ignoreme"> if (typeof(BSACallback) !== 'undefined') BSACallback(); </script></div>
+</div>
+<div class="native-js _native_ribbon"></div>
+
+</div>
+</div>
+</div>
+
+</div>
+</main>
+<footer class="border-top">
+<nav class="clearfix">
+<div class="col col-4 py1 mt1">
+<a class="btn" href="https://twitter.com/coderwall" rel="nofollow" target="_blank">
+@coderwall
+<i class="fa fa-twitter fa-1x ml1"></i>
+</a>
+</div>
+<div class="col col-8 py2 mt1">
+<div class="right">
+<a class="inline-block ml1" href="https://github.com/coderwall/coderwall-next" rel="nofollow">
+<i class="fa fa-github-alt"></i>
+</a>
+<a class="inline-block ml1" href="https://coderwall.com/t/hackerdesk/popular">
+<div class="sm-show"><i class="fa fa-gift"></i></div>
+</a>
+<a class="inline-block ml1 mr1" href="mailto:support@coderwall.com">
+Contact
+</a>
+<a class="inline-block mr1" href="https://coderwall.com/privacy_policy">Privacy</a>
+<a class="inline-block mr1" href="https://coderwall.com/tos">Terms</a>
+<p class="inline-block diminish inline mr1">Copyright 2019</p>
+</div>
+</div>
+<div class="col col-12 pb1"></div>
+</nav>
+</footer>
+</div>
+<div data="{&quot;currentUser&quot;:{&quot;item&quot;:null},&quot;currentProtip&quot;:{&quot;item&quot;:{&quot;id&quot;:83038,&quot;body&quot;:&quot;With JavaScript, it can be difficult to check whether an object is empty. With Arrays, you can easily check with **myArray.length**, but on the other hand, objects do not work that way.\r\n\r\nThe best way to check if an object is empty is by using a utility function like the one below.\r\n\r\n    function isEmpty(obj) {\r\n        for(var key in obj) {\r\n            if(obj.hasOwnProperty(key))\r\n                return false;\r\n        }\r\n        return true;\r\n    }\r\n\r\nSo if you have an empty object, you can check whether it is empty by using the above function.\r\n\r\n    var myObj = {}; // Empty Object\r\n    if(isEmpty(myObj)) {\r\n        // Object is empty (Would return true in this example)\r\n    } else {\r\n        // Object is NOT empty\r\n    }\r\n\r\nAlternatively, you can write the isEmpty function on the Object prototype.\r\n\r\n    Object.prototype.isEmpty = function() {\r\n        for(var key in this) {\r\n            if(this.hasOwnProperty(key))\r\n                return false;\r\n        }\r\n        return true;\r\n    }\r\n\r\nThen you can easily check if the object is empty like so.\r\n\r\n    var myObj = {\r\n        myKey: \&quot;Some Value\&quot;\r\n    }\r\n    \r\n    if(myObj.isEmpty()) {\r\n        // Object is empty\r\n    } else {\r\n        // Object is NOT empty (would return false in this example)\r\n    }\r\n\r\nExtending the object prototype is not the best thing to do as it can cause some browser issues and other issues with certain frameworks (it&#39;s also not always reliable in certain environments). The example I gave is pretty much framework agnostic although.\r\n\r\nThis is one of those utility functions that will always be useful, especially if you deal with a lot of objects on a daily basis (like I do).&quot;,&quot;created_at&quot;:&quot;2012-11-02T04:20:31.520Z&quot;,&quot;heartableId&quot;:&quot;protip_83038&quot;,&quot;hearts&quot;:25,&quot;html&quot;:&quot;\u003cp\u003eWith JavaScript, it can be difficult to check whether an object is empty. With Arrays, you can easily check with \u003cstrong\u003emyArray.length\u003c/strong\u003e, but on the other hand, objects do not work that way.\u003c/p\u003e\n\n\u003cp\u003eThe best way to check if an object is empty is by using a utility function like the one below.\u003c/p\u003e\n\n\u003cpre\u003e\u003ccode class=\&quot;prettyprint\&quot;\u003efunction isEmpty(obj) {\n    for(var key in obj) {\n        if(obj.hasOwnProperty(key))\n            return false;\n    }\n    return true;\n}\u003c/code\u003e\u003c/pre\u003e\n\n\u003cp\u003eSo if you have an empty object, you can check whether it is empty by using the above function.\u003c/p\u003e\n\n\u003cpre\u003e\u003ccode class=\&quot;prettyprint\&quot;\u003evar myObj = {}; // Empty Object\nif(isEmpty(myObj)) {\n    // Object is empty (Would return true in this example)\n} else {\n    // Object is NOT empty\n}\u003c/code\u003e\u003c/pre\u003e\n\n\u003cp\u003eAlternatively, you can write the isEmpty function on the Object prototype.\u003c/p\u003e\n\n\u003cpre\u003e\u003ccode class=\&quot;prettyprint\&quot;\u003eObject.prototype.isEmpty = function() {\n    for(var key in this) {\n        if(this.hasOwnProperty(key))\n            return false;\n    }\n    return true;\n}\u003c/code\u003e\u003c/pre\u003e\n\n\u003cp\u003eThen you can easily check if the object is empty like so.\u003c/p\u003e\n\n\u003cpre\u003e\u003ccode class=\&quot;prettyprint\&quot;\u003evar myObj = {\n    myKey: \&quot;Some Value\&quot;\n}\n\nif(myObj.isEmpty()) {\n    // Object is empty\n} else {\n    // Object is NOT empty (would return false in this example)\n}\u003c/code\u003e\u003c/pre\u003e\n\n\u003cp\u003eExtending the object prototype is not the best thing to do as it can cause some browser issues and other issues with certain frameworks (it&#39;s also not always reliable in certain environments). The example I gave is pretty much framework agnostic although.\u003c/p\u003e\n\n\u003cp\u003eThis is one of those utility functions that will always be useful, especially if you deal with a lot of objects on a daily basis (like I do).\u003c/p\u003e\n&quot;,&quot;public_id&quot;:&quot;_g3x9q&quot;,&quot;subscribed&quot;:false,&quot;tags&quot;:[&quot;objects&quot;,&quot;prototype&quot;,&quot;javascript&quot;,&quot;isempty&quot;],&quot;title&quot;:&quot;How to check if JavaScript Object is empty&quot;,&quot;upvotes&quot;:25}},&quot;comments&quot;:{&quot;items&quot;:[{&quot;id&quot;:1088,&quot;hearts&quot;:8,&quot;heartableId&quot;:&quot;comment_1088&quot;},{&quot;id&quot;:1096,&quot;hearts&quot;:2,&quot;heartableId&quot;:&quot;comment_1096&quot;},{&quot;id&quot;:1111,&quot;hearts&quot;:0,&quot;heartableId&quot;:&quot;comment_1111&quot;},{&quot;id&quot;:1112,&quot;hearts&quot;:0,&quot;heartableId&quot;:&quot;comment_1112&quot;},{&quot;id&quot;:12463,&quot;hearts&quot;:0,&quot;heartableId&quot;:&quot;comment_12463&quot;},{&quot;id&quot;:12874,&quot;hearts&quot;:0,&quot;heartableId&quot;:&quot;comment_12874&quot;},{&quot;id&quot;:28927,&quot;hearts&quot;:1,&quot;heartableId&quot;:&quot;comment_28927&quot;},{&quot;id&quot;:29788,&quot;hearts&quot;:0,&quot;heartableId&quot;:&quot;comment_29788&quot;},{&quot;id&quot;:29822,&quot;hearts&quot;:0,&quot;heartableId&quot;:&quot;comment_29822&quot;},{&quot;id&quot;:30518,&quot;hearts&quot;:0,&quot;heartableId&quot;:&quot;comment_30518&quot;},{&quot;id&quot;:30940,&quot;hearts&quot;:0,&quot;heartableId&quot;:&quot;comment_30940&quot;},{&quot;id&quot;:31237,&quot;hearts&quot;:0,&quot;heartableId&quot;:&quot;comment_31237&quot;},{&quot;id&quot;:31464,&quot;hearts&quot;:0,&quot;heartableId&quot;:&quot;comment_31464&quot;},{&quot;id&quot;:31632,&quot;hearts&quot;:0,&quot;heartableId&quot;:&quot;comment_31632&quot;}]}}" id="initial-redux-store"></div>
+
+
+</body></html>

@@ -1,35 +1,27 @@
 {
   "project_info": {
-    "project_number": "905637758517",
-    "firebase_url": "https://webinar-fc544.firebaseio.com",
-    "project_id": "webinar-fc544",
-    "storage_bucket": "webinar-fc544.appspot.com"
+    "project_number": "984386186860",
+    "firebase_url": "https://webinar-b2902.firebaseio.com",
+    "project_id": "webinar-b2902",
+    "storage_bucket": "webinar-b2902.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:905637758517:android:b4cce635000cc93b",
+        "mobilesdk_app_id": "1:984386186860:android:b4cce635000cc93b",
         "android_client_info": {
           "package_name": "com.matchologists"
         }
       },
       "oauth_client": [
         {
-          "client_id": "905637758517-8b69ud9v71gboqq1fer1eomn61ne4t95.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.matchologists",
-            "certificate_hash": "c07fd74926fdf2c4bd62e05295493e7b750bff03"
-          }
-        },
-        {
-          "client_id": "905637758517-fdbma8c7flshmrf7470p73n1sb2s4vnm.apps.googleusercontent.com",
+          "client_id": "984386186860-5qjdcsru407plus0i9cjgh3g0j8jtp4q.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyCl-yCUanKZhtSnqGBUh4WFtUgezFi94l4"
+          "current_key": "AIzaSyBeZdT0KtjYT5MjeANYBYHEnEXpnJIJ15Q"
         }
       ],
       "services": {
@@ -37,13 +29,8 @@
           "status": 1
         },
         "appinvite_service": {
-          "status": 2,
-          "other_platform_oauth_client": [
-            {
-              "client_id": "905637758517-fdbma8c7flshmrf7470p73n1sb2s4vnm.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
+          "status": 1,
+          "other_platform_oauth_client": []
         },
         "ads_service": {
           "status": 2

@@ -1,137 +1,145 @@
 import React, { Component } from 'react';
-import { StyleSheet, SafeAreaView, StatusBar, Platform, TouchableOpacity } from 'react-native';
+import { connect } from "react-redux";
+
+import { StyleSheet, SafeAreaView, StatusBar, Platform, TouchableOpacity, ScrollView, KeyboardAvoidingView } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import I18n from 'react-native-i18n';
 import { Image, View, Text } from 'react-native-animatable'
-import Header from '../Common/Header'
+import BaseFormComponent from "../Common/BaseFormComponent";
+import Modal from "react-native-modal";
+import Loader from '../Loading/Loader'
+
+import ApiManager from "../Common/ApiManager";
 import * as global from '../../../global.json'
 import CustomButton from '../CustomButton'
 import CustomTextInput from '../CustomTextInput'
-import metrics from '../../config/metrics'
-import appLogo from '../../../assets/icons/MatchologistsLogoNEW.png'
+const formStyle = { marginTop: 40 };
+let IS_ANDROID = Platform.OS === 'android'
 
-const loginWIDTH = metrics.DEVICE_WIDTH * 0.9
-const loginHeight = Platform.OS === 'android' ? metrics.DEVICE_HEIGHT * 0.3 : metrics.DEVICE_HEIGHT * 0.3
-const IMAGE_WIDTH = metrics.DEVICE_WIDTH * 0.6
+class ForgotPassword extends BaseFormComponent {
+    constructor(props) {
+        super(props);
+        this.state = {
+            email: "",
+            is_Loading:false
+        }
+    }
+    validation() {
+        const { email } = this.state;
+        const { language}= this.props;
+        var reg = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        if (!email.length) {
+            this.showSimpleMessage("info", { backgroundColor: global.gradientsecondry }, I18n.t('validation.emaillabel', { locale: language }), I18n.t('validation.emailtitle', { locale: language }))
+            return false
+        }
+        if (reg.test(email) === false) {
+            this.showSimpleMessage("info", { backgroundColor: global.gradientsecondry },I18n.t('validation.emailvalidlabel', { locale: language }), I18n.t('validation.emailvalidtitle', { locale: language }))
+            return false
+        }
+        return true;
+    }
+    handleForgotpassword = () => {
+        const { email } = this.state;
+        let details = {
+            'emailId': email
+        },
+        header = {};
+        if (this.validation()) {
+            this.setState({is_Loading: !this.state.is_Loading})
+            ApiManager.callwebservice('POST', 'api/forgotPasswordMail', header, details, (success) => {
+                let response = JSON.parse(success._bodyInit);
+                if (response.status === 0) {
+                    this.showSimpleMessage("danger", { backgroundColor: "#DC6666" }, response.message, response.message)
+                    this.setState({is_Loading: !this.state.is_Loading})
+                    return
+                }
+                this.showSimpleMessage("", { backgroundColor: global.gradientsecondry }, '', response.message)
+                this.timeOutCall()
+            }, (error) => {
+                console.log("error", error)
+            })
+        }
+    }
+    timeOutCall() {
+        setTimeout(() => {
+            this.setState({
+                is_Loading: !this.state.is_Loading
+            },() => this.props.navigation.navigate('login'))
+        }, 1000)
+    }
 
-export default class ForgotPassword extends Component {
     render() {
-        const { goBack } = this.props.navigation;
-        const { isLoading } = this.props
+        const { goBack } = this.props.navigation,
+            { isLoading, language } = this.props,
+            { email } = this.state;
         return (
-            <View style={styles.container}>
+            <LinearGradient colors={[global.gradientprimary, global.gradientsecondry]} style={{ flex: 1 }}>
                 <StatusBar backgroundColor="#DB3D88" barStyle="light-content" />
-
-                <LinearGradient colors={[global.gradientprimary, global.gradientsecondry]} style={{ flex: 1 }}>
-                    <SafeAreaView />
-                    <View style={{flexDirection:"row"}}>
-                    <TouchableOpacity
-                        onPress={()=>goBack()}
-                                    style={{
-                                        width: "20%",
-                                        backgroundColor: "transparent",
-                                        justifyContent: "center",
-                                        alignItems: "center"
-                                    }}>
-                                     <Image
-                                        source={require('../../images/icons/backbutton.png')}
-                                        style={{ width: 25, height: 17 }}
-                                        resizeMethod="resize"
-                                        resizeMode="contain" />
-                                </TouchableOpacity>
-                                <View style={{ width: "65%", backgroundColor: "transparent", alignItems: "center", justifyContent: "center" }}>
-                                    <Text style={{ fontFamily: "Avenir-Heavy", fontSize: 24, color: "rgba(255,255, 255, 100)" }}>Forgot Password</Text>
-                                </View>
-                                <TouchableOpacity 
-                                onPress={()=>this.setState({visibleModal: true})}
-                                style={{
-                                    width: "15%",
-                                    backgroundColor: "transparent",
-                                    justifyContent: "center",
-                                    alignItems: "center"
-                                }}>
-                                    {/* <Image
-                                        source={require('../../images/filter.png')}
-                                        style={{ width: 17, height: 18, left: 5 }}
-                                        resizeMethod="resize"
-                                        resizeMode="contain" /> */}
-                                </TouchableOpacity>
-                        </View>
-                               
-                        
-                                
-                           
-                    <View style={{ flex: 0.3, backgroundColor: "transparent", justifyContent: "space-around", alignItems: "center", padding: 30 }}>
-                        
+                <SafeAreaView />
+                <View style={{ flexDirection: "row", height: IS_ANDROID ? 59 : 69, backgroundColor: 'transparent', alignItems: IS_ANDROID ? 'center' : "flex-end" }}>
+                    <TouchableOpacity onPress={() => goBack()} style={styles.backbuttonContainer}>
+                        <Image
+                            source={require('../../images/icons/backbutton.png')}
+                            style={{ width: 25, height: 17 }}
+                            resizeMethod="resize"
+                            resizeMode="contain" />
+                    </TouchableOpacity>
+                    <View style={styles.forgot_container}>
+                        <Text style={styles.forgotpasswordtitle}>{I18n.t('forgotpasswordHeader', { locale: language })}</Text>
+                    </View>
+                    <View style={{ width: "15%" }} />
+                </View>
+                <ScrollView style={styles.container}>
+                    <View style={{ backgroundColor: "transparent", justifyContent: "space-around", alignItems: "center", paddingVertical: 30 }}>
                         <Text
                             ref={(ref) => this.linkRef = ref}
                             style={styles.welcomeText}
                             animation={'fadeIn'}
                             duration={600}
                             delay={400}>
-                            {I18n.t('forgotpasswordtitle')}
+                            {I18n.t('forgotpasswordtitle', { locale: language })}
                         </Text>
                     </View>
-                    <View style={{ flex: 0.8 }} />
-
-                </LinearGradient>
-                <View ref={(ref) => { this.formRef = ref }}
-                    animation={'fadeIn'}
-                    style={{
-                        // justifyContent: "center",
-                        width: loginWIDTH,
-                        height: loginHeight,
-                        alignSelf: 'center',
-                        zIndex: 1,
-                        position: "absolute",
-                        backgroundColor: "#fff",
-                        borderRadius: 10,
-                        shadowOffset: { width: 0, height: 2 },
-                        shadowOpacity: 0.2,
-                        shadowRadius: 2,
-                        elevation: 3,
-                        paddingHorizontal: metrics.DEVICE_WIDTH * 0.06
-
-                        // padding: 20
-                    }}>
-                    <View style={styles.head}>
-                        <Text style={{ color: "#D43C87", fontFamily: "Avenir-Medium", fontSize: 11 }}>
-                            {I18n.t('emaillabel')}</Text>
-                        <CustomTextInput
-                            // style={{ backgroundColor : "#fff" }}
-                            name={'email'}
-                            ref={(ref) => this.emailInputRef = ref}
-                            placeholder={'Email'}
-                            keyboardType={'email-address'}
-                            editable={!isLoading}
-                            returnKeyType={'next'}
-                            blurOnSubmit={false}
-                            withRef={true}
-                            // onSubmitEditing={() => this.passwordInputRef.focus()}
-                            onChangeText={(value) => this.setState({ email: value })}
-                            isEnabled={!isLoading}
-                        />
-                    </View>
-                    <View style={styles.footer}>
-                        <View style={{
-                            height: "60%", backgroundColor: "transparent", bottom: 0,
-                        }}>
+                    <View ref={(ref) => { this.formRef = ref }}
+                        animation={'fadeIn'}
+                        style={styles.form}>
+                        <KeyboardAvoidingView
+                            keyboardVerticalOffset={-100}
+                            behavior={'padding'}
+                            style={[formStyle]}>
+                            <Text style={styles.label}>{I18n.t('emaillabel', { locale: language })}</Text>
+                            <CustomTextInput style={{ minHeight: 42 }}
+                                name={'email'}
+                                ref={(ref) => this.emailInputRef = ref}
+                                value={email}
+                                placeholder={'Email'}
+                                keyboardType={'email-address'}
+                                editable={!isLoading}
+                                returnKeyType={'done'}
+                                withRef={true}
+                                onChangeText={(email) => this.setState({ email: email })}
+                                isEnabled={!isLoading}
+                            />
                             <LinearGradient
                                 colors={['rgb(220,57, 134)', 'rgb(40,40,120)']}
                                 start={{ x: 0, y: 1 }}
                                 end={{ x: 1, y: 1 }} style={styles.loginButton}>
                                 <CustomButton
-                                    onPress={() => this.props.navigation.navigate('profile')}
+                                    onPress={() => this.handleForgotpassword()}
                                     isLoading={isLoading}
                                     textStyle={styles.loginButtonText}
-                                    text={I18n.t('sendbutton')}
-                                />
+                                    text={I18n.t('sendbutton', { locale: language })}/>
                             </LinearGradient>
-                        </View>
-
+                        </KeyboardAvoidingView>
                     </View>
-                </View>
-            </View>
+                </ScrollView>
+                <Modal
+                    isVisible={this.state.is_Loading}
+                    scrollTo={this.handleScrollTo}
+                    style={{ margin: 0, justifyContent: "center", alignItems: "center" }}>
+                    <Loader/>
+                </Modal>
+            </LinearGradient>
         )
     }
 }
@@ -139,54 +147,62 @@ export default class ForgotPassword extends Component {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        justifyContent: 'center',
-        // alignItems : 'center'
-        // paddingHorizontal: metrics.DEVICE_WIDTH * 0.1
+        paddingHorizontal: 16,
+    },
+    backbuttonContainer: {
+        width: "20%",
+        height: 42,
+        backgroundColor: "transparent",
+        justifyContent: "center",
+        alignItems: "center"
+    },
+    forgot_container: {
+        width: "65%",
+        height: 42,
+        backgroundColor: "transparent",
+        alignItems: "center",
+        justifyContent: "center"
     },
     form: {
-        marginTop: 20
+        backgroundColor: "#fff",
+        borderRadius: 10,
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.2,
+        shadowRadius: 2,
+        elevation: 3,
+        paddingHorizontal: 16
     },
-    head: {
-        // flex : 6,
-        height: "55%",
-        justifyContent: 'flex-end',
-        // backgroundColor : "red",
-        // justifyContent : 'center'
-        // paddingVertical: 20
+    forgotpasswordtitle: {
+        fontFamily: "Avenir-Heavy",
+        fontSize: 24,
+        color: "rgba(255,255, 255, 100)"
     },
-    footer: {
-        height: "45%",
-        justifyContent: "center",
-        // alignItems:"center",
-        // justifyContent: 'space-around',
-        // alignItems:'flex-end',
-        // backgroundColor: "blue"
-        // justifyContent: 'flex-end'
+    label: {
+        lineHeight: 15,
+        color: "#D43C87",
+        fontFamily: "Avenir-Medium",
+        fontSize: 11,
+        paddingHorizontal: IS_ANDROID ? 3 : 0
     },
     loginButton: {
         borderRadius: 5,
+        marginTop: 32,
+        marginBottom: 20,
     },
     loginButtonText: {
         color: '#fff',
-        fontWeight: 'bold'
-    },
-    signupLink: {
-        color: "#71367D",
-        fontSize: 13,
-        fontFamily: 'Avenir-Heavy',
-        lineHeight: 20,
-        // backgroundColor: 'red',
-        // color: 'rgba(255,255,255,0.6)',
-        alignSelf: 'center',
-        // padding: 20
+        fontFamily: "Avenir-Heavy",
+        fontSize: 17
     },
     welcomeText: {
-        color: 'rgba(255, 255, 255, 100)',
+        color: 'rgba(255, 255, 255, 0.6)',
         fontFamily: "Avenir-Medium",
         fontSize: 17,
-        bottom: 10,
-        // backgroundColor: "blue",
-        // lineHeight: 100
     }
-
 })
+mapStateToProps = (state) => {
+    return {
+        language: state.language.defaultlanguage,
+    }
+}
+export default connect(mapStateToProps)(ForgotPassword);

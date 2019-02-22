@@ -18,5 +18,4 @@ export default class BaseFormComponent extends Component{
         });
         console.log(form.chat.value)
     }
-
 }

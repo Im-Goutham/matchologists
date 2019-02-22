@@ -1,4 +1,3 @@
-
 import React, { Component } from "react";
 import { View, Text, FlatList, Image, StyleSheet, TextInput, Platform, TouchableOpacity, } from "react-native";
 import metrics from '../../config/metrics';

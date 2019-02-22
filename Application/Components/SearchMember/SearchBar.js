@@ -2,7 +2,6 @@
 import React, { Component } from "react";
 import { View, Text, FlatList, Image, StyleSheet, TextInput, Platform, TouchableOpacity, } from "react-native";
 import metrics from '../../config/metrics';
-import Icons from 'react-native-vector-icons/Feather'
 import {
     widthPercentageToDP,
     heightPercentageToDP,
@@ -19,6 +18,12 @@ const IMAGE_HEIGHT = metrics.DEVICE_HEIGHT * 0.284
 
 
 export default class SearchBar extends Component {
+    constructor(props){
+        super(props);
+        this.state={
+        }
+    }
+    handleChange
     render() {
         const { isLoading, onLoginLinkPress, onSignupPress, navigation } = this.props
         return (
@@ -66,14 +71,11 @@ export default class SearchBar extends Component {
                     ref={(ref) => this.textInputRef = ref}
                     autoCapitalize={'none'}
                     autoCorrect={false}
-                    style={{
-                        height: 40,
-                        flex: 1,
-                        // paddingHorizontal:10
-                    }}
+                    style={{ height: 40, flex: 1}}
                     underlineColorAndroid={'transparent'}
                     placeholderTextColor={'#909096'}
                     selectionColor={'#909096'}
+                    onChangeText={(value) => this.handleChange(value)}
                     onFocus={() => this.setState({ isFocused: true })}
                     onBlur={() => this.setState({ isFocused: false })}
                 />

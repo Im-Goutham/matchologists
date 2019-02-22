@@ -149,25 +149,39 @@ class Toggle extends React.Component {
         return (
             <TouchableOpacity
                 activeOpacity={0.5}
-                style={{
-                    backgroundColor: this.state.isOn ? "#D43C87" : "gray",
+                style={[{
+                    backgroundColor: this.state.isOn ? "#D43C87" : "#fff",
                     width: 60,
                     height: 37,
                     borderRadius: 35,
                     paddingVertical: 2,
-                }}
+                    // borderWidth:1,
+                    // borderColor:"#696969"
+                }, styles.elevated_shdow]}
                 onPress={() => this.handlePress()}
             >
-                <Animated.View style={{
+                <Animated.View style={[{
                     width: 32,
                     height: 32,
                     borderRadius: 16,
                     backgroundColor: "#FFF",
+                    // borderColor:"#696969",
+                    // borderWidth:1,
                     transform: [{
                         translateX: this.state.animatedValue,
                     }]
-                }} />
+                }, styles.elevated_shdow]}
+                />
             </TouchableOpacity>
         )
+    }
+}
+const styles= {
+    elevated_shdow: {
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.5,
+        shadowRadius: 2,
+        elevation: 3,
+        shadowColor: 'black',
     }
 }

@@ -1,4 +1,10 @@
 {
   "name": "matchologists",
-  "displayName": "matchologists"
+  "displayName": "matchologists",
+  "senderID": "AIzaSyBuu4I6vaBC2DZ5seey3v7QSTS6Ry7WRVw",
+"baseurl": "http://matchologistapi.node.indianic.com"
 }
+// "baseurl": "http://10.2.2.43:4069",
+//http://matchologistapi.node.indianic.com
+//   "baseurl":"http://10.2.1.11:5142"
+// facebook releasehashkey: sWMUYf38YDXMDVum1Emnso+3JKc=

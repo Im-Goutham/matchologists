@@ -11,9 +11,9 @@ import {
     Platform,
     TouchableOpacity
 } from 'react-native';
-import LottieView from 'lottie-react-native';
 import CustomButton from '../CustomButton';
 import I18n from 'react-native-i18n'
+import {Close} from '../Common/Hamburger'
 export default class SubscribeScreen extends Component {
     render() {
         const { goBack , navigate} = this.props.navigation;
@@ -99,21 +99,3 @@ let styles = {
     }
 }
 
-class Close extends React.Component {
-    render() {
-        return (
-            <LottieView
-                speed={10000}
-                duration={700}
-                resizeMode="contain"
-                style={{
-                    width: 30,
-                    height: 30
-                }}
-                source={require('../../jsoncontainer/menu_switch.json')}
-                autoPlay
-                loop={false}
-            />
-        );
-    }
-}
