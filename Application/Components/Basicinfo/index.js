@@ -74,11 +74,11 @@ class Basicinfo extends BaseFormComponent {
             is_dobSeleted: false,
             getdob: '',
             dob: "Select Date",
-            pincode: '',
             bio: "",
             gallary_Images: [],
             is_Loading: false,
             review_visible: false,
+            zipcode:'',
             // friends_invite_visible: false,
             is_uploadFile: false,
             loadingProgress: 1,
@@ -148,7 +148,7 @@ class Basicinfo extends BaseFormComponent {
                 })
                 this.setState({
                     fullname: response.data.fullName ? response.data.fullName: '',
-                    pincode: response.data.zipcode ? response.data.zipcode: '',
+                    zipcode: response.data.zipcode ? response.data.zipcode.toString() : '',
                     selectedgender: genderIndex,
                     interest_gender: interestedgenderIndex,
                     dob: date_string,
@@ -250,7 +250,7 @@ class Basicinfo extends BaseFormComponent {
     }
     validateFirstScreen() {
         const { language } = this.props;
-        const { fullname, selectedgender, interest_gender, is_dobSeleted, bio, pincode } = this.state;
+        const { fullname, selectedgender, interest_gender, is_dobSeleted, bio, zipcode } = this.state;
         console.log("hello i am executed")
         if (!fullname.length) {
             this.showSimpleMessage("info", { backgroundColor: global.gradientsecondry }, I18n.t('validation.fullname_label', { locale: language }), I18n.t('validation.fullname_title', { locale: language }))
@@ -260,11 +260,11 @@ class Basicinfo extends BaseFormComponent {
             this.showSimpleMessage("info", { backgroundColor: global.gradientsecondry }, I18n.t('validation.doblabel', { locale: language }), I18n.t('validation.dobtitle', { locale: language }))
             return false;
         }
-        if (!pincode.length) {
+        if (!zipcode.length) {
             this.showSimpleMessage("info", { backgroundColor: global.gradientsecondry }, I18n.t('validation.pinlabel', { locale: language }), I18n.t('validation.pintitle', { locale: language }))
             return false;
         }
-        if (pincode.length < 4) {
+        if (zipcode.length < 4) {
             this.showSimpleMessage("info", { backgroundColor: global.gradientsecondry }, I18n.t('validation.validpinlabel', { locale: language }), I18n.t('validation.validpintitle', { locale: language }))
             return false;
         }
@@ -316,7 +316,7 @@ class Basicinfo extends BaseFormComponent {
     }
     updateProfile = async (uploadimage) => {
         const { navigate } = this.props.navigation;
-        const { fullname, selectedgender, interest_gender, dob, bio, gallary_Images, pincode } = this.state;
+        const { fullname, selectedgender, interest_gender, dob, bio, gallary_Images, zipcode } = this.state;
         let header = {
             'Authorization': this.props.token,
             'Content-Type': 'application/json'
@@ -327,7 +327,7 @@ class Basicinfo extends BaseFormComponent {
             "genderIntrestedIn": gender_arr[interest_gender].toLowerCase(),
             "dob": dob,
             "bio": bio,
-            "zipcode":pincode,
+            "zipcode":zipcode,
             "gallery": gallary_Images
         }
         console.log("details", details)
@@ -463,7 +463,7 @@ class Basicinfo extends BaseFormComponent {
                                             </TouchableOpacity>
                                         </View>
                                         <View style={styles.formgroup}>
-                                            <Text style={styles.label}>{I18n.t('pincodelabel', { locale: language })}</Text>
+                                            <Text style={styles.label}>{I18n.t('zipcodelabel', { locale: language })}</Text>
                                             <TextInputMask
                                                 ref={(ref) => { this._input = ref ? ref._inputElement : ref }}
                                                 type={"custom"}
@@ -476,9 +476,9 @@ class Basicinfo extends BaseFormComponent {
                                                 //     backgroundColor: "rgba(245,245,245,100)", flexDirection: "row", alignItems: "center"
                                                 // }}
                                                 selectionColor={'#696969'}
-                                                value={this.state.pincode}
-                                                onChangeText={(pincode) => {
-                                                    this.setState({ pincode })
+                                                value={this.state.zipcode}
+                                                onChangeText={(zipcode) => {
+                                                    this.setState({ zipcode })
                                                 }}
                                                 returnKeyType={'done'}
                                                 // onSubmitEditing={() => this.emailInputRef.focus()}
@@ -725,9 +725,7 @@ class Basicinfo extends BaseFormComponent {
                                             : undefined
                             }
                         </KeyboardAvoidingView>
-
                     </View>
-
                 </ScrollView>
                 <Modal
                     backdropOpacity={0.2}
@@ -748,7 +746,7 @@ class Basicinfo extends BaseFormComponent {
 
                     </View>
                     <TouchableOpacity style={{ borderRadius:5, overflow:"hidden" , marginVertical:8, width: IS_ANDROID?'85%': '100%' , backgroundColor:"#FFF", height:54, justifyContent:"center", alignItems:"center"}} onPress={()=>this._hideDateTimePicker()}>
-                            <Text style={{ fontFamily: "Avenir-Heavy", fontSize: 17,color: "#273174"}}>cancel</Text>
+                            <Text style={{ fontFamily: "Avenir-Heavy", fontSize: 17,color: "#273174"}}>Cancel</Text>
                             </TouchableOpacity>
                 </Modal>
                 {/* <DateTimePicker

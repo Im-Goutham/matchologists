@@ -1,21 +1,28 @@
 import React, { Component } from 'react';
-import { View, Button, TextInput, StyleSheet, FlatList, Text } from 'react-native';
+import { connect } from 'react-redux'
+import { View, Button, TextInput, StyleSheet, FlatList, Text, Dimensions } from 'react-native';
 import { OTSession } from 'opentok-react-native';
-import ApiManager from '../Common/ApiManager';
-
-export default class Chatroom extends Component {
+import ApiRequest from '../Userprofile/Apirequest';
+// import { reject } from 'rsvp';
+// import console = require('console');
+var { width , height} = Dimensions.get('window')
+class Chatroom extends Component {
   constructor(props) {
     super(props);
-    this.apiKey = '46209162';
-    this.sessionId = '1_MX40NjIwNDc0Mn5-MTU0MjYyNTk1MzQ3Nn4yZEhnMm5OT0p1UzRlVnpMakp3TmppTXV-fg';
-    this.token = 'T1==cGFydG5lcl9pZD00NjIwNDc0MiZzaWc9NTRhZTQyMDVlNGQxYzA5OTBjMTM3ZDI5NzRkZTQxNWMwOTk5OTc5NTpzZXNzaW9uX2lkPTFfTVg0ME5qSXdORGMwTW41LU1UVTBNall5TlRrMU16UTNObjR5WkVobk1tNU9UMHAxVXpSbFZucE1ha3AzVG1wcFRYVi1mZyZjcmVhdGVfdGltZT0xNTQyNjI1OTUzJnJvbGU9bW9kZXJhdG9yJm5vbmNlPTE1NDI2MjU5NTMuNDg4NzE3NTE0MzcyMjM=';    
+    // this.apiKey = '46220182';
+    this.apiKey='46244942',
+    // this.sessionId = '2_MX40NjIyMDE4Mn5-MTU1MTQyMTg5OTI1MX5xdFljR3VQMHN2clE2S2Z6SWZocmd0cFV-fg';
+    // this.token = 'T1==cGFydG5lcl9pZD00NjIyMDE4MiZzaWc9NzhmODc2Yjk2MTkzYjM2Zjg3MTUyMmU4MWUwNDE2NTU5MjgzNWM3YTpzZXNzaW9uX2lkPTJfTVg0ME5qSXlNREU0TW41LU1UVTFNVFF5TVRnNU9USTFNWDV4ZEZsalIzVlFNSE4yY2xFMlMyWjZTV1pvY21kMGNGVi1mZyZjcmVhdGVfdGltZT0xNTUxNDIxODk5JnJvbGU9bW9kZXJhdG9yJm5vbmNlPTE1NTE0MjE4OTkuMjY1MTE2Mzk5Njk4MTA=';
     this.state = {
+      loading: true,
       signal: {
         data: '',
         type: '',
       },
-      text: '',
-      messages: [],
+      sessionId :'',
+      token : '',
+      text : '',
+      messages : [],
     };
     this.sessionEventHandlers = {
       signal: (event) => {
@@ -30,21 +37,21 @@ export default class Chatroom extends Component {
       },
     };
   }
-
   componentDidMount(){
-    // this.callapi()
-  }
+    const { state } = this.props.navigation;
+    let userid= state.params.userId;
+    ApiRequest.getChatSessionId(this.props.token, userid, (resolve)=>{
+      // console.log("componentDidMount_navigation", resolve)
+      this.setState({
+        sessionId:resolve.data && resolve.data.session ? resolve.data.session : '' ,
+        token:resolve.data && resolve.data.token ? resolve.data.token : '' ,
+        loading: false,
 
-  callapi=()=>{
-    // ApiManager.callapi((success) => {
-    //   console.log("sessionId call back is", success.sessionId)
-    //   console.log("publisherToken call back is", success.publisherToken)
-    //   console.log("subscriberToken call back is", success.subscriberToken)
-    // },(error)=>{
-    //   console.log("error call back is", error)
-    // })
+      })
+    }, (reject)=>{
+      console.log("getChatSessionId_reject", reject)
+    })
   }
-
   sendSignal() {
     if (this.state.text) {
       this.setState({
@@ -61,32 +68,39 @@ export default class Chatroom extends Component {
     <Text style={styles.item}>{item.data}</Text>
   );
   render() {
+    if(this.state.loading){
+      return <></>
+    }
     return (
       <View style={{ flex: 1 }}>
         <OTSession 
           apiKey={this.apiKey}
-          sessionId={this.sessionId}
-          token={this.token}
+          sessionId={this.state.sessionId}
+          token={this.state.token}
           signal={this.state.signal}
           eventHandlers={this.sessionEventHandlers}
           ref={(instance) => {
             this.session = instance;
           }}
         />
-        <TextInput
-          style={{height: 40, borderColor: 'gray', borderWidth: 1}}
-          onChangeText={(text) => { this.setState({ text }); }}
-          value={this.state.text}
-        />
-        <Button
-          onPress={() => { this.sendSignal(); }}
-          title="Send Signal"
-        />
         <FlatList
           data={this.state.messages}
           renderItem={this._renderItem}
           keyExtractor={this._keyExtractor}
         />
+        <View style={{ alignSelf:"flex-end", width : width}}>
+        <Button
+          onPress={() => { this.sendSignal(); }}
+          title="Send Signal"
+        />
+
+                <TextInput
+          style={{height: 40, borderColor: 'gray', borderWidth: 1}}
+          onChangeText={(text) => { this.setState({ text }); }}
+          value={this.state.text}
+        />
+        </View>
+
       </View>
     );
   }
@@ -104,3 +118,12 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   }
 })
+
+mapStateToProps = (state) => {
+  return {
+      language: state.language.defaultlanguage,
+      data: state.auth.data,
+      token: state.auth.token
+  }
+}
+export default connect(mapStateToProps)(Chatroom);

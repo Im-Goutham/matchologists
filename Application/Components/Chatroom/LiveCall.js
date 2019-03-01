@@ -49,7 +49,7 @@ export default class LiveCall extends Component {
                     justifyContent: "space-between"
                 }}>
                     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-                        <Icons name="ios-close-circle" size={50} color="red" />
+                        {/* <Icons name="ios-close-circle" size={50} color="red" /> */}
                     </View>
                     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
                         <Timer

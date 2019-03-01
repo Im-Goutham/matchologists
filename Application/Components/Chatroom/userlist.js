@@ -96,16 +96,7 @@ class OnlineUsers extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            loading: false,
-            data: data,
-            page: 1,
-            seed: 1,
-            error: null,
-            refreshing: false,
         };
-    }
-
-    componentDidMount() {
     }
     renderSeparator = () => {
         return (
@@ -119,20 +110,22 @@ class OnlineUsers extends Component {
             />
         );
     };
-    renderRow = data.map((item) => {
+    renderRow = this.props.userdataList.map((item) => {
         const { navigate } = this.props.navigation;
         return (
             <TouchableOpacity
-                onPress={() => navigate('chatscreen')}
+                onPress={() => navigate('chatscreen', { userId: item._id })}
                 key={item.id}
-                style={{ flex: 1, alignItems: "center", justifyContent: "space-around", paddingRight: 15 }}>
+                style={{ flex: 1, alignItems: "center", justifyContent: "space-around", paddingHorizontal: 8 }}>
                 <View style={{ alignItems: "center" }}>
-                    <Image
-                        style={{ width: 60, height: 60, borderRadius: 30 }}
-                        source={item.picture.thumbnail}
-                        resizeMethod="resize"
-                        resizeMode="contain"
-                    />
+                    <View style={{ width: 60, height: 60, borderRadius: 30, overflow:"hidden" }}>
+                        <Image
+                            style={{ height: '100%', width: '100%', flex: 1 }}
+                            source={{ uri: item.uri }}
+                        // resizeMethod="resize"
+                        // resizeMode="contain"
+                        />
+                    </View>
                     <View style={{
                         width: 12,
                         height: 12,
@@ -145,26 +138,21 @@ class OnlineUsers extends Component {
                         borderColor: "#FFF"
                     }} />
                 </View>
-                <View style={{justifyContent: "space-around"}}>
-                    <Text style={{ fontFamily: "Avenir-Medium", fontSize: 15, color: "#3E3E47" }}>{item.name.first}</Text>
+                <View style={{ justifyContent: "space-around" }}>
+                    <Text style={{ fontFamily: "Avenir-Medium", fontSize: 15, color: "#3E3E47" }}>{item.fullName}</Text>
                 </View>
             </TouchableOpacity>
         )
     })
-    handleClick = () => {
-    }
+    handleClick = () => { }
     render() {
         return (
-            // <View style={{height: 129}}>
-                <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} style={{ height: 100, flexDirection: "row"}}>
-                    {this.renderRow}
-                </ScrollView>
-            // </View>
+            <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} style={{ height: 100, flexDirection: "row", paddingLeft: 8 }}>
+                {this.renderRow}
+            </ScrollView>
         );
     }
 }
-
-
 class Userlist extends Component {
     constructor(props) {
         super(props);
@@ -177,14 +165,11 @@ class Userlist extends Component {
             refreshing: false,
         };
     }
-
-    componentDidMount() {
-    }
     renderSeparator = () => {
         return (
             <View
                 style={{
-                    height: 1, 
+                    height: 1,
                     width: "80%",
                     backgroundColor: "#EFEFEF",
                     marginLeft: "20%"
@@ -220,19 +205,16 @@ class Userlist extends Component {
             </TouchableOpacity>
         )
     }
-    handleClick = () => {
-    }
     render() {
         return (
             <FlatList
                 contentContainerStyle={{
                     paddingHorizontal: 16,
-                    paddingBottom: 150,
                     backgroundColor: 'rgba(255,255,255, 100)',
                 }}
                 data={this.state.data}
                 renderItem={({ item }) => this.renderRow(item)}
-                keyExtractor = { (item, index) => index.toString()}
+                keyExtractor={(item, index) => index.toString()}
                 ItemSeparatorComponent={this.renderSeparator}
             />
         );

@@ -14,10 +14,13 @@ import {
     ScrollView,
     TouchableOpacity,
 } from 'react-native';
+import { connect } from 'react-redux'
+
 import LinearGradient from 'react-native-linear-gradient';
 import i18n from 'react-native-i18n'
 import Header from '../Common/Header'
 import SearchBar from './SearchBar'
+import ApiRequest from '../Userprofile/Apirequest';
 
 // import MonogamousList from './monogamous'
 import { Userlist, OnlineUsers } from './userlist';
@@ -26,13 +29,46 @@ import metrics from '../../config/metrics';
 const IMAGE_WIDTH = metrics.DEVICE_WIDTH * 0.05
 const header_height = metrics.DEVICE_HEIGHT * 0.1
 
-export default class UserChatlist extends Component {
+class UserChatlist extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            allUserData : [],
+            isLoading : true,
         }
     }
+    componentDidMount = async () => {
+        await this.sortAndFilterUsers()
+    }
+    sortAndFilterUsers = async () => {
+        ApiRequest.sortAndFilterUsers(this.props.token, (resolve) => {
+            var alluserData = resolve.data.data;
+            // console.log("sortAndFilterUsers", alluserData);
+            var new_array = [];
+            if(resolve.data.data){
+                for(var i=0; i< alluserData.length; i++ ){
+                    var userObject={};
+                    userObject._id = alluserData[i]._id ? alluserData[i]._id : '';
+                    userObject.fullName = alluserData[i].fullName ? alluserData[i].fullName : '';
+                    userObject.uri = alluserData[i].profilePic ? alluserData[i].profilePic : '';
+                    userObject.isOnline = alluserData[i].isOnline ? alluserData[i].isOnline : false;
+                    userObject.lastSeen = alluserData[i].lastSeen ? alluserData[i].lastSeen : undefined;
+                    new_array.push(userObject);
+                }
+                this.setState({
+                    allUserData: new_array,
+                    isLoading : false
+                })
+            }
+        }, (reject) => {
+            console.log("sortAndFilterUsers_reject", reject)
+        })
+
+    }
     render() {
+        if(this.state.isLoading){
+            return <Text>Loading</Text>
+        }
         const { navigate } = this.props.navigation;
         return (
             <View style={styles.container}>
@@ -83,19 +119,19 @@ export default class UserChatlist extends Component {
                         />
                     </SafeAreaView>
                 </LinearGradient>
-                <SearchBar />
-                <ScrollView contentContainerStyle={{ paddingVertical: 20, }} showsVerticalScrollIndicator={false}>
-                    <View style={{ height: 175, justifyContent:"center", paddingLeft:15, borderBottomWidth:10, borderBottomColor:"#F5F5F5" }}>
-                        <Text style={{ fontFamily: "Avenir-Medium", fontSize: 15, color: "#C1C0C9", lineHeight: 40,  }}>ALL MATCHES</Text>
-                        <View style={{  }}>
-                            <OnlineUsers navigation={this.props.navigation} />
+                {/* <SearchBar /> */}
+                <ScrollView contentContainerStyle={{ paddingVertical: 16, }} showsVerticalScrollIndicator={false}>
+                    <View style={{ justifyContent: "center", borderBottomWidth: 10, borderBottomColor: "#F5F5F5" }}>
+                        <View style={styles.elevationView}>
+                            <Text style={{ fontFamily: "Avenir-Medium", fontSize: 15, color: "#C1C0C9", lineHeight: 40, paddingLeft: 16 }}>ALL MATCHES</Text>
+                            <View style={{}}>
+                                <OnlineUsers navigation={this.props.navigation} userdataList={this.state.allUserData} />
+                            </View>
                         </View>
-
                     </View>
-                    <View style={{ backgroundColor: "red", }}>
+                    <View style={styles.elevationView}>
                         <Userlist navigation={this.props.navigation} />
                     </View>
-
                 </ScrollView>
             </View>
         );
@@ -104,12 +140,25 @@ export default class UserChatlist extends Component {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        // justifyContent: 'center',
-        // alignItems: 'center',
         backgroundColor: 'rgba(255,255,255, 100)',
     },
     bottomModal: {
         justifyContent: "flex-end",
         margin: 0
     },
+    elevationView: {
+        backgroundColor: "#fff",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.2,
+        shadowRadius: 2,
+        elevation: 3,
+    }
 });
+mapStateToProps = (state) => {
+    return {
+        language: state.language.defaultlanguage,
+        data: state.auth.data,
+        token: state.auth.token
+    }
+}
+export default connect(mapStateToProps)(UserChatlist);

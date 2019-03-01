@@ -18,7 +18,7 @@
     "namelabel": "FIRST NAME  MIDDLE NAME LAST NAME",
     "fullnameLabel":"FIRST NAME  MIDDLE NAME LAST NAME",
     "phonenumberlabel": "PHONE NUMBER",
-    "pincodelabel":"ZIP CODE",
+    "zipcodelabel":"ZIP CODE",
     "termslabel": "By signing up you're accepting our",
     "termsandservicelabel": "Terms and Service",
     "andlabel": "and",

@@ -88,39 +88,39 @@ class Filter extends BaseFormComponent {
         }
         return true;
     }
-    validate() {
-        const { location, is_profilematchChange, is_agerangeChange, today, week, month } = this.state;
-        if (!is_profilematchChange) {
-            return false
-        }
-        return true
-    }
-    makeRemoteRequest = async () => {
-        // const { location, profilematch, agerange, today, week, month } = this.state;
-        let header = {
-            'Authorization': this.props.token,
-        }
-        // this.props.saveCurrentFilter(data)
-        await AsyncStorage.setItem('localfilter', JSON.stringify(data));
+    // validate() {
+    //     const { location, is_profilematchChange, is_agerangeChange, today, week, month } = this.state;
+    //     if (!is_profilematchChange) {
+    //         return false
+    //     }
+    //     return true
+    // }
+    // makeRemoteRequest = async () => {
+    //     // const { location, profilematch, agerange, today, week, month } = this.state;
+    //     let header = {
+    //         'Authorization': this.props.token,
+    //     }
+    //     // this.props.saveCurrentFilter(data)
+    //     await AsyncStorage.setItem('localfilter', JSON.stringify(data));
 
-        console.log(" datafilterProfileUsers", data)
-        // if (this.validate()) {
-        ApiManager.callwebservice('POST', 'api/filterProfileUsers', header, data, (success) => {
-            let response = JSON.parse(success._bodyInit);
-            // this.props.closemodal()
-            console.log("response filterProfileUsers", response)
-            if (response.status === 0) {
-                return
-            } else if (response.status === 1) {
-                this.props.getFilteredUsers(response)
-            }
-        }, (error) => {
-            console.log("error", error)
-        })
-        // }
-    };
+    //     console.log(" datafilterProfileUsers", data)
+    //     // if (this.validate()) {
+    //     ApiManager.callwebservice('POST', 'api/filterProfileUsers', header, data, (success) => {
+    //         let response = JSON.parse(success._bodyInit);
+    //         // this.props.closemodal()
+    //         console.log("response filterProfileUsers", response)
+    //         if (response.status === 0) {
+    //             return
+    //         } else if (response.status === 1) {
+    //             this.props.getFilteredUsers(response)
+    //         }
+    //     }, (error) => {
+    //         console.log("error", error)
+    //     })
+    //     // }
+    // };
     profileValuesChange = values => {
-        data.matchPercentage = parseInt(values.toString())
+        // data.matchPercentage = parseInt(values.toString())
         this.setState({
             profilematch: values,
             is_profilematchChange: true
@@ -160,10 +160,10 @@ class Filter extends BaseFormComponent {
         console.log("onValuesChangeFinish", values)
 
     }
-    handleZipcode=(zipcode)=>{
-        data.zipcode = zipcode;
-        this.props.handleZipcode(zipcode)
-    }
+    // handleZipcode=(zipcode)=>{
+    //     data.zipcode = zipcode;
+    //     this.props.handleZipcode(zipcode)
+    // }
     render() {
         const { language, isLoading, onLoginLinkPress, onSignupPress } = this.props;
         const { is_today, is_week, is_month } = this.props;
@@ -201,7 +201,7 @@ class Filter extends BaseFormComponent {
                 </View>
                 <ScrollView style={{}}>
                     <View style={styles.searchBox}>
-                    <Text style={styles.label}>{I18n.t('pincodelabel', { locale: language })}</Text>
+                    <Text style={styles.label}>{I18n.t('zipcodelabel', { locale: language })}</Text>
 
                         {/* <Text style={styles.label}>{I18n.t('locationLabel', { locale: language })}</Text> */}
                         <View style={{ marginTop: 8 }} />
@@ -251,7 +251,7 @@ class Filter extends BaseFormComponent {
                                                 style={[styles.input]}
                                                 selectionColor={'#696969'}
                                                 value={this.props.zipcode}
-                                                onChangeText={this.handleZipcode.bind(this)}
+                                                onChangeText={(zipcode)=>this.props.handleZipcode(zipcode) }
                                                 // onChangeText={(pincode) => {
                                                 //     this.setState({ pincode })
                                                 // }}
@@ -296,7 +296,7 @@ class Filter extends BaseFormComponent {
                                 }}
                                 values={[this.props.profilematch_values[0]]}
                                 sliderLength={metrics.DEVICE_WIDTH * 0.9}
-                                onValuesChange={this.profileValuesChange}
+                                onValuesChange={(values)=>this.props.profilematch(values)}
                                 min={0}
                                 max={100}
                                 step={1}
@@ -360,8 +360,8 @@ class Filter extends BaseFormComponent {
                             ]}
                             // stepLength={5}
                             sliderLength={metrics.DEVICE_WIDTH * 0.9}
-                            onValuesChange={this.multiSliderValuesChange}
-                            // onValuesChange={this.props.multiSliderValuesChange}
+                            // onValuesChange={this.multiSliderValuesChange}
+                            onValuesChange={(values)=>this.props.multiSliderValuesChange(values)}
                             onValuesChangeStart={this.changevalueStart}
                             onValuesChangeFinish={this.onValuesChangeFinish}
                             min={18}
@@ -380,15 +380,25 @@ class Filter extends BaseFormComponent {
                     <View style={{ paddingHorizontal: 16 }}>
                         <Text style={{ fontFamily: "Avenir-Medium", fontSize: 11, color: "#D43C87" }}>{I18n.t('lastLoginLabel', { locale: language })}</Text>
                         <View style={{ marginTop: 8 }} />
-                        <TouchableOpacity style={{ flexDirection: "row", height: 30, marginVertical: 5 }} onPress={() => this.todayFilter("today")}>
+                        <TouchableOpacity style={{ flexDirection: "row", height: 30, marginVertical: 5 }} 
+                        onPress={()=>this.props.updateToday("today")}
+                        // onPress={() => this.todayFilter("today")}
+                        >
                             <Image source={is_today ? require('../../../assets/icons/checked.png') : require('../../../assets/icons/unchecked.png')} style={{ width: 24, height: 24 }} resizeMode="contain" resizeMethod="resize" />
                             <Text style={{ fontFamily: "Avenir-Medium", fontSize: 17, color: "#909096", marginHorizontal: 20 }}>{I18n.t('todayLabel', { locale: language })}</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity style={{ flexDirection: "row", height: 30, marginVertical: 5 }} onPress={() => this.todayFilter("week")}>
+                        <TouchableOpacity style={{ flexDirection: "row", height: 30, marginVertical: 5 }} 
+                                                onPress={()=>this.props.updateToday("week")}
+                        // onPress={() => this.todayFilter("week")}
+                        >
                             <Image source={is_week ? require('../../../assets/icons/checked.png') : require('../../../assets/icons/unchecked.png')} style={{ width: 24, height: 24 }} resizeMode="contain" resizeMethod="resize" />
                             <Text style={{ fontFamily: "Avenir-Medium", fontSize: 17, color: "#909096", marginHorizontal: 20 }}>{I18n.t('weekLabel', { locale: language })}</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity style={{ flexDirection: "row", height: 30, marginVertical: 5 }} onPress={() => this.todayFilter("month")}>
+                        <TouchableOpacity style={{ flexDirection: "row", height: 30, marginVertical: 5 }} 
+                                                                        onPress={()=>this.props.updateToday("month")}
+
+                        // onPress={() => this.todayFilter("month")}
+                        >
                             <Image source={is_month ? require('../../../assets/icons/checked.png') : require('../../../assets/icons/unchecked.png')} style={{ width: 24, height: 24 }} resizeMode="contain" resizeMethod="resize" />
                             <Text style={{ fontFamily: "Avenir-Medium", fontSize: 17, color: "#909096", marginHorizontal: 20 }}>{I18n.t('monthLabel', { locale: language })}</Text>
                         </TouchableOpacity>
@@ -396,7 +406,7 @@ class Filter extends BaseFormComponent {
                     <View style={{ marginTop: 8 }} />
                     <View style={{ paddingHorizontal: 16 }}>
                         <Text style={{ fontFamily: "Avenir-Medium", fontSize: 11, color: "#D43C87" }}>{I18n.t('aboutparnerLabel', { locale: language })}</Text>
-                        <TouchableOpacity onPress={()=>alert('in Progress')}>
+                        <TouchableOpacity onPress={this.props.questionanswerModalToggle}>
                     <Image source={require('../../images/applogo.png')} style={{ width:120, height:120}} resizeMethod="resize" resizeMode="contain"/>
                     </TouchableOpacity>
                     </View>
@@ -414,7 +424,8 @@ class Filter extends BaseFormComponent {
                         }}>
                         <CustomButton
                             textStyle={{ color: "#fff", fontFamily: "Avenir-Heavy", fontSize: 17 }}
-                            onPress={() => this.makeRemoteRequest()}
+                            onPress={()=>this.props.searchbyFilter()}
+                            // onPress={() => this.makeRemoteRequest()}
                             // style={{ backgroundColor: "#009933" }}
                             text={"APPLY"} />
                     </LinearGradient>

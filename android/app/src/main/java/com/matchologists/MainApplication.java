@@ -3,6 +3,8 @@ package com.matchologists;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import com.brentvatne.react.ReactVideoPackage;
+import com.devfd.RNGeocoder.RNGeocoderPackage;
 import com.henninghall.date_picker.DatePickerPackage;
 import io.branch.rnbranch.RNBranchPackage;
 import com.RNFetchBlob.RNFetchBlobPackage;
@@ -53,6 +55,8 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
+            new ReactVideoPackage(),
+            new RNGeocoderPackage(),
             new DatePickerPackage(),
             new RNBranchPackage(),
             new RNFetchBlobPackage(),

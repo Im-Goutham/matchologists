@@ -21,6 +21,7 @@ import {
     ActivityIndicator
 } from 'react-native';
 import { bindActionCreators } from "redux";
+import _ from 'lodash';
 import { connect } from "react-redux";
 import { Image } from 'react-native-animatable'
 import LinearGradient from 'react-native-linear-gradient';
@@ -37,8 +38,10 @@ import Loader from '../Loading/Loader'
 import BaseFormComponent from "../Common/BaseFormComponent";
 import CustomSlider from 'react-native-custom-slider';
 import CustomTextInput from '../CustomTextInput'
+import { Object } from 'core-js';
 let IS_ANDROID = Platform.OS === 'android';
 if (Platform.OS === 'android') UIManager.setLayoutAnimationEnabledExperimental(true)
+
 let answer_data = {};
 
 class Questionnaire extends BaseFormComponent {
@@ -72,7 +75,7 @@ class Questionnaire extends BaseFormComponent {
         console.log('question is  ', questionNum, 'total ', questions.length);
         if (questionNum <= questions.length) {
             this.setState({ questionNum, isAnswerSelected: false, answerIds: [] }, () => {
-                this.getQuestions();
+                // this.getQuestions();
                 this.calculateProgressWidth();
                 this.props.saveNumber(questionNum)
             });
@@ -80,27 +83,28 @@ class Questionnaire extends BaseFormComponent {
             this.props.navigation.navigate("Home")
         }
     }
-    getQuestions = async() => {
+    getQuestions = async () => {
         // console.log("this.props.token", this.props.token)
         // this.setState({ isLoading: true })
-        console.log("call again")
-
         let header = {
             'Authorization': this.props.token,
             'lang': this.props.language
         };
         await ApiManager.callwebservice('GET', 'api/getUserProfileQuestionAnswer', header, '', (success) => {
             let responsedata = JSON.parse(success._bodyInit);
-            console.log("responsedata", responsedata)
+            console.log("getUserProfileQuestionAnswer", responsedata)
             this.setState({
                 questions: responsedata.data.questionAnswers,
                 isLoading: false
             })
             this.calculateProgressWidth()
-            console.log("success", responsedata.data.questionAnswers)
+            // console.log("success", responsedata.data.questionAnswers)
         }, (error) => {
             console.log("error", error)
         })
+    }
+    checkIfAnswerISSelected = () => {
+
     }
     calculateProgressWidth() {
         let { questionNum, questions } = this.state;
@@ -158,36 +162,68 @@ class Questionnaire extends BaseFormComponent {
     //     questions[questionNum - 1] = questionData;
     //     this.setState({ questions });
     // }
-    activate_selectKey() {
+    activate_selectKey(questionData, passedAnswer) {
         if (this.state.is_min_height_selected && this.state.is_max_height_selected) {
+            questionData ? questionData.answer = passedAnswer : undefined;
             this.setState({
                 isAnswerSelected: true,
-                answerIds: [1]
+                // answerIds: [1]
             });
         }
     }
-    selectAnswer(key, availableanswer) {
+    selectAnswer(key, availableanswer, answer) {
         let { questions, questionNum } = this.state;
         let questionData = questions[questionNum - 1];
-        var selected_answer_id = availableanswer[key]._id
+        var selected_answer_id = questionData.answers ? questionData['answers'][key]._id : availableanswer[key]._id
         answer_data.questionId = questionData._id._id;
         answer_data.answerId = [selected_answer_id];
         answer_data.skip = false;
         answer_data.answer = {};
+        answer && answer.selected ? answer.selected = false : answer ? answer.selected = true : "";
+        console.log("answer", answer)
         this.setState({
             isAnswerSelected: true,
-            selectedanswer: selected_answer_id,
-            answerIds: [selected_answer_id]
+            // selectedanswer: selected_answer_id,
+            // answerIds: [selected_answer_id],
+            questions: this.state.questions
         });
     }
-    add_newParams() {
-        // let { questions, questionNum } = this.state;
-        // let questionData = questions[questionNum - 1];
-        // answer_data.questionId = questionData._id._id;
-        // console.log("answer_data", answer_data)
-        // this.setState({
-        //     isAnswerSelected: true,
-        // })
+    selectAnswerCheckbox(answer) {
+        answer && answer.selected ? answer.selected = false : answer ? answer.selected = true : "";
+        let { questions, questionNum } = this.state;
+        let questionData = questions[questionNum - 1];
+        let selected_answer_ids = [];
+        if(questionData.answers){
+            selected_answer_ids = _.filter(questionData.answers, (ans)=> {return ans.selected});
+            selected_answer_ids = _.map(selected_answer_ids, (ans)=>{return ans && ans._id ? ans._id : ""});
+        }
+        answer_data.questionId = questionData._id._id;
+        answer_data.answerId = selected_answer_ids;
+        answer_data.skip = false;
+        answer_data.answer = {};
+        this.setState({
+            isAnswerSelected: true,
+            questions: this.state.questions
+        });
+    }
+    selectanswerForRadio = async (answer) => {
+        let { questions, questionNum } = this.state;
+        let questionData = questions[questionNum - 1];
+        var selected_answer_id = answer._id
+        answer_data.questionId = questionData._id._id;
+        answer_data.answerId = [selected_answer_id];
+        answer_data.skip = false;
+        answer_data.answer = {};
+        await _.map(questionData.answers, (answer) => {
+            return answer.selected = false;
+        });
+        if (answer) {
+            answer.selected = true;
+        }
+        this.setState({
+            isAnswerSelected: true,
+            questions: this.state.questions
+        })
     }
 
     callmyCheckbox(availableanswer) {
@@ -198,7 +234,7 @@ class Questionnaire extends BaseFormComponent {
         answer_data.answerId = availableanswer;
         answer_data.skip = availableanswer && Array.isArray(availableanswer) && availableanswer.length == 0 ? true : false;
         answer_data.answer = {};
-        console.log("answer_data", answer_data)
+        console.log("answer_data ==================", answer_data)
         this.setState({
             // isAnswerSelected: true,
             answerIds: availableanswer
@@ -223,17 +259,17 @@ class Questionnaire extends BaseFormComponent {
             self.setState({
                 min_height_selected: selected_height,
                 is_min_height_selected: true,
-            }, () => this.activate_selectKey());
+            }, () => this.activate_selectKey(questionData, answer_data.answer));
         } else {
             answer_data.answer = Object.assign({}, answer_data.answer, { 'max': selected_height });
             self.setState({
                 max_height_selected: selected_height,
                 is_max_height_selected: true,
-            }, () => this.activate_selectKey());
+            }, () => this.activate_selectKey(questionData, answer_data.answer));
         }
         console.log("selected_height", answer_data)
     }
-    savemyanswer = async() => {
+    savemyanswer = async () => {
         let { questionNum, questions } = this.state;
         this.setState({ isLoading: true });
         let header = {
@@ -241,38 +277,42 @@ class Questionnaire extends BaseFormComponent {
             'Content-Type': 'application/json'
         };
         console.log("answer_data", answer_data)
-       await ApiManager.callwebservice('POST', 'api/addUserQuestionAnswer', header, answer_data, (success) => {
-            let responsedata = JSON.parse(success._bodyInit);
-            this.setState({
-                isLoading: false,
-                // isAnswerSelected: false,
-                // selectedanswer: ''
-            });
-            console.log("success", responsedata)
-            this.props.saveNumber(questionNum)
-            if (responsedata.status === 1) {
-                questionNum++ // + 1;
-                console.log('question is  ', questionNum, 'total ', questions.length);
-                this.getQuestions()
-                if (questionNum <= questions.length) {
-                    this.setState({ questionNum }, () => { this.calculateProgressWidth() });
+        if (answer_data && typeof answer_data === "object" && answer_data.questionId) {
+            await ApiManager.callwebservice('POST', 'api/addUserQuestionAnswer', header, answer_data, (success) => {
+                let responsedata = JSON.parse(success._bodyInit);
+                this.setState({
+                    isLoading: false,
+                    // isAnswerSelected: false,
+                    // selectedanswer: ''
+                });
+                console.log("success", responsedata)
+                this.props.saveNumber(questionNum)
+                if (responsedata.status === 1) {
+                    questionNum++ // + 1;
+                    console.log('question is  ', questionNum, 'total ', questions.length);
+                    // this.getQuestions()
+                    if (questionNum <= questions.length) {
+                        this.setState({ questionNum }, () => { this.calculateProgressWidth() });
 
-                } else if (questionNum >= questions.length) {
-                    this.props.navigation.navigate("Home")
+                    } else if (questionNum >= questions.length) {
+                        this.props.navigation.navigate("Home")
+                    }
+                    console.log("success", responsedata.status)
+                    answer_data = {};
+                    this.setState({ isAnswerSelected: false, selectedanswer: '' });
+                } else if (responsedata.status === 0) {
+                    console.log("responsedata", responsedata)
+                    if (responsedata.message) {
+                        let message = responsedata.message.message ? responsedata.message.message : responsedata.message;
+                        this.showSimpleMessage("info", { backgroundColor: global.gradientsecondry }, "error", message)
+                    }
                 }
-                console.log("success", responsedata.status)
-                answer_data = {};
-                this.setState({ isAnswerSelected: false, selectedanswer: '' });
-            } else if (responsedata.status === 0) {
-                console.log("responsedata", responsedata)
-                if (responsedata.message) {
-                    let message = responsedata.message.message ? responsedata.message.message : responsedata.message;
-                    this.showSimpleMessage("info", { backgroundColor: global.gradientsecondry }, "error", message)
-                }
-            }
-        }, (error) => {
-            console.log("error while fetch data")
-        })
+            }, (error) => {
+                console.log("error while fetch data")
+            })
+        }
+
+
     }
     updateCurrentState(key, selected_answer) {
         let { questionNum, questions } = this.state;
@@ -283,17 +323,9 @@ class Questionnaire extends BaseFormComponent {
     renderOptions(data) {
         console.log("renderOptions", data)
         return data.map((answer, key) => {
-            if (answer.selected) {
-                this.setState({
-                    selectedanswer: answer._id,
-                    answerIds: [answer._id]
-                    // isAnswerSelected: true,
-                }, () => this.updateCurrentState(key, answer));
-                answer.selected = false;
-            }
             return <View key={key}>
                 {
-                    answer._id === this.state.selectedanswer ? (
+                    answer.selected ? (
                         <LinearGradient
                             colors={[global.gradientprimary, global.gradientsecondry]}
                             start={{ x: 0, y: 1 }}
@@ -302,13 +334,13 @@ class Questionnaire extends BaseFormComponent {
                         >
                             <TouchableOpacity
                                 style={[styles.answerBtn, { backgroundColor: 'white', width: "100%", height: "100%", marginHorizontal: 5 }]}
-                                onPress={() => this.selectAnswer(key, data)}
+                                onPress={() => this.selectanswerForRadio(answer)}
                             >
                                 <Text style={[styles.answerTxt, { color: '#313138', fontFamily: 'Avenir-Heavy' }]}>{answer.answer}</Text>
                             </TouchableOpacity>
                         </LinearGradient>
                     ) : (
-                            <TouchableOpacity style={styles.answerBtn} onPress={() => this.selectAnswer(key, data)}>
+                            <TouchableOpacity style={styles.answerBtn} onPress={() => this.selectanswerForRadio(answer)}>
                                 <Text style={styles.answerTxt}>{answer.answer}</Text>
                             </TouchableOpacity>
                         )
@@ -316,19 +348,24 @@ class Questionnaire extends BaseFormComponent {
             </View>
         })
     }
-    indianicCall(data) {
-        let { questionNum, questions } = this.state;
-        let questionData = questions[questionNum - 1];
-        answer_data.questionId = questionData._id._id;
-        answer_data.answerId = data;
-        console.log("isAnswerSelected", this.state.isAnswerSelected)
-        if (!this.state.isAnswerSelected) {
-            this.setState({ isAnswerSelected: true })
-            console.log("hello world", this.state.isAnswerSelected)
-        }
-    }
+    // indianicCall(data) {
+    //     let { questionNum, questions } = this.state;
+    //     let questionData = questions[questionNum - 1];
+    //     answer_data.questionId = questionData._id._id;
+    //     answer_data.answerId = data;
+    //     console.log("isAnswerSelected", this.state.isAnswerSelected)
+    //     if (!this.state.isAnswerSelected) {
+    //         this.setState({ isAnswerSelected: true })
+    //         console.log("hello world", this.state.isAnswerSelected)
+    //     }
+    // }
     renderCheckboxes(data) {
-        return <Checkbox data={data} callmyCheckbox={this.callmyCheckbox.bind(this)} indianicCall={this.indianicCall.bind(this)} setActiveButton={this.setActiveButton.bind(this)} />
+        return <Checkbox
+            data={data}
+            selectAnswer={this.selectAnswerCheckbox.bind(this)}
+            callmyCheckbox={this.callmyCheckbox.bind(this)}
+            // indianicCall={this.indianicCall.bind(this)} 
+            setActiveButton={this.setActiveButton.bind(this)} />
     }
     save_height(height_is) {
         let self = this;
@@ -340,12 +377,13 @@ class Questionnaire extends BaseFormComponent {
         answer_data.answer = { 'height': height_is };
         console.log("answer_is", answer_data)
     }
-    heightSubmit(height_is, key) {
+    heightSubmit(height_is, key, heightAnswer) {
+        heightAnswer.answer = { 'height': height_is };
         console.log("height_is", height_is)
         this.setState({
             useHeightis: height_is,
             isAnswerSelected: true,
-            answerIds: [height_is]
+            // answerIds: [height_is]
         }, () => this.save_height(height_is))
     }
     renderMeasureheight(remoteData) {
@@ -361,19 +399,19 @@ class Questionnaire extends BaseFormComponent {
                 answer_data.answer = { 'height': remoteData.answer.height };
                 console.log("answer_is remoteData", typeof remoteData.answer.height);
                 this.state.useHeightis = remoteData.answer.height;
-                this.state.answerIds = [remoteData.answer.height];
+                // this.state.answerIds = [remoteData.answer.height];
                 remoteData.answer.height = ""
             }
         }
         return (
             <ScrollView style={{ height: 200 }} nestedScrollEnabled={true}>
                 {
-                    this.mapHeight()
+                    this.mapHeight(remoteData)
                 }
             </ScrollView>
         )
     }
-    mapHeight() {
+    mapHeight(heightAnswer) {
         let height = [];
         for (let i = 4; i <= 6; i++) {
             for (let j = 0; j <= 11; j++) {
@@ -401,13 +439,13 @@ class Questionnaire extends BaseFormComponent {
                                     width: "100%",
                                     borderRadius: 25,
                                 }}
-                                onPress={() => this.heightSubmit(answer, key)}
+                                onPress={() => this.heightSubmit(answer, key, heightAnswer)}
                             >
                                 <Text style={[styles.answerTxt, { color: '#313138', fontFamily: 'Avenir-Heavy' }]}>{answer}</Text>
                             </TouchableOpacity>
                         </LinearGradient>
                     ) : (
-                            <TouchableOpacity style={styles.answerBtn} onPress={() => this.heightSubmit(answer, key)}>
+                            <TouchableOpacity style={styles.answerBtn} onPress={() => this.heightSubmit(answer, key, heightAnswer)}>
                                 <Text style={styles.answerTxt}>{answer}</Text>
                             </TouchableOpacity>
                         )
@@ -431,9 +469,9 @@ class Questionnaire extends BaseFormComponent {
                 this.state.is_min_height_selected = true;
                 this.state.max_height_selected = remoteData.answer.max;
                 this.state.is_max_height_selected = true;
-                this.state.answerIds = [remoteData.answer.max]
-                remoteData.answer.max = "";
-                remoteData.answer.min = "";
+                // this.state.answerIds = [remoteData.answer.max]
+                // remoteData.answer.max = "";
+                // remoteData.answer.min = "";
             }
         } return (
             <View style={{ flex: 1, flexDirection: "row", justifyContent: "space-between" }}>
@@ -490,77 +528,78 @@ class Questionnaire extends BaseFormComponent {
             </View>
         )
     }
-    renderMatchprefrence(data) {
-        return data.map((answer, key) => {
-            return (
-                <View key={key} style={{
-                    flexDirection: "row",
-                    // backgroundColor:"blue", 
-                    justifyContent: "space-between"
-                }}>
-                    {
-                        answer.selected ? (
-                            <LinearGradient
-                                colors={['rgb(220,57, 134)', 'rgb(40,40,120)']}
-                                start={{ x: 0, y: 1 }}
-                                end={{ x: 1, y: 1 }}
-                                style={{
-                                    flex: 1,
-                                    height: 52,
-                                    borderRadius: 26,
-                                    justifyContent: 'center',
-                                    // alignItems: 'center',
-                                    // marginHorizontal: 10,
-                                    // marginVertical: 5,
-                                }}
-                            // style={[styles.answerBtn, { backgroundColor: 'white' }]}
-                            >
-                                <TouchableOpacity style={{
-                                    flex: 1,
-                                    borderRadius: 26,
-                                    justifyContent: 'center',
-                                    alignItems: 'center',
-                                    backgroundColor: 'rgb(233,233,234)',
-                                    marginHorizontal: 1,
-                                    marginVertical: 1,
-                                }}
-                                    onPress={() => this.selectAnswer(key)}
-                                >
-                                    <Text style={[styles.answerTxt, { color: '#313138', fontFamily: 'Avenir-Heavy' }]}>{answer.answer}</Text>
-                                </TouchableOpacity>
-                            </LinearGradient>
-                        ) : (
-                                <TouchableOpacity style={{
-                                    flex: 1,
-                                    height: 52,
-                                    borderRadius: 26,
-                                    justifyContent: 'center',
-                                    alignItems: 'center',
-                                    backgroundColor: 'rgb(233,233,234)',
-                                    marginHorizontal: 10,
-                                    marginVertical: 5,
-                                }} onPress={() => this.selectAnswer(key)}>
-                                    <Text style={styles.answerTxt}>{answer.answer}</Text>
-                                </TouchableOpacity>
-                            )
-                    }
-                </View>
-            )
-        })
-    }
-    multiSliderValuesChange = values => {
+    // renderMatchprefrence(data) {
+    //     return data.map((answer, key) => {
+    //         return (
+    //             <View key={key} style={{
+    //                 flexDirection: "row",
+    //                 // backgroundColor:"blue", 
+    //                 justifyContent: "space-between"
+    //             }}>
+    //                 {
+    //                     answer.selected ? (
+    //                         <LinearGradient
+    //                             colors={['rgb(220,57, 134)', 'rgb(40,40,120)']}
+    //                             start={{ x: 0, y: 1 }}
+    //                             end={{ x: 1, y: 1 }}
+    //                             style={{
+    //                                 flex: 1,
+    //                                 height: 52,
+    //                                 borderRadius: 26,
+    //                                 justifyContent: 'center',
+    //                                 // alignItems: 'center',
+    //                                 // marginHorizontal: 10,
+    //                                 // marginVertical: 5,
+    //                             }}
+    //                         // style={[styles.answerBtn, { backgroundColor: 'white' }]}
+    //                         >
+    //                             <TouchableOpacity style={{
+    //                                 flex: 1,
+    //                                 borderRadius: 26,
+    //                                 justifyContent: 'center',
+    //                                 alignItems: 'center',
+    //                                 backgroundColor: 'rgb(233,233,234)',
+    //                                 marginHorizontal: 1,
+    //                                 marginVertical: 1,
+    //                             }}
+    //                                 onPress={() => this.selectAnswer(key)}
+    //                             >
+    //                                 <Text style={[styles.answerTxt, { color: '#313138', fontFamily: 'Avenir-Heavy' }]}>{answer.answer}</Text>
+    //                             </TouchableOpacity>
+    //                         </LinearGradient>
+    //                     ) : (
+    //                             <TouchableOpacity style={{
+    //                                 flex: 1,
+    //                                 height: 52,
+    //                                 borderRadius: 26,
+    //                                 justifyContent: 'center',
+    //                                 alignItems: 'center',
+    //                                 backgroundColor: 'rgb(233,233,234)',
+    //                                 marginHorizontal: 10,
+    //                                 marginVertical: 5,
+    //                             }} onPress={() => this.selectAnswer(key)}>
+    //                                 <Text style={styles.answerTxt}>{answer.answer}</Text>
+    //                             </TouchableOpacity>
+    //                         )
+    //                 }
+    //             </View>
+    //         )
+    //     })
+    // }
+    multiSliderValuesChange = (answer, values) => {
         let { questions, questionNum } = this.state;
         let questionData = questions[questionNum - 1];
         answer_data.questionId = questionData._id._id;
         answer_data.answerId = [];
         answer_data.skip = false;
-        answer_data.answer = { 'min': values[0], 'max': values[1] }
+        answer_data.answer = { 'min': values[0], 'max': values[1] };
+        answer.answer = { 'min': values[0], 'max': values[1] };
         this.setState({
             agerange: values,
             isAnswerSelected: true,
-            answerIds: [123456]
+            // answerIds: [123456]
         });
-        console.log("answer_data", answer_data)
+        console.log("answer_data ======= multi", answer_data)
     };
 
     rangeRender(data) {
@@ -569,16 +608,16 @@ class Questionnaire extends BaseFormComponent {
 
 
         if (data.answer && data.answer.max) {
-            answer_data.questionId = questionData._id._id;
-            answer_data.answerId = [];
-            answer_data.skip = false;
-            answer_data.answer = { 'min': data.answer.min, 'max': data.answer.max }
-            this.state.answerIds = [data.answer.min];
+            // answer_data.questionId = questionData._id._id;
+            // answer_data.answerId = [];
+            // answer_data.skip = false;
+            // answer_data.answer = { 'min': data.answer.min, 'max': data.answer.max }
+            // this.state.answerIds = [data.answer.min];
             this.state.agerange = [data.answer.min, data.answer.max];
-            data.answer.answer = {};
+            // data.answer.answer = {};
 
         }
-        console.log("answer_data", answer_data)
+        // console.log("answer_data", answer_data)
 
 
         return (
@@ -619,7 +658,7 @@ class Questionnaire extends BaseFormComponent {
                         this.state.agerange[1],
                     ]}
                     sliderLength={metrics.DEVICE_WIDTH * 0.9}
-                    onValuesChange={this.multiSliderValuesChange}
+                    onValuesChange={this.multiSliderValuesChange.bind(this, data)}
                     min={0}
                     max={100}
                     step={1}
@@ -701,6 +740,7 @@ class Questionnaire extends BaseFormComponent {
         let { questionNum, questions, progressWidth, isLoading } = this.state;
         let questionData = questions[questionNum - 1];
         const { navigate } = this.props.navigation;
+        let selectedAnswers = [];
 
         console.log('answerIds', this.state.answerIds);
         if (isLoading) {
@@ -714,6 +754,14 @@ class Questionnaire extends BaseFormComponent {
                 </Modal>
             </View>
         }
+        if (questionData.answers && Array.isArray(questionData.answers) && questionData.answers.length) {
+            selectedAnswers = _.filter(questionData.answers, (answer) => {
+                return answer.selected;
+            });
+        }else if(questionData.answer && typeof questionData.answer == "object" && !_.isEmpty(questionData.answer)){
+            selectedAnswers = [questionData.answer];
+        }
+
         return (
             <SafeAreaView style={{ flex: 1, backgroundColor: "rgba(255,255,255,100)" }}>
                 <StatusBar
@@ -789,7 +837,9 @@ class Questionnaire extends BaseFormComponent {
                 </ScrollView>
                 <View style={{ paddingHorizontal: 16 }}>
                     {
-                        this.state.isAnswerSelected && this.state.answerIds.length ?
+
+
+                        this.state.isAnswerSelected && selectedAnswers.length ?
                             <LinearGradient
                                 colors={[global.gradientprimary, global.gradientsecondry]}
                                 start={{ x: 0, y: 1 }}
@@ -800,7 +850,7 @@ class Questionnaire extends BaseFormComponent {
                                 </TouchableOpacity>
                             </LinearGradient>
                             :
-                            this.state.answerIds.length ?
+                            selectedAnswers.length ?
                                 <LinearGradient
                                     colors={[global.gradientprimary, global.gradientsecondry]}
                                     start={{ x: 0, y: 1 }}
@@ -811,12 +861,12 @@ class Questionnaire extends BaseFormComponent {
                                     </TouchableOpacity>
                                 </LinearGradient>
                                 :
-                                <TouchableOpacity style={{ backgroundColor: "#F5F5F5", height: 50, justifyContent: "center", alignItems: "center", borderRadius: 5 }} disabled={true}  >
-                                    <Text style={styles.questionTitle}>{I18n.t('save_title', { locale: language })}</Text>
-                                </TouchableOpacity>
+                            <TouchableOpacity style={{ backgroundColor: "#F5F5F5", height: 50, justifyContent: "center", alignItems: "center", borderRadius: 5 }} disabled={true}  >
+                                <Text style={styles.questionTitle}>{I18n.t('save_title', { locale: language })}</Text>
+                            </TouchableOpacity>
                     }
                     {
-                        this.state.answerIds.length ? undefined :
+                        selectedAnswers.length ? undefined :
                             questionData._id.canSkip ?
                                 <TouchableOpacity style={{ height: 50, justifyContent: "center", alignItems: "center", marginBottom: 10 }} onPress={() => this.skipQuestion()}>
                                     <Text style={styles.skipTxt}>{I18n.t('skip_title', { locale: language })}</Text>
@@ -1017,24 +1067,11 @@ class Checkbox extends Component {
             selectedOptions: []
         }
     }
-    unceckData(key, data) {
-        console.log("hello uncheck")
+    uncheckData(key, data) {
         let options = this.state.selectedOptions;
-        // if (this.state.selectedOptions.indexOf(data._id) > -1) {
-        //     for (var i = 0; i < options.length; i++) {
-        //         if (options[i] === data._id) {
-        //             options.splice(i, 1);
-        //             data.selected = false;
-        //         }
-        //     }
-        // } 
         let array_index = this.state.selectedOptions.indexOf(data._id)
         options.splice(array_index, 1);
         data.selected = false;
-
-        // this.setState({
-        //     selectedanswer: data._id
-        // })
         this.props.callmyCheckbox(this.state.selectedOptions)
     }
 
@@ -1049,50 +1086,51 @@ class Checkbox extends Component {
         this.props.setActiveButton()
     }
 
-    checkedData(answer) {
-        let x = (names) => names.filter((v, i) => names.indexOf(v) === i);
-        let arr = this.state.selectedOptions;
-        let array_data = x(arr)
-        array_data.push(answer._id)
-        this.state.selectedOptions = array_data;
-        console.log("checkedData checkbox", array_data)
-        this.props.indianicCall(arr)
-        // this.state.selectedOptions.push(answer._id)
-
-    }
+    // checkedData(answer) {
+    //     let x = (names) => names.filter((v, i) => names.indexOf(v) === i);
+    //     let arr = this.state.selectedOptions;
+    //     let array_data = x(arr)
+    //     array_data.push(answer._id)
+    //     this.state.selectedOptions = array_data;
+    // console.log("checkedData checkbox", array_data)
+    //     this.props.indianicCall(arr)
+    // }
     componentDidMount() {
+        // this.setState({
+        //     selectedOptions : []
+        // })
         this.state.selectedOptions = [];
-        if (this.props.data) {
-            console.log("this.props.data)", this.props.data)
-            let remoteData = this.props.data;
-            for (let i = 0; i < remoteData.length; i++) {
-                if (remoteData[i].selected) {
-                    this.state.selectedOptions.push(remoteData[i]._id)
-                    this.props.callmyCheckbox(this.state.selectedOptions)
-                }
-            }
-        }
+        // if (this.props.data) {
+        //     console.log("componentDidMount called", this.props.data)
+        //     let remoteData = this.props.data;
+        //     for (let i = 0; i < remoteData.length; i++) {
+        //         if (remoteData[i].selected) {
+        //             this.state.selectedOptions.push(remoteData[i]._id)
+        //             this.props.callmyCheckbox(this.state.selectedOptions)
+        //         }
+        //     }
+        // }
     }
     // componentWillReceiveProps(nextProps, nextState){
+    //     console.log("componentWillReceiveProps called", nextProps)
+    //     this.state.selectedOptions = [];
     //     if (nextProps.data) {
     //         let remoteData = nextProps.data;
-    //         for(let i=0; i < remoteData.length; i++){
-    //             this.state.selectedOptions.push(remoteData[i]._id)
-    //             // this.checkedData(remoteData[i]._id)
+    //         for (let i = 0; i < remoteData.length; i++) {
+    //             if (remoteData[i].selected) {
+    //                 // this.state.selectedOptions.push(remoteData[i]._id)
+    //                 // this.props.callmyCheckbox(this.state.selectedOptions)
+    //             }
     //         }
-    //         console.log("nextProps", nextProps.data)
     //     }
     // }
     renderCheckboxes() {
         return this.props.data.map((answer, key) => {
-            // if (answer.selected) {
-            // this.checkedData(answer)
-            // this.state.selectedOptions.push(answer._id)
-            // answer.selected = false;
-            // }
+            console.log("answer", answer)
             return <View key={key} style={{}}>
                 {
-                    this.state.selectedOptions.indexOf(answer._id) > -1 ?
+                    // this.state.selectedOptions.indexOf(answer._id) > -1 ?
+                    answer.selected ?
                         <TouchableOpacity
                             style={{
                                 flex: 1,
@@ -1102,7 +1140,7 @@ class Checkbox extends Component {
                                 paddingVertical: 5,
                                 marginVertical: 10
                             }}
-                            onPress={() => this.unceckData(key, answer)}
+                            onPress={() => this.props.selectAnswer(answer)}
                         >
                             <View style={{ backgroundColor: "transparent", flex: 2 }}>
                                 <Image
@@ -1129,7 +1167,9 @@ class Checkbox extends Component {
                                 paddingVertical: 5,
                                 marginVertical: 10
                             }}
-                            onPress={() => this.selectAnswer(key, answer)}
+                            onPress={() => this.props.selectAnswer(answer)}
+
+                            // onPress={() => this.selectAnswer(key, answer)}
                         >
                             <View style={{ backgroundColor: "transparent", flex: 2 }}>
                                 <Image
@@ -1153,7 +1193,6 @@ class Checkbox extends Component {
 
     render() {
         console.log("selectedOptions", this.state.selectedOptions)
-
         return (
             <>
                 {

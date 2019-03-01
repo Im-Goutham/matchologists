@@ -58,7 +58,7 @@ let IS_ANDROID = Platform.OS === 'android',
         // },
         {
             "label": "message_label",
-            "action_Page": ""
+            "action_Page": "message"
         },
         {
             "label": "setting_label",
@@ -139,7 +139,7 @@ class Sidebar extends BaseFormComponent {
             }
         });
     }
-    upload_pic = (filelink, filetype, filename, is_video) => {
+    upload_pic = async (filelink, filetype, filename, is_video) => {
         // this.props.activateLoading()
         let header = {
             'Authorization': this.props.token,
@@ -151,13 +151,12 @@ class Sidebar extends BaseFormComponent {
         };
         let Is_update = true
         console.log("uploadFile", details)
-        ApiManager.callRnFetchblobFileUploader('POST', 'api/uploadFile', header, details, (progress) => {
+       await ApiManager.callRnFetchblobFileUploader('POST', 'api/uploadFile', header, details, (progress) => {
             console.log("uploadFile callRnFetchblobFileUploader progress", progress)
             // this.props.updateUploadingProgress(progress)
         }, (success) => {
             var response = JSON.parse(success.data);
             console.log("fileUpload", response)
-            // this.props.activateLoading()
 
             if (response.status === 0) {
                 this.showSimpleMessage("danger", { backgroundColor: "#DC6666" }, response.message, '')
