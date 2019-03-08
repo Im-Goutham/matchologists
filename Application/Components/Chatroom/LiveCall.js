@@ -3,37 +3,83 @@ import {
     View,
     StyleSheet,
     Text,
+    Image,
     Dimensions,
-    TouchableWithoutFeedback
+    TouchableOpacity
 } from 'react-native';
 // import Icons from 'react-native-vector-icons/Ionicons'
-import { OTSession, OTPublisher, OTSubscriber } from 'opentok-react-native';
+import { OTSession, OTPublisher, OTSubscriber, EventData, OT } from 'opentok-react-native';
 import LinearGradient from 'react-native-linear-gradient';
 
-import { API_KEY } from '../../../global.json'
+import * as global from '../../../global.json'
 let { width, height } = Dimensions.get('window');
 import Timer from './TimeKeeper/index';
 
 export default class LiveCall extends Component {
     constructor(props) {
         super(props);
-        this.state = {
-            apiKey : '46244942',
-            sessionId : '2_MX40NjI0NDk0Mn5-MTU0NjUwMDUxNzYyMH52Q2RIYm96M2hTK0NwczU3bXhKNFc5dkd-QX4',
-            token : 'T1==cGFydG5lcl9pZD00NjI0NDk0MiZzaWc9MDBmNzU5OTE1Y2ExMTM0Mzg3YTYzNTQ3ZDA2NDYxZmYzYTRiYzExYTpzZXNzaW9uX2lkPTJfTVg0ME5qSTBORGswTW41LU1UVTBOalV3TURVeE56WXlNSDUyUTJSSVltOTZNMmhUSzBOd2N6VTNiWGhLTkZjNWRrZC1RWDQmY3JlYXRlX3RpbWU9MTU0NjUwMDUxOCZub25jZT0wLjE0NDAzNDc5ODE5ODI3MjE0JnJvbGU9cHVibGlzaGVyJmV4cGlyZV90aW1lPTE1NDY1ODY5MTgmaW5pdGlhbF9sYXlvdXRfY2xhc3NfbGlzdD0='
-        }
+        this.publisherProperties = {
+            publishAudio: false,
+            cameraPosition: 'front',
+            publishVideo: true,
+        };
+        this.publisherEventHandlers = {
+            audioLevel: event => {
+                console.log('Publisher stream created!', event);
+            },
+            error: event => {
+                console.log('Publisher stream destroyed!', event);
+            },
+            streamCreated: event => {
+                console.log('Publisher stream created!', event);
+            },
+            streamDestroyed: event => {
+                console.log('Publisher stream destroyed!', event);
+            }
+        };
+        this.subscriberProperties = {
+            subscribeToAudio: false,
+            subscribeToVideo: true,
+          };        
+        this.sessionEventHandlers = {
+            sessionConnected: event => {
+                console.log('sessionConnected created!', event);
+            },
+            streamCreated: event => {
+                console.log('Stream created!', event);
+            },
+            streamDestroyed: event => {
+                console.log('Stream destroyed!', event);
+            },
+        };
     }
 
     render() {
-        let { apiKey, sessionId, token } = this.state;
+        const { goBack, state } = this.props.navigation;
+        const { sessionId, token } = state.params;
+        console.log("sessionId", sessionId);
+        console.log("token", token);
         return (
             <View style={{ flex: 1, flexDirection: 'row' }}>
-                <OTSession apiKey={apiKey} sessionId={sessionId} token={token}>
+                <OTSession
+                    apiKey={global.API_KEY}
+                    sessionId={sessionId}
+                    token={token}
+                    eventHandlers={this.sessionEventHandlers}
+                >
                     <View style={{ position: "absolute", zIndex: 2 }}>
-                        <OTPublisher style={{ width: 150, height: 200 }} />
+                        <OTPublisher
+                            style={{ width: 150, height: 200 }}
+                            properties={this.publisherProperties}
+                            eventHandlers={this.publisherEventHandlers}
+                        />
                     </View>
                     <View style={{ flex: 1 }}>
-                        <OTSubscriber style={{ width: "100%", height: "100%", resizeMode: "contain" }} />
+                        <OTSubscriber 
+                        style={{ width: "100%", height: "100%", resizeMode: "contain" }} 
+                        properties={this.subscriberProperties}
+                        eventHandlers={this.subscriberEventHandlers}                
+                        />
                     </View>
                 </OTSession>
                 <View style={{
@@ -77,7 +123,15 @@ export default class LiveCall extends Component {
                             colors={['#DB3D88', '#273174']}
                             start={{ x: 0, y: 1 }}
                             end={{ x: 1, y: 1 }}
-                            style={{ width: 40, height: 40, borderRadius: 20, justifyContent: "center", alignItems: "center" }}>
+                            style={{ width: 40, height: 40, borderRadius: 20, overFlow: "hidden" }}>
+                            <TouchableOpacity onPress={() => goBack()} style={{ width: 40, height: 40, justifyContent: "center", alignItems: "center" }}>
+                                <Image
+                                    source={require('../../images/icons/Close.png')}
+                                    style={{ width: 15, height: 15 }}
+                                    resizeMode="contain"
+                                    resizeMethod="resize"
+                                />
+                            </TouchableOpacity>
                             {/* <Icons name="ios-reverse-camera" size={30} color="#fff" /> */}
                         </LinearGradient>
                     </View>

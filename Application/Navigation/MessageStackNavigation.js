@@ -14,7 +14,6 @@ const MessageStacknavigation = createStackNavigator({
     chatlist: { screen: UserChatlist },
     chatscreen: { screen: Chatroom },
     livecall: { screen: LiveCall }
-
 }, {
         index: 0,
         initialRouteName: 'chatlist',

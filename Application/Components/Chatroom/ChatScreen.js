@@ -11,7 +11,6 @@ import {
     Button, TextInput, FlatList
 } from 'react-native';
 import { OTSession } from 'opentok-react-native';
-
 import ChatHeader from './ChatHeader'
 import { GiftedChat, Actions, Bubble, SystemMessage } from 'react-native-gifted-chat';
 import CustomActions from './CustomActions';

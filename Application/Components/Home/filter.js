@@ -52,7 +52,7 @@ class Filter extends BaseFormComponent {
             is_weekchange: false,
             month: false,
             is_monthChange: false,
-            zipcode:''
+            zipcode: ''
         }
     }
     async componentDidMount() {
@@ -60,11 +60,11 @@ class Filter extends BaseFormComponent {
         if (filterlocalstorage && typeof filterlocalstorage == "string") {
             filterlocalstorage = JSON.parse(filterlocalstorage);
             console.log('filterlocalstorage', filterlocalstorage);
-        filterlocalstorage && filterlocalstorage.lastLogin ? this.setState({ lastlogin: filterlocalstorage.lastLogin}): undefined;
-        data = filterlocalstorage;
+            filterlocalstorage && filterlocalstorage.lastLogin ? this.setState({ lastlogin: filterlocalstorage.lastLogin }) : undefined;
+            data = filterlocalstorage;
         }
         this.setState({
-            zipcode : this.props.zipcode,
+            zipcode: this.props.zipcode,
             profilematch: this.props.profilematch_values,
             agerange: this.props.agerange_values,
             today: this.props.is_today,
@@ -152,11 +152,11 @@ class Filter extends BaseFormComponent {
         // this.setState({
         //     is_todayChange: !this.state.is_todayChange
     }
-    changevalueStart(values){
+    changevalueStart(values) {
         console.log("changevalueStart", values)
 
     }
-    onValuesChangeFinish(values){
+    onValuesChangeFinish(values) {
         console.log("onValuesChangeFinish", values)
 
     }
@@ -196,12 +196,12 @@ class Filter extends BaseFormComponent {
                         justifyContent: "center",
                         alignItems: "center"
                     }}>
-                        <Text style={{ fontFamily: "Avenir-Medium", fontSize: 15, color: "#D43C87" }} onPress={() => {this.props.resetFilter(), data={}}} >Clear</Text>
+                        <Text style={{ fontFamily: "Avenir-Medium", fontSize: 15, color: "#D43C87" }} onPress={() => { this.props.resetFilter(), data = {} }} >Clear</Text>
                     </View>
                 </View>
                 <ScrollView style={{}}>
                     <View style={styles.searchBox}>
-                    <Text style={styles.label}>{I18n.t('zipcodelabel', { locale: language })}</Text>
+                        <Text style={styles.label}>{I18n.t('zipcodelabel', { locale: language })}</Text>
 
                         {/* <Text style={styles.label}>{I18n.t('locationLabel', { locale: language })}</Text> */}
                         <View style={{ marginTop: 8 }} />
@@ -244,21 +244,21 @@ class Filter extends BaseFormComponent {
                             debounce={200}
                         /> */}
                         <View style={autocompleteStyle.textInputContainer}>
-                        <TextInputMask
-                                                ref={(ref) => { this._input = ref ? ref._inputElement : ref }}
-                                                type={"custom"}
-                                                keyboardType={"numeric"}
-                                                style={[styles.input]}
-                                                selectionColor={'#696969'}
-                                                value={this.props.zipcode}
-                                                onChangeText={(zipcode)=>this.props.handleZipcode(zipcode) }
-                                                // onChangeText={(pincode) => {
-                                                //     this.setState({ pincode })
-                                                // }}
-                                                returnKeyType={'done'}
-                                                options={{ mask: "99999" }}
-                                            />
-                                            </View>
+                            <TextInputMask
+                                ref={(ref) => { this._input = ref ? ref._inputElement : ref }}
+                                type={"custom"}
+                                keyboardType={"numeric"}
+                                style={[styles.input]}
+                                selectionColor={'#696969'}
+                                value={this.props.zipcode}
+                                onChangeText={(zipcode) => this.props.handleZipcode(zipcode)}
+                                // onChangeText={(pincode) => {
+                                //     this.setState({ pincode })
+                                // }}
+                                returnKeyType={'done'}
+                                options={{ mask: "99999" }}
+                            />
+                        </View>
 
                     </View>
                     <View style={{ paddingHorizontal: 16, alignSelf: "center", marginTop: 80 }}>
@@ -296,7 +296,7 @@ class Filter extends BaseFormComponent {
                                 }}
                                 values={[this.props.profilematch_values[0]]}
                                 sliderLength={metrics.DEVICE_WIDTH * 0.9}
-                                onValuesChange={(values)=>this.props.profilematch(values)}
+                                onValuesChange={(values) => this.props.profilematch(values)}
                                 min={0}
                                 max={100}
                                 step={1}
@@ -361,7 +361,7 @@ class Filter extends BaseFormComponent {
                             // stepLength={5}
                             sliderLength={metrics.DEVICE_WIDTH * 0.9}
                             // onValuesChange={this.multiSliderValuesChange}
-                            onValuesChange={(values)=>this.props.multiSliderValuesChange(values)}
+                            onValuesChange={(values) => this.props.multiSliderValuesChange(values)}
                             onValuesChangeStart={this.changevalueStart}
                             onValuesChangeFinish={this.onValuesChangeFinish}
                             min={18}
@@ -371,31 +371,31 @@ class Filter extends BaseFormComponent {
                             max={100}
                             step={2}
                             // allowOverlap={false}
-                            snapped={false}                            
-                            // onToggleOne={()=>alert("i am ebale")}
-                            // onToggleTwo={()=>console.log()}
+                            snapped={false}
+                        // onToggleOne={()=>alert("i am ebale")}
+                        // onToggleTwo={()=>console.log()}
                         />
 
                     </View>
                     <View style={{ paddingHorizontal: 16 }}>
                         <Text style={{ fontFamily: "Avenir-Medium", fontSize: 11, color: "#D43C87" }}>{I18n.t('lastLoginLabel', { locale: language })}</Text>
                         <View style={{ marginTop: 8 }} />
-                        <TouchableOpacity style={{ flexDirection: "row", height: 30, marginVertical: 5 }} 
-                        onPress={()=>this.props.updateToday("today")}
+                        <TouchableOpacity style={{ flexDirection: "row", height: 30, marginVertical: 5 }}
+                            onPress={() => this.props.updateToday("today")}
                         // onPress={() => this.todayFilter("today")}
                         >
                             <Image source={is_today ? require('../../../assets/icons/checked.png') : require('../../../assets/icons/unchecked.png')} style={{ width: 24, height: 24 }} resizeMode="contain" resizeMethod="resize" />
                             <Text style={{ fontFamily: "Avenir-Medium", fontSize: 17, color: "#909096", marginHorizontal: 20 }}>{I18n.t('todayLabel', { locale: language })}</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity style={{ flexDirection: "row", height: 30, marginVertical: 5 }} 
-                                                onPress={()=>this.props.updateToday("week")}
+                        <TouchableOpacity style={{ flexDirection: "row", height: 30, marginVertical: 5 }}
+                            onPress={() => this.props.updateToday("week")}
                         // onPress={() => this.todayFilter("week")}
                         >
                             <Image source={is_week ? require('../../../assets/icons/checked.png') : require('../../../assets/icons/unchecked.png')} style={{ width: 24, height: 24 }} resizeMode="contain" resizeMethod="resize" />
                             <Text style={{ fontFamily: "Avenir-Medium", fontSize: 17, color: "#909096", marginHorizontal: 20 }}>{I18n.t('weekLabel', { locale: language })}</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity style={{ flexDirection: "row", height: 30, marginVertical: 5 }} 
-                                                                        onPress={()=>this.props.updateToday("month")}
+                        <TouchableOpacity style={{ flexDirection: "row", height: 30, marginVertical: 5 }}
+                            onPress={() => this.props.updateToday("month")}
 
                         // onPress={() => this.todayFilter("month")}
                         >
@@ -407,8 +407,8 @@ class Filter extends BaseFormComponent {
                     <View style={{ paddingHorizontal: 16 }}>
                         <Text style={{ fontFamily: "Avenir-Medium", fontSize: 11, color: "#D43C87" }}>{I18n.t('aboutparnerLabel', { locale: language })}</Text>
                         <TouchableOpacity onPress={this.props.questionanswerModalToggle}>
-                    <Image source={require('../../images/applogo.png')} style={{ width:120, height:120}} resizeMethod="resize" resizeMode="contain"/>
-                    </TouchableOpacity>
+                            <Image source={require('../../images/applogo.png')} style={{ width: 120, height: 120 }} resizeMethod="resize" resizeMode="contain" />
+                        </TouchableOpacity>
                     </View>
 
                     <LinearGradient
@@ -424,7 +424,7 @@ class Filter extends BaseFormComponent {
                         }}>
                         <CustomButton
                             textStyle={{ color: "#fff", fontFamily: "Avenir-Heavy", fontSize: 17 }}
-                            onPress={()=>this.props.searchbyFilter()}
+                            onPress={() => this.props.searchbyFilter()}
                             // onPress={() => this.makeRemoteRequest()}
                             // style={{ backgroundColor: "#009933" }}
                             text={"APPLY"} />
@@ -517,7 +517,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: IS_ANDROID ? 19 : 16
     },
     input: {
-        alignSelf:"center",
+        alignSelf: "center",
         backgroundColor: "#F5F5F5",
         marginTop: 8,
         borderRadius: 5,
@@ -528,7 +528,7 @@ const styles = StyleSheet.create({
         fontSize: 17,
         fontFamily: "Avenir-Medium",
         width: metrics.DEVICE_WIDTH - 32,
-        color:"#909096"
+        color: "#909096"
     }
 });
 mapStateToProps = (state) => {

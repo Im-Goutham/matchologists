@@ -8,84 +8,17 @@ import {
     Image,
     TouchableOpacity
 } from 'react-native';
+import Loading from '../Loading/index';
 import LinearGradient from 'react-native-linear-gradient';
-import photo_1 from '../../images/search_result.png'
-import Photo_7 from '../../images/Photo_7.png'
-import Photo_8 from '../../images/Photo_8.png'
-import Photo_9 from '../../images/Photo_9.png'
-import Photo_10 from '../../images/Photo_10.png'
-import Photo_11 from '../../images/Photo_11.png'
-import Photo_12 from '../../images/Photo_12.png'
-let data = [
-    {
-        "id": 1,
-        "name": "Danny Rice",
-        "message": "sent you a friend request",
-        "action": "FEEDBACK",
-        "picture": photo_1,
-        "is_permission": false
-    },
-    {
-        "id": 2,
-        "name": "Elizabeth Turner",
-        "message": "Want your permission to make call",
-        "action": "FEEDBACK",
-        "picture": Photo_7,
-        "is_permission": true
-    },
-    {
-        "id": 3,
-        "name": "David Jones",
-        "message": "sent you a friend request",
-        "action": "FEEDBACK",
-        "picture": Photo_8,
-        "is_permission": false
-    },
-    {
-        "id": 4,
-        "name": "Mick James",
-        "message": "sent you a friend request",
-        "action": "FEEDBACK",
-        "picture": Photo_9,
-        "is_permission": false
-    },
-    {
-        "id": 5,
-        "name": "Harry Jonas ",
-        "message": "sent you a friend request",
-        "action": "FEEDBACK",
-        "picture": Photo_10,
-        "is_permission": false
-    },
-    {
-        "id": 6,
-        "name": "Michelle Cox",
-        "message": "sent you a friend request",
-        "action": "FEEDBACK",
-        "picture": Photo_11,
-        "is_permission": false
-    },
-    {
-        "id": 7,
-        "name": "Daniel Manner",
-        "message": "sent you a friend request",
-        "action": "FEEDBACK",
-        "picture": Photo_12,
-        "is_permission": false
-    },
-    {
-        "id": 8,
-        "name": "Paul Rosse ",
-        "message": "sent you a friend request",
-        "action": "FEEDBACK",
-        "picture": Photo_11,
-        "is_permission": false
-    }
-];
+import Apirequest from '../Common/Apirequest'
+
 export default class NotificationsList extends Component {
     constructor(props) {
         super(props);
-        this.state = {};
+        this.state = {
+            notificationData: [],
+            isloading: true
+        };
     }
     renderSeparator = () => {
         return (
@@ -99,55 +32,92 @@ export default class NotificationsList extends Component {
             />
         );
     };
+    componentDidMount() {
+        // this.setState({
+        // notificationData: this.props.notificationData,
+        // isloading: this.props.isloading
+        // })
+    }
+    componentWillReceiveProps(nextProps, nextState) {
+        this.setState({
+            notificationData: nextProps.notificationData,
+            isloading: nextProps.isloading
+        })
+
+    }
     render() {
+        const { notificationData, isloading } = this.state;
+        if (isloading) {
+            return <Loading />
+        }
         return (
             <FlatList
                 contentContainerStyle={styles.container}
-                data={data}
+                data={notificationData}
                 renderItem={({ item }) => this.renderRow(item)}
                 ItemSeparatorComponent={this.renderSeparator}
-                // ListHeaderComponent={<>}
-                // getItemLayout={(data, index) => ({ length: 20, offset: 20 * index, index})}            
-                  />
+                keyExtractor={(item, index) => index.toString()}
+            // ListHeaderComponent={<>}
+            // getItemLayout={(data, index) => ({ length: 20, offset: 20 * index, index})}            
+            />
         );
+    }
+    friendRequest(item) {
+        return (
+            <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginVertical: 5 }}>
+                <LinearGradient
+                    colors={['#DB3D88', '#273174']}
+                    start={{ x: 0, y: 1 }}
+                    end={{ x: 1, y: 1 }}
+                    style={[styles.answerBtn, { backgroundColor: 'white' }]}>
+                    <TouchableOpacity style={{ paddingVertical: 5, paddingHorizontal: 10, borderRadius: 15 }}>
+                        <Text style={{ color: "#FFF" }}> Accept</Text>
+                    </TouchableOpacity>
+                </LinearGradient>
+                <LinearGradient
+                    colors={['#DB3D88', '#273174']}
+                    start={{ x: 0, y: 1 }}
+                    end={{ x: 1, y: 1 }}
+                    style={[styles.answerBtn, { backgroundColor: 'white' }]}>
+                    <TouchableOpacity style={[styles.answerBtn, {
+                        backgroundColor: 'white', paddingVertical: 3.5, paddingHorizontal: 8.5, borderRadius: 15
+                    }]}>
+                        <Text style={[styles.answerTxt, { color: '#313138', fontFamily: 'Avenir-Heavy' }]}> Denied</Text>
+                    </TouchableOpacity>
+                </LinearGradient>
+                <Text> 8 min ago</Text>
+            </View>
+        )
+    }
+    teamfeedback(item) {
+        return (
+            <TouchableOpacity style={{ paddingVertical: 8 }} onPress={() => this.props.navigate('friendrequestfeedback', { data: item, token : this.props.token, invitationname:"abhishek" })}>
+                <Text style={{ color: "#D43C87", fontSize: 12, fontFamily: "Avenir-Medium", lineHeight: 22 }}>FEEDBACK</Text>
+            </TouchableOpacity>
+        )
+    }
+    notification(item) {
+        return <></>
     }
     renderRow(item) {
         return (
-            <View style={{ backgroundColor: "#FFF", height: 97, flexDirection: "row", paddingHorizontal: 15 }}>
-                <View style={{ flex: 2, justifyContent: "center", alignItems: "center", backgroundColor:"transparent" }}>
-                    <Image source={item.picture} style={{ width: 60, height: 60, borderRadius: 30 }} />
+            <View style={{ backgroundColor: item.isSeen ? "#FFF" : "#F5F5F5", height: 97, flexDirection: "row", paddingHorizontal: 15 }}>
+                <View style={{ flex: 2, justifyContent: "center", alignItems: "center", backgroundColor: "transparent" }}>
+                    <Image source={item.uri ? { uri: item.uri }: require('../../images/applogo.png')} style={{ width: 60, height: 60, borderRadius: 30 }} />
                 </View>
                 <View style={{
                     flex: 8, backgroundColor: "transparent", justifyContent: "center",
                     justifyContent: "center", paddingHorizontal: 15
                 }}>
-                    <Text style={{ color: "#3E3E47", fontSize: 17, fontFamily: "Avenir-Heavy", lineHeight: 22 }}>{item.name}  <Text style={{ fontSize: 15, fontFamily: "Avenir-Medium", lineHeight: 22 }}>{item.message}</Text></Text>
+                    <Text style={{ color: "#3E3E47", fontSize: 17, fontFamily: "Avenir-Heavy", lineHeight: 22 }}>{item.notificationText}</Text>
+                    {/* <Text style={{ fontSize: 15, fontFamily: "Avenir-Medium", lineHeight: 22 }}>{item.notificationText}</Text> */}
                     {
-                        item.is_permission ? <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginVertical: 5 }}>
-                            <LinearGradient
-                                colors={['#DB3D88', '#273174']}
-                                start={{ x: 0, y: 1 }}
-                                end={{ x: 1, y: 1 }}
-                                style={[styles.answerBtn, { backgroundColor: 'white' }]}>
-                                <TouchableOpacity style={{ paddingVertical: 5, paddingHorizontal: 10, borderRadius: 15 }}>
-                                    <Text style={{ color: "#FFF" }}> Accept</Text>
-                                </TouchableOpacity>
-                            </LinearGradient>
-                            <LinearGradient
-                                colors={['#DB3D88', '#273174']}
-                                start={{ x: 0, y: 1 }}
-                                end={{ x: 1, y: 1 }}
-                                style={[styles.answerBtn, { backgroundColor: 'white' }]}>
-                                <TouchableOpacity style={[styles.answerBtn, {
-                                    backgroundColor: 'white', paddingVertical: 3.5, paddingHorizontal: 8.5, borderRadius: 15
-                                }]}>
-                                    <Text style={[styles.answerTxt, { color: '#313138', fontFamily: 'Avenir-Heavy' }]}> Denied</Text>
-                                </TouchableOpacity>
-                            </LinearGradient>
-                            <Text> 8 min ago</Text>
-                        </View>
-                            :
-                            <Text style={{ color: "#D43C87", fontSize: 12, fontFamily: "Avenir-Medium", lineHeight: 22 }}>{item.action}</Text>
+                        item.type === 'permission' ? this.friendRequest(item)
+                            : (item.type === 'friendrequest' || 'notification') ? this.teamfeedback(item)
+                                // : item.type === 'notification' ?this.notification(item)
+                                // : item.type === 'teamfeedback' ?this.teamfeedback(item)
+                                // : item.type === 'teamfeedback' ?this.teamfeedback(item)
+                                : undefined
                     }
                 </View>
 

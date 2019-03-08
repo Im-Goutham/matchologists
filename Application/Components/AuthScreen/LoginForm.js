@@ -1,7 +1,7 @@
 import React from 'react';
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
-import { Platform, StyleSheet, SafeAreaView, StatusBar, TouchableOpacity, ScrollView, KeyboardAvoidingView, Alert } from 'react-native';
+import { Platform, StyleSheet, SafeAreaView, StatusBar, TouchableOpacity, ScrollView, KeyboardAvoidingView, Alert, AsyncStorage } from 'react-native';
 import { LoginManager, AccessToken, GraphRequest, GraphRequestManager } from 'react-native-fbsdk'
 import { type, GoogleSignin, GoogleSigninButton, statusCodes, User } from 'react-native-google-signin';
 import Modal from "react-native-modal";
@@ -51,13 +51,17 @@ class LoginForm extends BaseFormComponent {
     async componentDidMount() {
         this._configureGoogleSignIn();
         await this._getCurrentUser();
+        console.log("componentDidMount");
 
-        await FCM.getFCMToken().then(token => {
+        FCM.getFCMToken().then(token => {
+            console.log("getFCMToken", token);
             this.setState({ deviceToken: token || "" });
         });
         if (Platform.OS === "ios") {
-            await FCM.getAPNSToken().then(token => {
-                console.log("APNS TOKEN (getFCMToken)", token);
+            console.log("APNS TOKEN (getFCMToken) before");
+            FCM.getAPNSToken().then(token => {
+                console.log("APNS TOKEN (getFCMToken) after", token);
+                this.setState({ deviceToken: token || "" });
             });
         }
     }
@@ -201,6 +205,7 @@ class LoginForm extends BaseFormComponent {
                 is_loginSuccess: !this.state.is_loginSuccess
             })
             let password = '';
+            AsyncStorage.setItem("userId", JSON.stringify(data))
             this.props.login(details.emailId, password, token, data);
             this.timeOutCall()
 
@@ -250,8 +255,8 @@ class LoginForm extends BaseFormComponent {
                 let response = JSON.parse(success._bodyInit),
                     token = response.access_token,
                     data = response.data;
-                    console.log("response callwebservice login", response)
-
+                    console.log("response callwebservice login", data)
+                    AsyncStorage.setItem("userId", JSON.stringify(data))
                     // let userimage=   "" ;
                 if (response.status === 0) {
                     this.showSimpleMessage("danger", { backgroundColor: "#DC6666" }, response.message, response.message)
@@ -264,6 +269,7 @@ class LoginForm extends BaseFormComponent {
                         // this.showSimpleMessage("", { backgroundColor: "#009933" }, '', response.message)
                         this.timeOutCall()
                         this.props.saveuserProifileimage(userimage)
+                        
                         this.props.login(email, password, token, data);    
     
                     }
@@ -281,8 +287,8 @@ class LoginForm extends BaseFormComponent {
     }
     render() {
         const { goBack } = this.props.navigation;
-
-        const { isLoading, onLoginLinkPress, onSignupPress, language } = this.props
+        const { isLoading, onLoginLinkPress, onSignupPress, language } = this.props;
+        console.log("token from login", this.state.deviceToken)
         return (
             <View style={styles.container}>
                 <LinearGradient colors={[global.gradientprimary, global.gradientsecondry]} style={{ flex: 1 }} />
@@ -431,6 +437,7 @@ class LoginForm extends BaseFormComponent {
                         source={require('../../jsoncontainer/success_animation.json')}
                         autoPlay
                         loop={false}
+                        onAnimationFinish={()=>console.log("Lottie finish animation")}
                     />
                 </Modal>
 

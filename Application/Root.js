@@ -1,19 +1,18 @@
 import React from "react";
-import { View, Platform, Clipboard } from "react-native";
+import { View, Platform, Clipboard, AsyncStorage } from "react-native";
 import './i18n/I18n'
 import { Provider } from "react-redux";
 import store from "./store";
 import App from "./Navigation";
 import Messagebar from './Components/MessageBar'
 import SplashScreen from 'react-native-splash-screen';
-
 import FCM, { NotificationActionType } from "react-native-fcm";
 import { registerKilledListener, registerAppListener } from "./Listeners/index";
 // import firebaseClient from "./FirebaseClient";
 
 console.reportErrorsAsExceptions = false;
-
 registerKilledListener();
+
 class Root extends React.Component {
 	constructor(props) {
 		super(props);
@@ -22,8 +21,19 @@ class Root extends React.Component {
 			tokenCopyFeedback: "",
 		};
 		SplashScreen.hide();
+		// this.getUserData= this.getUserData.bind(this)
+	}
+	getUserData= async ()=>{
+		try {
+			const value = await AsyncStorage.getItem('userId');
+			console.log("useridIS", value)	
+		} catch (error) {
+			console.log("error", error)	
+
+		}
 	}
 	async componentDidMount() {
+		// this.getUserData()
 		//FCM.createNotificationChannel is mandatory for Android targeting >=8. Otherwise you won't see any notification
 		FCM.createNotificationChannel({
 			id: 'default',
@@ -63,7 +73,6 @@ class Root extends React.Component {
 				console.log("APNS TOKEN (getFCMToken)", token);
 			});
 		}
-
 		// topic example
 		// FCM.subscribeToTopic('sometopic')
 		// FCM.unsubscribeFromTopic('sometopic')

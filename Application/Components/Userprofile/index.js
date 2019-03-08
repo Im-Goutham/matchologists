@@ -30,7 +30,7 @@ import metrics from '../../config/metrics';
 import Geocoder from 'react-native-geocoder';
 import Video from 'react-native-video';
 import Modal from 'react-native-modal';
-import ApiRequest from './Apirequest';
+import ApiRequest from '../Common/Apirequest';
 import BaseFormComponent from '../Common/BaseFormComponent'
 import * as global from '../../../global.json'
 Geocoder.fallbackToGoogle('AIzaSyCtUjtU1-n7mQ-V-iFQanx3hL_082lBSXs')

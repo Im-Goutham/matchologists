@@ -1,17 +1,19 @@
 // import React from 'react';
 import SocketIOClient from 'socket.io-client';
-
+import { baseurl as URL } from '../../../app.json';
 let SocketChat = {
     connectSocket(){
-        this.socket = SocketIOClient('http://10.2.2.43:4069/'); 
+        return this.socket = SocketIOClient(URL); 
         // console.log("socket",  this.socket)
-        this.socket.on('testSocket', (data) => { console.log('Data recieved from server', data)});
     },
-    userConnect(userId){
-        this.socket.emit('userConnect', {userId : userId }); 
+    userConnect(userId , resolve){
+       return resolve( this.socket.emit('userConnect', {userId : userId })); 
     },
-    userdisConnect(){
-        this.socket.emit('userDisconnect', {userId : '123456798' }); 
+    socketSubscribe(data ,resolve){
+       return resolve (this.socket.on('testSocket', (data) => { return resolve(data)}));
+    },
+    userdisConnect(userid, resolve ){
+        return resolve ( this.socket.emit('userDisconnect', {userId : userid }))
     }
 }
 module.exports = SocketChat;

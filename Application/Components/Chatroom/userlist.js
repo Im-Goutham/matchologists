@@ -110,18 +110,24 @@ class OnlineUsers extends Component {
             />
         );
     };
-    renderRow = this.props.userdataList.map((item) => {
+    renderRow = this.props.userdataList.map((item, index) => {
         const { navigate } = this.props.navigation;
         return (
             <TouchableOpacity
-                onPress={() => navigate('chatscreen', { userId: item._id })}
-                key={item.id}
+                onPress={() => navigate('chatscreen', { userId: item._id, opentokToken: this.props.opentokToken, fullName: item.fullName })}
+                key={index}
                 style={{ flex: 1, alignItems: "center", justifyContent: "space-around", paddingHorizontal: 8 }}>
-                <View style={{ alignItems: "center" }}>
-                    <View style={{ width: 60, height: 60, borderRadius: 30, overflow:"hidden" }}>
+                <View style={{ alignItems: "center",  shadowOffset: { width: 0, height: 2 },
+                    shadowOpacity: 0.2,
+                    shadowRadius: 2,
+                    elevation: 3, }}>
+                    <View style={{ width: 60, height: 60, borderRadius: 30, overflow: "hidden",  shadowOffset: { width: 0, height: 2 },
+                    shadowOpacity: 0.2,
+                    shadowRadius: 2,
+                    elevation: 3, }}>
                         <Image
                             style={{ height: '100%', width: '100%', flex: 1 }}
-                            source={{ uri: item.uri }}
+                            source={item.uri ? { uri: item.uri } : require('../../images/applogo.png')}
                         // resizeMethod="resize"
                         // resizeMode="contain"
                         />
@@ -157,12 +163,6 @@ class Userlist extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            loading: false,
-            data: data,
-            page: 1,
-            seed: 1,
-            error: null,
-            refreshing: false,
         };
     }
     renderSeparator = () => {
@@ -177,20 +177,20 @@ class Userlist extends Component {
             />
         );
     };
-    renderRow = (item) => {
+    renderRow = (item, index) => {
         const { navigate } = this.props.navigation;
         return (
             <TouchableOpacity
-                onPress={() => navigate('chatscreen')}
-                key={item.id}
+                onPress={() => navigate('chatscreen', { userId: item._id, opentokToken: this.props.opentokToken, fullName: item.fullName })}
+                key={index}
                 style={{ flex: 1, flexDirection: "row", paddingVertical: 16 }}>
                 <View style={{ flex: 2, alignItems: "center" }}>
-                    <Image
-                        style={{ width: 60, height: 60, borderRadius: 30 }}
-                        source={item.picture.thumbnail}
-                        resizeMethod="resize"
-                        resizeMode="contain"
-                    />
+                    <View style={{ width: 60, height: 60, borderRadius: 30, overflow: "hidden" }}>
+                        <Image
+                            style={{ height: '100%', width: '100%', flex: 1 }}
+                            source={item.uri ? { uri: item.uri } : require('../../images/applogo.png')}
+                        />
+                    </View>
 
                     <Badge />
                 </View>
@@ -200,7 +200,7 @@ class Userlist extends Component {
                     justifyContent: "space-around",
                 }}>
                     <Text style={{ fontFamily: "Avenir-Heavy", fontSize: 17, color: "#3E3E47" }}>
-                        {item.name.first + " " + item.name.last}</Text>
+                        {item.fullName}</Text>
                 </View>
             </TouchableOpacity>
         )
@@ -212,7 +212,7 @@ class Userlist extends Component {
                     paddingHorizontal: 16,
                     backgroundColor: 'rgba(255,255,255, 100)',
                 }}
-                data={this.state.data}
+                data={this.props.userdataList}
                 renderItem={({ item }) => this.renderRow(item)}
                 keyExtractor={(item, index) => index.toString()}
                 ItemSeparatorComponent={this.renderSeparator}

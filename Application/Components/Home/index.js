@@ -22,6 +22,8 @@ import {
     FlatList,
     AsyncStorage
 } from 'react-native';
+import io from 'socket.io-client'; // 2.0.4
+
 import ApiManager from "../Common/ApiManager";
 import { connect } from 'react-redux'
 import LinearGradient from 'react-native-linear-gradient';
@@ -37,32 +39,41 @@ import * as global from '../../../global.json'
 import sort_ascending from '../../images/icons/white-sort.png';
 import ascending from '../../images/icons/ascending.png';
 import desending from '../../images/icons/desending.png';
-
 import { Close } from '../Common/Hamburger'
-
-import SocketChat from '../Common/client';
+// import SocketChat from '../Common/client';
 const IS_ANDROID = Platform.OS === 'android'
 import metrics from '../../config/metrics';
+import { baseurl as URL } from '../../../app.json';
+
+// import { resolve } from 'dns';
 // const IMAGE_WIDTH = metrics.DEVICE_WIDTH * 0.05
 // const header_height = metrics.DEVICE_HEIGHT * 0.1
 
 var sortarray = [
-    { "label": "Match Picks", "key": "sortPercentage", "order":null , "image": null},
-    { "label": "Activity Date", "key": "sortActivityDate", "order":null , "image": null },
-    { "label": "Newest First", "key": "sortNewest", "order":null , "image": null },
-    { "label": "Age", "key": "sortAge", "order":null, "image": null },
-    { "label": "Distance", "key": "sortDistance", "order":null, "image": null },
+    { "label": "Match Picks", "key": "sortPercentage", "order": null, "image": null },
+    { "label": "Activity Date", "key": "sortActivityDate", "order": null, "image": null },
+    { "label": "Newest First", "key": "sortNewest", "order": null, "image": null },
+    { "label": "Age", "key": "sortAge", "order": null, "image": null },
+    { "label": "Distance", "key": "sortDistance", "order": null, "image": null },
 ];
 let data = {};
 let sortremotecallData = {}
+// const socketURL = 'https://smarttransit-dev-map-api.herokuapp.com/v1/socket'
 
 class HomeScreen extends Component {
     constructor(props) {
         super(props);
+        console.log("URL", URL)
+        this.socket = io(URL);
+        this.socket.on('connect', () => {
+            console.log('connected!', connect)
+            // alert('connected!', connect);
+        });
+
         this.state = {
             sortArray: sortarray,
             lastlogin: { "today": false, "week": false, "month": false },
-            sortingbyobjects:null,
+            sortingbyobjects: null,
             selectedquestions: [],
             questionsdata: [],
             userList: [],
@@ -80,22 +91,32 @@ class HomeScreen extends Component {
             lastPress: 0
         }
     }
+    componentWillUnmount() {
+        var userId = this.props.data._id;
+       var sok= this.socket.emit('userDisconnect', {userId : userId })
+       console.log("componentWillUnmount", sok)
+        // SocketChat.userdisConnect(userId, (resolve) => {
+        //     console.log("SocketChat_userdisConnect", resolve)
+        // })
+
+    }
     componentDidMount() {
         var userId = this.props.data._id;
-        SocketChat.userConnect(userId)
+        this.socket.emit('userConnect', {userId : userId })
+
         this.readfilterdata()
             .then(() => this.sortAndFilterUsers())
             .then(() => this.getAboutYourPartnerQuestions());
-            // .done()
+        // .done()
     }
     readfilterdata = async () => {
-        
+
         var filterlocalstorage = await AsyncStorage.getItem('localfilter');
         if (filterlocalstorage && typeof filterlocalstorage == "string") {
             filterlocalstorage = JSON.parse(filterlocalstorage);
             console.log("this.state.sortArray", this.state.sortArray);
-            await _.map(this.state.sortArray, (sort)=>{
-                if(_.has(filterlocalstorage, sort.key)){
+            await _.map(this.state.sortArray, (sort) => {
+                if (_.has(filterlocalstorage, sort.key)) {
                     sort.order = filterlocalstorage[sort.key];
                     sort.order == 'asc' ? sort.image = ascending : sort.order == "desc" ? sort.image = descending : sort.image = null;
                     console.log('sort in if ', sort);
@@ -105,8 +126,8 @@ class HomeScreen extends Component {
             console.log("filterlocalstorage", data)
             console.log("sortarray from local", sortarray);
 
-            
-            
+
+
             // for(var i=0; i< sortarrayData.length; i++){
             //     alert("sortarrayData")
             // }
@@ -148,7 +169,7 @@ class HomeScreen extends Component {
         let header = {
             'Authorization': this.props.token,
         }
-        let merged = {...data, ...sortremotecallData};
+        let merged = { ...data, ...sortremotecallData };
         console.log("merged_data", merged)
         await ApiManager.callwebservice('POST', 'api/sortAndFilterUsers', header, merged, (success) => {
             let response = JSON.parse(success._bodyInit);
@@ -355,33 +376,33 @@ class HomeScreen extends Component {
     //     // data.sortdata.key = "desc";
     //     // console.log("hello sort by", this.state.sortingbyobjects)
     // }
-    matchProfilesortbyNew = ( sortdata , indexvalue) => {
+    matchProfilesortbyNew = (sortdata, indexvalue) => {
         console.log('sortdata', sortdata);
-        _.map(this.state.sortArray, (sort)=>{
-            if(!_.isEqual(sort.key, sortdata.key) ){
+        _.map(this.state.sortArray, (sort) => {
+            if (!_.isEqual(sort.key, sortdata.key)) {
                 sort.order = null;
                 sort.image = null;
             }
-           
+
         })
-        if(sortdata && sortdata.key){
-            if(sortdata.order == 'asc'){
+        if (sortdata && sortdata.key) {
+            if (sortdata.order == 'asc') {
                 sortdata.order = "desc";
                 sortdata.image = desending;
-            }else if(sortdata.order == 'desc'){
+            } else if (sortdata.order == 'desc') {
                 sortdata.order = null;
                 sortdata.image = null;
-            }else{
+            } else {
                 sortdata.order = 'asc';
                 sortdata.image = ascending;
             }
         }
-       
+
         this.setState({
             sortingbyobjects: sortdata,
             sortArray: this.state.sortArray
         })
-        sortremotecallData={};
+        sortremotecallData = {};
     }
     // Deselectsortby=(sortdata , indexvalue)=>{
     //     var sortData = sortarray
@@ -403,15 +424,15 @@ class HomeScreen extends Component {
     //     })
     //     sortremotecallData={};        
     // }
-    sortResultRemoteCall= async() =>{
+    sortResultRemoteCall = async () => {
         sortremotecallData[this.state.sortingbyobjects.key] = this.state.sortingbyobjects.order;
         console.log("hello sort by", sortremotecallData)
-        let merger = { ...data, ...sortremotecallData}
+        let merger = { ...data, ...sortremotecallData }
         await AsyncStorage.setItem('localfilter', JSON.stringify(merger));
 
         this.setState({
             sortingModal: false
-        },()=>this.sortAndFilterUsers())
+        }, () => this.sortAndFilterUsers())
     }
     questionanswerModalToggle = () => {
         this.setState({
@@ -594,45 +615,45 @@ class HomeScreen extends Component {
                         {/* soting View */}
                         {
                             this.state.sortArray.map((value, index) => {
-                                console.log("value of sort", value)
+                                // console.log("value of sort", value)
                                 return (
                                     <View key={index}>
                                         {
-                                        //    value && value.order === "asc" ?
-                                                <TouchableOpacity
+                                            //    value && value.order === "asc" ?
+                                            <TouchableOpacity
                                                 onPress={() => this.matchProfilesortbyNew(value, index)}
                                                 style={{
-                                                        backgroundColor: "transparent",
-                                                        height: 42,
-                                                        // justifyContent: 'center',
-                                                        alignItems: "flex-start",
-                                                        paddingHorizontal: 16,
-                                                        borderBottomWidth: 1,
-                                                        borderColor: "#CED0CE",
-                                                        flexDirection:"row",
-                                                        justifyContent:"space-between"
+                                                    backgroundColor: "transparent",
+                                                    height: 42,
+                                                    // justifyContent: 'center',
+                                                    alignItems: "flex-start",
+                                                    paddingHorizontal: 16,
+                                                    borderBottomWidth: 1,
+                                                    borderColor: "#CED0CE",
+                                                    flexDirection: "row",
+                                                    justifyContent: "space-between"
 
-                                                    }} key={index}>
-                                                    <Text style={{ color: value.order === "asc" ? "#DB3D88" : value.order === "desc"  ? "#009933" : "#909096" , fontSize: 17, fontFamily: 'Avenir-Medium'}}>{value.label} </Text>
-                                                    <Image source={value.image} style={{ width:20, height:20, alignSelf:"center"}} resizeMethod="resize" resizeMode="contain"/>
-                                                </TouchableOpacity>
-                                                // :
-                                                // <TouchableOpacity
-                                                // onPress={() => this.matchProfilesortbyNew(value, index)}
-                                                //     style={{
-                                                //         backgroundColor: "transparent",
-                                                //         height: 42,
-                                                //         // justifyContent: 'center',
-                                                //         alignItems: "flex-start",
-                                                //         paddingHorizontal: 16,
-                                                //         borderBottomWidth: 1,
-                                                //         borderColor: "#CED0CE",
-                                                //         flexDirection:"row",
-                                                //         justifyContent:"space-between"
-                                                //     }} key={index}>
-                                                //     <Text style={{ color: "#909096", fontSize: 17, fontFamily: 'Avenir-Medium' }}>{value.label} </Text>
-                                                //     <Image source={value.image} style={{ width:20, height:20, alignSelf:"center"}} resizeMethod="resize" resizeMode="contain"/>
-                                                // </TouchableOpacity>
+                                                }} key={index}>
+                                                <Text style={{ color: value.order === "asc" ? "#DB3D88" : value.order === "desc" ? "#009933" : "#909096", fontSize: 17, fontFamily: 'Avenir-Medium' }}>{value.label} </Text>
+                                                <Image source={value.image} style={{ width: 20, height: 20, alignSelf: "center" }} resizeMethod="resize" resizeMode="contain" />
+                                            </TouchableOpacity>
+                                            // :
+                                            // <TouchableOpacity
+                                            // onPress={() => this.matchProfilesortbyNew(value, index)}
+                                            //     style={{
+                                            //         backgroundColor: "transparent",
+                                            //         height: 42,
+                                            //         // justifyContent: 'center',
+                                            //         alignItems: "flex-start",
+                                            //         paddingHorizontal: 16,
+                                            //         borderBottomWidth: 1,
+                                            //         borderColor: "#CED0CE",
+                                            //         flexDirection:"row",
+                                            //         justifyContent:"space-between"
+                                            //     }} key={index}>
+                                            //     <Text style={{ color: "#909096", fontSize: 17, fontFamily: 'Avenir-Medium' }}>{value.label} </Text>
+                                            //     <Image source={value.image} style={{ width:20, height:20, alignSelf:"center"}} resizeMethod="resize" resizeMode="contain"/>
+                                            // </TouchableOpacity>
                                         }
                                     </View>
                                 )
@@ -646,7 +667,7 @@ class HomeScreen extends Component {
                             end={{ x: 1, y: 1 }}
                             style={[{ borderRadius: 5 }]}
                         >
-                            <TouchableOpacity onPress={()=>this.sortResultRemoteCall()} style={{ width: '100%', height: 54, justifyContent: 'center', alignItems: "center" }}>
+                            <TouchableOpacity onPress={() => this.sortResultRemoteCall()} style={{ width: '100%', height: 54, justifyContent: 'center', alignItems: "center" }}>
                                 <Text style={{ color: "#FFF", fontSize: 17, fontFamily: 'Avenir-Medium' }}>View Result</Text>
                             </TouchableOpacity>
                         </LinearGradient>
@@ -771,6 +792,8 @@ class HomeScreen extends Component {
     }
     async resetFilter() {
         await AsyncStorage.removeItem('localfilter');
+        data={};
+        sortremotecallData={};
         this.setState({
             zipcode: '',
             location: {},
@@ -781,7 +804,7 @@ class HomeScreen extends Component {
             week: false,
             month: false,
             sortArray: sortarray
-        })
+        },()=>this.sortAndFilterUsers())
     }
 
     updateToday(key) {

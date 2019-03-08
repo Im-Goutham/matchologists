@@ -1,23 +1,21 @@
 import React, { Component } from "react";
 import { connect } from 'react-redux'
 import { View, Text, FlatList, Image, StyleSheet, TextInput, Platform, TouchableOpacity, Dimensions } from "react-native";
-import metrics from '../../config/metrics';
 import I18n from 'react-native-i18n';
-
+import Modal from "react-native-modal";
+import Loader from "../Loading/Loader";
+import _ from 'lodash';
 import {
     widthPercentageToDP,
     heightPercentageToDP,
 } from 'react-native-responsive-screen';
-import Modal from "react-native-modal";
-import Loader from "../Loading/Loader";
-import _ from 'lodash';
+import metrics from '../../config/metrics';
 import ApiManager from "../Common/ApiManager";
 import userImage from '../../images/Rectangle.png'
 const IS_ANDROID = Platform.OS === 'android'
 
 const IMAGE_WIDTH = metrics.DEVICE_WIDTH * 0.47
 const IMAGE_HEIGHT = metrics.DEVICE_HEIGHT * 0.284
-
 let data = [
     {
         "id": 1,
@@ -39,13 +37,10 @@ class Userlist extends Component {
         };
     }
     componentDidMount() {
-        console.log("hello socket from userlist")
         this.setState({
             data: this.props.userList,
             is_loading: this.props.is_loading
         })
-
-        // this.makeRemoteRequest();
     }
     componentWillReceiveProps(nextState, nextProps) {
         console.log("nextState_hello", nextState.userList)

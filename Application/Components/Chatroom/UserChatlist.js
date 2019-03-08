@@ -15,12 +15,13 @@ import {
     TouchableOpacity,
 } from 'react-native';
 import { connect } from 'react-redux'
-
+// import { OT } from 'opentok-react-native';
+import Loading from '../Loading'
 import LinearGradient from 'react-native-linear-gradient';
 import i18n from 'react-native-i18n'
 import Header from '../Common/Header'
 import SearchBar from './SearchBar'
-import ApiRequest from '../Userprofile/Apirequest';
+import ApiRequest from '../Common/Apirequest';
 
 // import MonogamousList from './monogamous'
 import { Userlist, OnlineUsers } from './userlist';
@@ -38,6 +39,7 @@ class UserChatlist extends Component {
         }
     }
     componentDidMount = async () => {
+        // console.log("enableLogs", OT.enableLogs(true))
         await this.sortAndFilterUsers()
     }
     sortAndFilterUsers = async () => {
@@ -67,9 +69,10 @@ class UserChatlist extends Component {
     }
     render() {
         if(this.state.isLoading){
-            return <Text>Loading</Text>
+            return <Loading/>
         }
         const { navigate } = this.props.navigation;
+        // const opentokToken = this.props.data.opentokToken 
         return (
             <View style={styles.container}>
                 <LinearGradient
@@ -125,12 +128,16 @@ class UserChatlist extends Component {
                         <View style={styles.elevationView}>
                             <Text style={{ fontFamily: "Avenir-Medium", fontSize: 15, color: "#C1C0C9", lineHeight: 40, paddingLeft: 16 }}>ALL MATCHES</Text>
                             <View style={{}}>
-                                <OnlineUsers navigation={this.props.navigation} userdataList={this.state.allUserData} />
+                                <OnlineUsers navigation={this.props.navigation} userdataList={this.state.allUserData} 
+                                // opentokToken={opentokToken}
+                                />
                             </View>
                         </View>
                     </View>
                     <View style={styles.elevationView}>
-                        <Userlist navigation={this.props.navigation} />
+                        <Userlist navigation={this.props.navigation} userdataList={this.state.allUserData} 
+                        // opentokToken={opentokToken} 
+                        />
                     </View>
                 </ScrollView>
             </View>

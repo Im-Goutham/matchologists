@@ -13,22 +13,59 @@ import {
     Image,
     TouchableOpacity,
 } from 'react-native';
+import { connect } from 'react-redux'
 import LinearGradient from 'react-native-linear-gradient';
 import i18n from 'react-native-i18n'
 import Header from '../Common/Header'
-import NotificationsList from './NotificationsList'
-const IS_ANDROID = Platform.OS === 'android'
+import NotificationsList from './NotificationsList';
+// import Loading from '../Loading/index'
+import Apirequest from '../Common/Apirequest'
+const IS_ANDROID = Platform.OS === 'android';
 import metrics from '../../config/metrics';
-const IMAGE_WIDTH = metrics.DEVICE_WIDTH * 0.05
-const header_height = metrics.DEVICE_HEIGHT * 0.1
+const IMAGE_WIDTH = metrics.DEVICE_WIDTH * 0.05;
+const header_height = metrics.DEVICE_HEIGHT * 0.1;
 
-export default class MyCalender extends Component {
+class Notification extends Component {
     constructor(props) {
         super(props);
         this.state = {
             visibleModal: false,
-            scrollOffset: ''
+            scrollOffset: '',
+            notificationData: [],
+            isloading: true
         }
+    }
+    componentDidMount() {
+        let data = [];
+        var token = this.props.token;
+        Apirequest.getNotifications(token, resolve => {
+            if (resolve.data) {
+                // console.log("resolve", resolve.data.data)
+                var datasource = resolve.data.data;
+                for (var i = 0; i < datasource.length; i++) {
+                    let dataobject = {};
+                    dataobject._id = datasource[i] && datasource[i]._id ? datasource[i]._id : '';
+                    dataobject.updatedAt = datasource[i] && datasource[i].updatedAt ? datasource[i].updatedAt : '';
+                    dataobject.createdAt = datasource[i] && datasource[i].createdAt ? datasource[i].createdAt : '';
+                    dataobject.senderId = datasource[i] && datasource[i].senderId && datasource[i].senderId._id ? datasource[i].senderId._id : '';
+                    dataobject.uri = datasource[i] && datasource[i].senderId && datasource[i].senderId.profilePic ? datasource[i].senderId.profilePic : null;
+                    dataobject.receiverId = datasource[i] && datasource[i].receiverId ? datasource[i].receiverId : '';
+                    dataobject.notificationText = datasource[i] && datasource[i].notificationText ? datasource[i].notificationText : '';
+                    dataobject.type = datasource[i] && datasource[i].type ? datasource[i].type : '';
+                    dataobject.isSeen = datasource[i] && datasource[i].isSeen ? datasource[i].isSeen : false;
+                    // console.log("getNotifications", dataobject)
+                    data.push(dataobject)
+                }
+                console.log("getNotifications", data)
+                this.setState({
+                    notificationData: data,
+                    isloading: false
+                })
+            }
+        }, reject => {
+            console.log("reject", reject)
+
+        })
     }
     handleScrollTo = p => {
         if (this.scrollViewRef) {
@@ -37,15 +74,17 @@ export default class MyCalender extends Component {
     };
     handleOnScroll = event => {
         console.log("event.nativeEvent.contentOffset.y");
-
         this.setState({
             scrollOffset: event.nativeEvent.contentOffset.y
         });
     };
 
     render() {
-        console.log("devices are", Platform)
+        const { notificationData, isloading } = this.state;
         const { navigate } = this.props.navigation;
+        // if(isloading){
+        //     return <Loading/>
+        // }
         return (
             <View style={styles.container}>
                 <LinearGradient
@@ -56,8 +95,8 @@ export default class MyCalender extends Component {
                         // marginBottom : IS_ANDROID ? 30 :20
                     }}>
                     <SafeAreaView>
-                        <Header 
-                        isSearcrchbar={false}
+                        <Header
+                            isSearcrchbar={false}
                             left={
                                 <TouchableOpacity
                                     onPress={() => this.props.navigation.openDrawer()}
@@ -83,21 +122,21 @@ export default class MyCalender extends Component {
                                 </View>
                             }
                             right={
-                                <TouchableOpacity 
-                                onPress={()=>this.setState({visibleModal: true})}
-                                style={{
-                                    width: "15%",
-                                    backgroundColor: "transparent",
-                                    justifyContent: "center",
-                                    alignItems: "center"
-                                }}>
+                                <TouchableOpacity
+                                    onPress={() => this.setState({ visibleModal: true })}
+                                    style={{
+                                        width: "15%",
+                                        backgroundColor: "transparent",
+                                        justifyContent: "center",
+                                        alignItems: "center"
+                                    }}>
                                 </TouchableOpacity>
                             }
                         />
                     </SafeAreaView>
                 </LinearGradient>
-                <NotificationsList/>
-                <SafeAreaView/>
+                <NotificationsList notificationData={notificationData} isloading={isloading} token={this.props.token} navigate={ navigate }/>
+                <SafeAreaView />
             </View>
         );
     }
@@ -114,3 +153,11 @@ const styles = StyleSheet.create({
         margin: 0
     },
 });
+mapStateToProps = (state) => {
+    return {
+        language: state.language.defaultlanguage,
+        data: state.auth.data,
+        token: state.auth.token
+    }
+}
+export default connect(mapStateToProps)(Notification);
