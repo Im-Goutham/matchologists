@@ -157,5 +157,66 @@ const ApiRequest = {
             console.log("error", error)
         })
     },
+    saveUserSettings(token, data, resolve, reject){
+        let header = {
+            'Authorization': token,
+        }
+        ApiManager.callwebservice('POST', 'api/saveUserSettings', header, data, (success) => {
+            let response = JSON.parse(success._bodyInit);
+            if (response.status === 0) {
+                return reject(response);
+            } else if (response.status === 1) {
+                return resolve(response);
+            }
+        }, (error) => {
+            console.log("error", error)
+        })
+    },
+// remaining
+    getProfileQuestionsAccordingToStatus(){
+        let header = {
+            'Authorization': token,
+        }
+        ApiManager.callwebservice('POST', 'api/getProfileQuestionsAccordingToStatus', header, data, (success) => {
+            let response = JSON.parse(success._bodyInit);
+            if (response.status === 0) {
+                return reject(response);
+            } else if (response.status === 1) {
+                return resolve(response);
+            }
+        }, (error) => {
+            console.log("error", error)
+        })
+    },
+    getUserPreference(){
+        let header = {
+            'Authorization': token,
+        }
+        ApiManager.callwebservice('POST', 'api/getUserPreference', header, data, (success) => {
+            let response = JSON.parse(success._bodyInit);
+            if (response.status === 0) {
+                return reject(response);
+            } else if (response.status === 1) {
+                return resolve(response);
+            }
+        }, (error) => {
+            console.log("error", error)
+        })
+    },
+    getAboutYourPartnerQuestions(){
+        let header = {
+            'Authorization': token,
+        }
+        ApiManager.callwebservice('POST', 'api/getUserPreference', header, data, (success) => {
+            let response = JSON.parse(success._bodyInit);
+            if (response.status === 0) {
+                return reject(response);
+            } else if (response.status === 1) {
+                return resolve(response);
+            }
+        }, (error) => {
+            console.log("error", error)
+        })
+    }
 }
 module.exports=ApiRequest

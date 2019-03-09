@@ -14,6 +14,7 @@ import {
     TouchableOpacity,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
+import { connect } from 'react-redux'
 import i18n from 'react-native-i18n'
 import Header from '../Common/Header'
 import SettingsList from './settingslist'
@@ -22,7 +23,7 @@ import metrics from '../../config/metrics';
 const IMAGE_WIDTH = metrics.DEVICE_WIDTH * 0.05
 const header_height = metrics.DEVICE_HEIGHT * 0.1
 
-export default class SettingScreen extends Component {
+class SettingScreen extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -37,7 +38,6 @@ export default class SettingScreen extends Component {
     };
     handleOnScroll = event => {
         console.log("event.nativeEvent.contentOffset.y");
-
         this.setState({
             scrollOffset: event.nativeEvent.contentOffset.y
         });
@@ -46,15 +46,14 @@ export default class SettingScreen extends Component {
     render() {
         console.log("devices are", Platform)
         const { navigate } = this.props.navigation;
+        const { token } = this.props;
         return (
             <View style={styles.container}>
                 <LinearGradient
                     colors={['#DB3D88', '#273174']}
                     start={{ x: 0, y: 1 }}
                     end={{ x: 1, y: 1 }}
-                    style={{
-                        // marginBottom : IS_ANDROID ? 30 :20
-                    }}>
+                    style={{ }}>
                     <SafeAreaView>
                         <Header 
                         isSearcrchbar={false}
@@ -96,7 +95,7 @@ export default class SettingScreen extends Component {
                         />
                     </SafeAreaView>
                 </LinearGradient>
-                <SettingsList/> 
+                <SettingsList token={token}/> 
                 <SafeAreaView/>
             </View>
         );
@@ -114,3 +113,11 @@ const styles = StyleSheet.create({
         margin: 0
     },
 });
+mapStateToProps = (state) => {
+    return {
+        language: state.language.defaultlanguage,
+        data: state.auth.data,
+        token: state.auth.token
+    }
+}
+export default connect(mapStateToProps)(SettingScreen);

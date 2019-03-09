@@ -82,6 +82,7 @@
     "invitefriendtitle":"Invite Friend",
     "forgotpasswordHeader":"Forgot Password",
     "aboutparnerLabel":"ABOUT YOUR PARTNER",
+    "compatibilitypercentagelable": "Compatibility Percentage",
     "validation": {
         "emaillabel":"Email is required", 
         "emailtitle": "Please provide an email address",

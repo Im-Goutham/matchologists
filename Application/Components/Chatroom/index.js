@@ -1,10 +1,26 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux'
-import { View, Button, TextInput, StyleSheet, FlatList, Text, Image, Dimensions, Keyboard, TouchableOpacity, Platform, TouchableWithoutFeedback, KeyboardAvoidingView, AsyncStorage } from 'react-native';
+import { 
+    View, 
+    Button,
+    SafeAreaView, 
+    TextInput, 
+    StyleSheet, 
+    Animated,
+    FlatList, 
+    Text, 
+    Image, 
+    Dimensions, 
+    Keyboard, 
+    TouchableOpacity, 
+    Platform, 
+    TouchableWithoutFeedback, 
+    KeyboardAvoidingView, 
+    AsyncStorage 
+} from 'react-native';
 import { OTSession } from 'opentok-react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import PopupMenu from '../Userprofile/options';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import CustomTextInput from '../CustomTextInput'
 import ApiRequest from '../Common/Apirequest';
 import ChatHeader from './ChatHeader';
@@ -178,8 +194,8 @@ class Chatroom extends Component {
         }
         console.log("this.state.messages", this.state.messages)
         return (
-            <View style={{ flex: 1, backgroundColor: "#fff" }}>
-                {/* <View style={{ height: "90%" }}> */}
+            <Animated.View style={{ flex: 1, backgroundColor: "#fff" }}>
+              <SafeAreaView/>
                 <ChatHeader
                     left={
                         <TouchableOpacity
@@ -211,9 +227,6 @@ class Chatroom extends Component {
                         <View
                             style={{
                                 width: "26%",
-                                // backgroundColor: "#009933",
-                                // justifyContent: "center",
-                                // alignItems: "center",
                                 flexDirection: "row"
                             }}>
                             <TouchableOpacity
@@ -234,15 +247,6 @@ class Chatroom extends Component {
                                     actions={[this.deletePost, this.cancel]}
                                 />
                             </View>
-                            {/* <TouchableOpacity
-                                    style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
-                                    onPress={() => console.log()}>
-                                    <Image
-                                        source={require('../../images/icons/vertical-dot.png')}
-                                        style={{ width: 28, height: 18, left: 5 }}
-                                        resizeMethod="resize"
-                                        resizeMode="contain" />
-                                </TouchableOpacity> */}
                         </View>
                     }
                 />
@@ -260,14 +264,11 @@ class Chatroom extends Component {
                 <FlatList
                     ref="flatList1"
                     style={{ width: '100%', paddingHorizontal: 8, marginBottom: 80 }}
-                    // inverted
                     data={this.state.messages}
                     renderItem={this._renderItem}
                     keyExtractor={(item, index) => index.toString()}
                 // onLayout={() => this.flatList1.scrollToEnd({animated: true})}
-
                 />
-                {/* </View> */}
                 {
                     Platform.OS === 'ios' ?
                         <KeyboardAvoidingView style={{ position: 'absolute', left: 0, right: 0, bottom: 0 }} behavior="position">
@@ -316,8 +317,7 @@ class Chatroom extends Component {
                             </View>
                         </KeyboardAvoidingView>
                 }
-
-            </View>
+            </Animated.View>
         );
     }
 }
