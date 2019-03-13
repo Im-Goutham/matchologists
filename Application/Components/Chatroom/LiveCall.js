@@ -25,7 +25,7 @@ export default class LiveCall extends Component {
         };
         this.publisherEventHandlers = {
             audioLevel: event => {
-                console.log('Publisher stream created!', event);
+                console.log('Publisher stream audioLevel!', event);
             },
             error: event => {
                 console.log('Publisher stream destroyed!', event);
@@ -49,14 +49,20 @@ export default class LiveCall extends Component {
                 console.log('Stream created!', event);
             },
             streamDestroyed: event => {
+                this.videocallisend(event)
                 console.log('Stream destroyed!', event);
             },
         };
+    }
+    videocallisend(event){
+        const { goBack, state } = this.props.navigation;
+        goBack()
     }
 
     render() {
         const { goBack, state } = this.props.navigation;
         const { sessionId, token } = state.params;
+        console.log("state", state);
         console.log("sessionId", sessionId);
         console.log("token", token);
         return (

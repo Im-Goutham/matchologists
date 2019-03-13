@@ -40,7 +40,7 @@ export default class FriendrequestFeedback extends BaseFormComponent {
         super(props);
         this.state = {
             questionData: [],
-            questionindex: 1,
+            questionindex: 0,
             isloading: true,
             questions: '',
             questionNum: '',
@@ -54,7 +54,7 @@ export default class FriendrequestFeedback extends BaseFormComponent {
         var token = state.params.token;
         var data = state.params.data;
         Apirequest.getFeedbackQuestions(token, 'invitefeedback', resolve => {
-            // console.log(resolve.data)
+            console.log("getFeedbackQuestions_resolve", resolve)
             if (resolve.data && resolve.data.questionAnswers) {
                 this.setState({
                     questionData: resolve.data.questionAnswers ? resolve.data.questionAnswers : [],
@@ -62,6 +62,8 @@ export default class FriendrequestFeedback extends BaseFormComponent {
                 })
             }
         }, reject => {
+            console.log("getFeedbackQuestions_reject", reject)
+
             this.setState({
                 questionData: [],
                 isloading: false
@@ -69,29 +71,59 @@ export default class FriendrequestFeedback extends BaseFormComponent {
             console.log(reject)
         })
     }
+
+    updateNotificationStatus = () => {
+        const { questionData, questionindex } = this.state;
+        const { state, goBack } = this.props.navigation
+        var token = state.params.token;
+        var notificationId = state.params.data;
+        var Data = {
+            "notificationIds": [notificationId._id]
+        }
+        Apirequest.updateNotificationStatus(token, Data, resolve => {
+            data = {}
+            console.log("questionindex", questionindex)
+            console.log("questionData_length", questionData.length)
+            console.log("updateNotificationStatus_resolve", resolve)
+            state.params.checkemitRequest()
+
+            goBack()
+        }, reject => {
+            console.log("updateNotificationStatus_reject", reject)
+        })
+    }
     selectanswerForRadio = async (answer, availableanswer) => {
         const { questionData, questionindex } = this.state;
         const { state } = this.props.navigation
         var usersData = state.params.data;
 
-        let currentQuestion = questionData[questionindex - 1];
-        await _.map(currentQuestion.answers, (answer) => {
-            return answer.selected = false;
-        });
+        let currentQuestion = questionData[questionindex];
+        await _.map(currentQuestion.answers, (answer) => { return answer.selected = false });
         data.feedbackReceiver = usersData.receiverId;
         data.feedbackType = currentQuestion._id.category;
         data.questionId = currentQuestion._id._id;
         data.answerId = answer._id;
         data.variableValue = {};
-        // console.log("selectanswerForRadio", data);
         var indexofnextQuestion = _.findIndex(questionData, (x) => { return x._id._id === answer.nextQuestionId });
         if (answer) {
             answer.selected = true;
         }
         this.setState({
-            questionindex: ++indexofnextQuestion,
+            questionindex: indexofnextQuestion,
             questionData: this.state.questionData
-        }, () => this.saveUserFeedback())
+        }, () => this.saveFeedback())
+    }
+    saveFeedback() {
+        const { questionData, questionindex } = this.state;
+        const { state, goBack } = this.props.navigation
+        var token = state.params.token;
+        Apirequest.saveUserFeedback(token, data, resolve => {
+            console.log("resolve", resolve)
+            data = {}
+        }, reject => {
+            console.log("error", reject)
+        })
+
     }
     renderRadioOption(availableanswer) {
         return availableanswer.map((answer, index) => {
@@ -120,22 +152,6 @@ export default class FriendrequestFeedback extends BaseFormComponent {
             </View>
         })
     }
-    refreshPage(answer) {
-        // const { questionData, questionindex } = this.state;
-        // const { state } = this.props.navigation
-        // var usersData = state.params.data;
-        // let currentQuestion = questionData[questionindex - 1];
-        // data.feedbackReceiver = usersData.receiverId;
-        // data.feedbackType = currentQuestion._id.category;
-        // data.questionId = currentQuestion._id._id;
-        // data.answerId = answer._id;
-        // data.variableValue = { days: answer.dynamicvalue };
-        // this.setState({
-        //     questionData: this.state.questionData,
-        //     saveanswer: true
-        // })
-
-    }
     renderMultipleOption(availableanswer) {
         return <Checkbox
             selectedDate={this.state.selectedDate}
@@ -143,9 +159,6 @@ export default class FriendrequestFeedback extends BaseFormComponent {
             data={availableanswer}
             getmyvalue={this.getmyvalue.bind(this)}
             selectAnswer={this.selectAnswerCheckbox.bind(this)}
-            // callmyCheckbox={this.callmyCheckbox.bind(this)}
-        // refreshPage={this.refreshPage.bind(this)}
-        // setActiveButton={this.setActiveButton.bind(this)}
         />
 
     }
@@ -153,51 +166,98 @@ export default class FriendrequestFeedback extends BaseFormComponent {
         const { questionData, questionindex } = this.state;
         const { state } = this.props.navigation
         var usersData = state.params.data;
-        let currentQuestion = questionData[questionindex - 1];
+        let currentQuestion = questionData[questionindex];
 
-        answer && answer.selected ? answer.selected = false : answer ? answer.selected = true : "";
+        console.log("currentQuestion", answer)
+
+        _.map(currentQuestion.answers, (answer) => { return answer.selected = false });
+
+        answer && answer.selected ? answer.selected = false : answer ? answer.selected = true : undefined;
         answer && answer.selected ? undefined : answer.dynamicvalue = 2
 
-        let selected_answer_ids = [];
-        if (currentQuestion.answers) {
-            selected_answer_ids = _.filter(currentQuestion.answers, (ans) => { return ans.selected });
-            selected_answer_ids = _.map(selected_answer_ids, (ans) => { return ans && ans._id ? ans._id : "" });
-        }
         data.feedbackReceiver = usersData.receiverId;
         data.feedbackType = currentQuestion._id.category;
         data.questionId = currentQuestion._id._id;
-        data.answerId = selected_answer_ids;
-        data.variableValue = { days: answer.dynamicvalue };
+        data.answerId = answer._id;
+        answer.containVariable ? data.variableValue = { days: answer.dynamicvalue } : data.variableValue = {}
         this.setState({
             questionData: this.state.questionData,
-            saveanswer: !selected_answer_ids.length ? false : true
+            saveanswer: !answer.selected ? false : true
         });
-        // console.log("selectAnswerCheckbox_selected_answer_ids", selected_answer_ids)
-        // console.log("selectAnswerCheckbox_questionData", questionData)
-        // console.log("selectAnswerCheckbox_currentQuestion", currentQuestion)
-
+        console.log("sendDatatoserver", data)
     }
+
+    //    selectAnswerCheckbox(answer) {
+    //         const { questionData, questionindex } = this.state;
+    //         const { state } = this.props.navigation
+    //         var usersData = state.params.data;
+    //         let currentQuestion = questionData[questionindex - 1];
+    //         console.log("selectAnswerCheckbox", answer)
+
+    //         // answer && answer.selected ? answer.selected = false : answer ? answer.selected = true : undefined;
+    //         // answer && answer.selected ? undefined : answer.dynamicvalue = 2
+
+    //         let selected_answer_ids = [];
+    //         // if (currentQuestion.answers) {
+    //             // selected_answer_ids = _.filter(currentQuestion.answers, (ans) => { return ans.selected });
+    //         //     selected_answer_ids = _.map(selected_answer_ids, (ans) => { return ans && ans._id ? ans._id : "" });
+    //         // }
+    //         _.map(currentQuestion.answers, (answer) => { return answer.selected = false });
+    //         answer && answer.selected ? answer.selected = false : answer ? answer.selected = true : undefined;
+    //         answer && answer.selected ? undefined : answer.dynamicvalue = 2
+
+    //         data.feedbackReceiver = usersData.receiverId;
+    //         data.feedbackType = currentQuestion._id.category;
+    //         data.questionId = currentQuestion._id._id;
+    //         data.answerId = answer._id;
+    //         answer.containVariable ? data.variableValue = { days: answer.dynamicvalue } : data.variableValue = {}
+    //         // if (answer) {
+    //         //     answer.selected = true;
+    //         // }
+
+    //         this.setState({
+    //             questionData: this.state.questionData,
+    //             saveanswer: !answer.selected ? false : true
+    //         });
+    //         console.log("sendDatatoserver", data)
+    //         // console.log("selectAnswerCheckbox_questionData", questionData)
+    //         // console.log("selectAnswerCheckbox_currentQuestion", currentQuestion)
+
+    //     }
     // callmyCheckbox(data) {
     //     console.log("callmyCheckbox", data)
     // }
     // setActiveButton() { }
-    saveUserFeedback() {
+    saveUserFeedback(availableanswer) {
         const { questionData, questionindex } = this.state;
         const { state, goBack } = this.props.navigation
         var token = state.params.token;
+        let currentQuestion = questionData[questionindex];
+
+        console.log("saveUserFeedback_data", data)
+        console.log("currentQuestion", currentQuestion)
+
         Apirequest.saveUserFeedback(token, data, resolve => {
+            console.log("saveUserFeedback_resolve", resolve)
             this.showSimpleMessage("", { backgroundColor: global.gradientsecondry }, "", resolve.message)
-            data = {}
-            if (questionindex >= questionData.length ) {
-                goBack()
+            console.log("currentQuestion_isPositive", currentQuestion._id.isPositive)
+            console.log("currentQuestion_isNegative", currentQuestion._id.isNegative)
+            if (currentQuestion && currentQuestion._id && currentQuestion._id.isPositive) {
+                console.log("going to positive")
+                this.updateNotificationStatus()
             }
+            else if (currentQuestion && currentQuestion._id && currentQuestion._id.isNegative) {
+                console.log("going to negative")
+                this.updateNotificationStatus()
+            }
+
         }, reject => {
-            console.log("reject", reject)
+            console.log("saveUserFeedback_reject", reject)
             this.showSimpleMessage("", { backgroundColor: global.gradientsecondry }, "", reject.message)
             // remove this after complete 
-            if (questionindex >= questionData.length ) {
-                goBack()
-            }
+            // if (questionindex >= questionData.length) {
+            //     goBack()
+            // }
             // 
 
         })
@@ -237,12 +297,13 @@ export default class FriendrequestFeedback extends BaseFormComponent {
         const { goBack, state } = this.props.navigation;
         const { questionData, questionindex } = this.state;
         var invitationname = state.params.invitationname;
+        var data = state.params.data;
         if (this.state.isloading) {
             return <Loading />
         }
-        let currentQuestion = questionData[questionindex - 1];
-        let availableanswer = questionData[questionindex - 1].answers;
-        console.log("currentQuestion", currentQuestion)
+        let currentQuestion = questionData[questionindex];
+        let availableanswer = questionData[questionindex].answers;
+        console.log("data from navigation", data)
         return (
             <>
                 <SafeAreaView style={{ flex: 1, backgroundColor: "rgba(255,255,255,100)" }}>
@@ -277,8 +338,11 @@ export default class FriendrequestFeedback extends BaseFormComponent {
                                     colors={[global.gradientprimary, global.gradientsecondry]}
                                     start={{ x: 0, y: 1 }}
                                     end={{ x: 1, y: 1 }}
-                                    style={{ borderRadius: 5, marginBottom: 10 }}>
-                                    <TouchableOpacity style={{ height: 50, justifyContent: "center", alignItems: "center", }} disabled={false} onPress={() => this.saveUserFeedback()} >
+                                    style={{ borderRadius: 5, marginBottom: 10, marginTop: 16 }}>
+                                    <TouchableOpacity
+                                        style={{ height: 50, justifyContent: "center", alignItems: "center", }}
+                                        disabled={false}
+                                        onPress={this.saveUserFeedback.bind(this, availableanswer)} >
                                         <Text style={{ color: "#fff", fontSize: 17, fontFamily: 'Avenir-Heavy' }}>{"Save"}</Text>
                                     </TouchableOpacity>
                                 </LinearGradient>
@@ -326,6 +390,13 @@ const styles = {
         fontSize: 17,
         fontFamily: 'Avenir-Medium',
     },
+    row: {
+        flex: 1,
+        justifyContent: 'space-between',
+        flexDirection: 'row',
+        paddingVertical: 5,
+        marginVertical: 10
+    }
 }
 class Checkbox extends Component {
     constructor(props) {
@@ -335,23 +406,12 @@ class Checkbox extends Component {
             showDate: false
         }
     }
-    uncheckData(key, data) {
-        let options = this.state.selectedOptions;
-        let array_index = this.state.selectedOptions.indexOf(data._id)
-        options.splice(array_index, 1);
-        data.selected = false;
-        this.props.callmyCheckbox(this.state.selectedOptions)
-    }
-
-    // selectAnswer(key, data) {
+    // uncheckData(key, data) {
     //     let options = this.state.selectedOptions;
-    //     data.selected = true;
-    //     this.state.selectedOptions.push(data._id)
-    //     this.setState({
-    //         selectedanswer: data._id
-    //     })
+    //     let array_index = this.state.selectedOptions.indexOf(data._id)
+    //     options.splice(array_index, 1);
+    //     data.selected = false;
     //     this.props.callmyCheckbox(this.state.selectedOptions)
-    //     // this.props.setActiveButton()
     // }
     componentDidMount() {
         this.state.selectedOptions = [];
@@ -372,7 +432,6 @@ class Checkbox extends Component {
     }
     selectOptions(itemValue, itemIndex, answers) {
         answers.dynamicvalue = itemValue;
-        // answers.selected = true;
         this.setState({ showDate: false })
         this.props.selectAnswer(answers)
     }
@@ -398,19 +457,9 @@ class Checkbox extends Component {
             return <View key={key} style={{}}>
                 {
                     answer.selected ?
-                        <TouchableOpacity
-                            style={{
-                                flex: 1,
-                                justifyContent: 'space-between',
-                                flexDirection: 'row',
-                                paddingVertical: 5,
-                                marginVertical: 10
-                            }}
-                            onPress={() => this.props.selectAnswer(answer)}
-                        >
+                        <TouchableOpacity style={styles.row} onPress={() => this.props.selectAnswer(answer)}>
                             <View style={{ backgroundColor: "transparent", flex: 2 }}>
-                                <Image
-                                    source={checked}
+                                <Image source={checked}
                                     style={{
                                         width: 24, height: 24,
                                     }}
@@ -424,14 +473,7 @@ class Checkbox extends Component {
                         </TouchableOpacity>
                         :
                         answer.containVariable ?
-                            <View
-                                style={{
-                                    flex: 1,
-                                    justifyContent: 'space-between',
-                                    flexDirection: 'row',
-                                    paddingVertical: 5,
-                                    marginVertical: 10
-                                }}>
+                            <View style={styles.row}>
                                 <View style={{ backgroundColor: "transparent", flex: 2 }}>
                                     <Image
                                         source={unchecked}
@@ -505,17 +547,7 @@ class Checkbox extends Component {
                                 }
                             </View>
                             :
-                            <TouchableOpacity
-                                style={{
-                                    flex: 1,
-                                    justifyContent: 'space-between',
-                                    flexDirection: 'row',
-                                    // backgroundColor:"red", 
-                                    paddingVertical: 5,
-                                    marginVertical: 10
-                                }}
-                                onPress={() => this.props.selectAnswer(answer)}
-                            >
+                            <TouchableOpacity  style={styles.row} onPress={() => this.props.selectAnswer(answer)}>
                                 <View style={{ backgroundColor: "transparent", flex: 2 }}>
                                     <Image
                                         source={unchecked}
@@ -531,6 +563,7 @@ class Checkbox extends Component {
                                     <Text style={[styles.answerTxt]}>{answer.containVariable ? _.replace(answer.answer, new RegExp("{{days}}"), answer.dynamicvalue ? answer.dynamicvalue : 2) : answer.answer} </Text>{}
                                 </View>
                             </TouchableOpacity>
+                            
                 }
             </View>
         })

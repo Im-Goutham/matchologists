@@ -1,96 +1,10 @@
 import React, { Component } from "react";
 import { View, Text, FlatList, Image, StyleSheet, TouchableOpacity, ScrollView } from "react-native";
-import search_result from '../../images/search_result.png'
-import search_result_2 from '../../images/search_result_2.png'
-import search_result_3 from '../../images/search_result_3.png'
-import search_result_4 from '../../images/search_result.png'
-import search_result_5 from '../../images/search_result_4.png'
-let data = [
-    {
-        'id': 1,
-        "gender": "male",
-        "name": {
-            "first": "Danny",
-            "last": "Rice"
-        },
-        "match": {
-            "matchfound": 45
-        },
-        "picture": {
-            "thumbnail": search_result
-        }
-    },
-    {
-        'id': 2,
-        "gender": "male",
-        "name": {
-            "first": "Jane",
-            "last": "Gibson"
-        },
-        "match": {
-            "matchfound": 90
-        },
-        "picture": {
-            "thumbnail": search_result_2
-        }
-    },
-    {
-        'id': 3,
-        "gender": "male",
-        "name": {
-            "first": "Sean",
-            "last": "Potter"
-        },
-        "match": {
-            "matchfound": 87
-        },
-        "picture": {
-            "thumbnail": search_result_3
-        }
-    },
-    {
-        'id': 4,
-        "gender": "male",
-        "name": {
-            "first": "Betty",
-            "last": "Schwartz"
-        },
-        "match": {
-            "matchfound": 50
-        },
-        "picture": {
-            "thumbnail": search_result_4
-        }
-    },
-    {
-        'id': 5,
-        "gender": "male",
-        "name": {
-            "first": "Clara ",
-            "last": "Griffin"
-        },
-        "match": {
-            "matchfound": 22
-        },
-        "picture": {
-            "thumbnail": search_result_5
-        }
-    },
-    {
-        'id': 6,
-        "gender": "male",
-        "name": {
-            "first": "Clara ",
-            "last": "Griffin"
-        },
-        "match": {
-            "matchfound": 22
-        },
-        "picture": {
-            "thumbnail": search_result_5
-        }
-    },
-]
+// import search_result from '../../images/search_result.png'
+// import search_result_2 from '../../images/search_result_2.png'
+// import search_result_3 from '../../images/search_result_3.png'
+// import search_result_4 from '../../images/search_result.png'
+// import search_result_5 from '../../images/search_result_4.png'
 
 class OnlineUsers extends Component {
     constructor(props) {
@@ -114,7 +28,12 @@ class OnlineUsers extends Component {
         const { navigate } = this.props.navigation;
         return (
             <TouchableOpacity
-                onPress={() => navigate('chatscreen', { userId: item._id, opentokToken: this.props.opentokToken, fullName: item.fullName })}
+                onPress={() => navigate('chatscreen', { 
+                    userId: item._id, 
+                    opentokToken: this.props.opentokToken, 
+                    fullName: item.fullName ,
+                    image : item.uri
+                })}
                 key={index}
                 style={{ flex: 1, alignItems: "center", justifyContent: "space-around", paddingHorizontal: 8 }}>
                 <View style={{ alignItems: "center",  shadowOffset: { width: 0, height: 2 },
@@ -179,9 +98,15 @@ class Userlist extends Component {
     };
     renderRow = (item, index) => {
         const { navigate } = this.props.navigation;
+        console.log("chatscreen", item)
         return (
             <TouchableOpacity
-                onPress={() => navigate('chatscreen', { userId: item._id, opentokToken: this.props.opentokToken, fullName: item.fullName })}
+                onPress={() => navigate('chatscreen', { 
+                    userId: item._id, 
+                    opentokToken: this.props.opentokToken, 
+                    fullName: item.fullName,
+                    image : item.uri
+                })}
                 key={index}
                 style={{ flex: 1, flexDirection: "row", paddingVertical: 16 }}>
                 <View style={{ flex: 2, alignItems: "center" }}>
@@ -191,8 +116,7 @@ class Userlist extends Component {
                             source={item.uri ? { uri: item.uri } : require('../../images/applogo.png')}
                         />
                     </View>
-
-                    <Badge />
+                    {/* <Badge /> */}
                 </View>
                 <View style={{
                     flex: 6,

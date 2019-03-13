@@ -35,25 +35,48 @@ class Notification extends Component {
             isloading: true
         }
     }
-    componentDidMount() {
+    
+    componentDidMount = async () => {
+        this.getNotifications()
+    }
+    getChatSessionId(callback){
+        this.setState({
+            isloading: true
+        })
+        const { navigate } = this.props.navigation;
+        let userid = callback.senderId;
+        console.log("callback_senderId", userid)
+        Apirequest.getChatSessionId(this.props.token, userid, (resolve) => {
+            console.log("getChatSessionId_resolve", resolve.session)
+            this.setState({
+                isloading: false
+            },()=> navigate('livecall', { 
+                sessionId : resolve.data && resolve.data.session ? resolve.data.session : '', 
+                token : resolve.data && resolve.data.token ? resolve.data.token : ''
+            }))
+        }, (reject) => {
+            console.log("getChatSessionId_reject", reject)
+        })
+    }
+    getNotifications() {
         let data = [];
         var token = this.props.token;
         Apirequest.getNotifications(token, resolve => {
             if (resolve.data) {
-                // console.log("resolve", resolve.data.data)
+                console.log("resolve", resolve.data.data)
                 var datasource = resolve.data.data;
                 for (var i = 0; i < datasource.length; i++) {
                     let dataobject = {};
                     dataobject._id = datasource[i] && datasource[i]._id ? datasource[i]._id : '';
                     dataobject.updatedAt = datasource[i] && datasource[i].updatedAt ? datasource[i].updatedAt : '';
                     dataobject.createdAt = datasource[i] && datasource[i].createdAt ? datasource[i].createdAt : '';
-                    dataobject.senderId = datasource[i] && datasource[i].senderId && datasource[i].senderId._id ? datasource[i].senderId._id : '';
+                    dataobject.senderId = datasource[i] && datasource[i].senderId && datasource[i].senderId._id ? datasource[i].senderId._id : ''; dataobject.senderId = datasource[i] && datasource[i].senderId && datasource[i].senderId._id ? datasource[i].senderId._id : '';
+                    dataobject.fullname = datasource[i] && datasource[i].senderId && datasource[i].senderId.fullName ? datasource[i].senderId.fullName : '';
                     dataobject.uri = datasource[i] && datasource[i].senderId && datasource[i].senderId.profilePic ? datasource[i].senderId.profilePic : null;
                     dataobject.receiverId = datasource[i] && datasource[i].receiverId ? datasource[i].receiverId : '';
                     dataobject.notificationText = datasource[i] && datasource[i].notificationText ? datasource[i].notificationText : '';
                     dataobject.type = datasource[i] && datasource[i].type ? datasource[i].type : '';
                     dataobject.isSeen = datasource[i] && datasource[i].isSeen ? datasource[i].isSeen : false;
-                    // console.log("getNotifications", dataobject)
                     data.push(dataobject)
                 }
                 console.log("getNotifications", data)
@@ -63,10 +86,42 @@ class Notification extends Component {
                 })
             }
         }, reject => {
+            this.setState({
+                notificationData: [],
+                isloading: true
+            })
             console.log("reject", reject)
-
         })
     }
+
+    respondToVideoCallPermission(callback, accepttype) {
+        console.log("respondToVideoCallPermission", callback)
+        const { navigate } = this.props.navigation;
+        var data = {
+            "permissionRequesterId": callback.senderId,
+            "isAccept": accepttype
+        }
+        Apirequest.respondToVideoCallPermission(this.props.token, data, resolve => {
+            this.updateNotificationStatus(callback)
+            this.getChatSessionId(callback)
+            // navigate("livecall")
+
+        }, reject => {
+            console.log("respondToVideoCallPermission_resolve", reject)
+        })
+    }
+    updateNotificationStatus = (callback) => {
+        var token = this.props.token;
+        var data = {
+            "notificationIds": [callback._id]
+        }
+        Apirequest.updateNotificationStatus(token, data, resolve => {
+            console.log("updateNotificationStatus", resolve)
+        }, reject => {
+            console.log(reject)
+        })
+    }
+
     handleScrollTo = p => {
         if (this.scrollViewRef) {
             this.scrollViewRef.scrollTo(p);
@@ -78,13 +133,9 @@ class Notification extends Component {
             scrollOffset: event.nativeEvent.contentOffset.y
         });
     };
-
     render() {
         const { notificationData, isloading } = this.state;
         const { navigate } = this.props.navigation;
-        // if(isloading){
-        //     return <Loading/>
-        // }
         return (
             <View style={styles.container}>
                 <LinearGradient
@@ -135,7 +186,14 @@ class Notification extends Component {
                         />
                     </SafeAreaView>
                 </LinearGradient>
-                <NotificationsList notificationData={notificationData} isloading={isloading} token={this.props.token} navigate={ navigate }/>
+                <NotificationsList
+                    notificationData={notificationData}
+                    isloading={isloading}
+                    getNotifications={this.getNotifications.bind(this)}
+                    token={this.props.token}
+                    navigate={navigate}
+                    respondToVideoCallPermission={this.respondToVideoCallPermission.bind(this)}
+                />
                 <SafeAreaView />
             </View>
         );
@@ -143,10 +201,7 @@ class Notification extends Component {
 }
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
-        // justifyContent: 'center',
-        // alignItems: 'center',
-        // backgroundColor: "#009933" //'rgba(255,255,255, 100)',
+        flex: 1
     },
     bottomModal: {
         justifyContent: "flex-end",

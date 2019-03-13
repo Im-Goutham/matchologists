@@ -157,6 +157,21 @@ const ApiRequest = {
             console.log("error", error)
         })
     },
+    updateNotificationStatus(token, data, resolve, reject){
+        let header = {
+            'Authorization': token,
+        }
+        ApiManager.callwebservice('POST', 'api/updateNotificationStatus', header, data, (success) => {
+            let response = JSON.parse(success._bodyInit);
+            if (response.status === 0) {
+                return reject(response);
+            } else if (response.status === 1) {
+                return resolve(response);
+            }
+        }, (error) => {
+            console.log("error", error)
+        })
+    },
     saveUserSettings(token, data, resolve, reject){
         let header = {
             'Authorization': token,
@@ -172,12 +187,11 @@ const ApiRequest = {
             console.log("error", error)
         })
     },
-// remaining
-    getProfileQuestionsAccordingToStatus(){
+    getFavouriteUsers(token, data, resolve, reject){
         let header = {
             'Authorization': token,
         }
-        ApiManager.callwebservice('POST', 'api/getProfileQuestionsAccordingToStatus', header, data, (success) => {
+        ApiManager.callwebservice('GET', 'api/getFavouriteUsers', header, data, (success) => {
             let response = JSON.parse(success._bodyInit);
             if (response.status === 0) {
                 return reject(response);
@@ -188,11 +202,11 @@ const ApiRequest = {
             console.log("error", error)
         })
     },
-    getUserPreference(){
+    addFavouriteUserAsMonogamous(token, data, resolve, reject){
         let header = {
             'Authorization': token,
         }
-        ApiManager.callwebservice('POST', 'api/getUserPreference', header, data, (success) => {
+        ApiManager.callwebservice('POST', 'api/addFavouriteUserAsMonogamous', header, data, (success) => {
             let response = JSON.parse(success._bodyInit);
             if (response.status === 0) {
                 return reject(response);
@@ -203,11 +217,31 @@ const ApiRequest = {
             console.log("error", error)
         })
     },
-    getAboutYourPartnerQuestions(){
+    removeFavouriteUser(token, data, resolve, reject){
         let header = {
             'Authorization': token,
+            'Content-Type':"application/json"
         }
-        ApiManager.callwebservice('POST', 'api/getUserPreference', header, data, (success) => {
+        // console.log("api/removeFavouriteUser", header)
+        // console.log("api/removeFavouriteUser_data", data)
+        ApiManager.callwebservice('POST', 'api/removeFavouriteUser', header, data, (success) => {
+            let response = JSON.parse(success._bodyInit);
+            // console.log("success_removeFavouriteUser",response)
+            if (response.status === 0) {
+                return reject(response);
+            } else if (response.status === 1) {
+                return resolve(response);
+            }
+        }, (error) => {
+            console.log("error_removeFavouriteUser", error)
+        })
+    },
+    removeMonogamousUser(token, data, resolve, reject){
+        let header = {
+            'Authorization': token,
+            'Content-Type':"application/json"
+        }
+        ApiManager.callwebservice('POST', 'api/removeMonogamousUser', header, data, (success) => {
             let response = JSON.parse(success._bodyInit);
             if (response.status === 0) {
                 return reject(response);
@@ -215,7 +249,56 @@ const ApiRequest = {
                 return resolve(response);
             }
         }, (error) => {
-            console.log("error", error)
+            console.log("error_removeFavouriteUser", error)
+        })
+    },
+    // new call
+    askVideoCallPermission(token, data, resolve, reject){
+        let header = {
+            'Authorization': token,
+            'Content-Type':"application/json"
+        }
+        ApiManager.callwebservice('POST', 'api/askVideoCallPermission', header, data, (success) => {
+            let response = JSON.parse(success._bodyInit);
+            if (response.status === 0) {
+                return reject(response);
+            } else if (response.status === 1) {
+                return resolve(response);
+            }
+        }, (error) => {
+            console.log("error_removeFavouriteUser", error)
+        })
+    },
+    respondToVideoCallPermission(token, data, resolve, reject){
+        let header = {
+            'Authorization': token,
+            'Content-Type':"application/json"
+        }
+        ApiManager.callwebservice('POST', 'api/respondToVideoCallPermission', header, data, (success) => {
+            let response = JSON.parse(success._bodyInit);
+            if (response.status === 0) {
+                return reject(response);
+            } else if (response.status === 1) {
+                return resolve(response);
+            }
+        }, (error) => {
+            console.log("error_removeFavouriteUser", error)
+        })
+    },
+    reportUser(token, data, resolve, reject){
+        let header = {
+            'Authorization': token,
+            'Content-Type':"application/json"
+        }
+        ApiManager.callwebservice('POST', 'api/reportUser', header, data, (success) => {
+            let response = JSON.parse(success._bodyInit);
+            if (response.status === 0) {
+                return reject(response);
+            } else if (response.status === 1) {
+                return resolve(response);
+            }
+        }, (error) => {
+            console.log("error_removeFavouriteUser", error)
         })
     }
 }

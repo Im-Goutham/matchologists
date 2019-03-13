@@ -13,7 +13,7 @@ import NotificationStacknavigation from './NotificationStacknavigation'
 import FeedbackStacknavigation from './FeedbackStacknavigation';
 import WebinarStackNavigation from './WebinarStackNavigation';
 import MessageStackNavigation from './MessageStackNavigation';
-// import Notifications from '../Components/Notifications';
+import Editprofile from '../Components/Basicinfo/Editprofile';
 
 const window_width = metrics.DEVICE_WIDTH
 
@@ -22,9 +22,9 @@ export default createDrawerNavigator(
         homePage: {
             screen: HomestackNavigation
         },
-        // notifications: {
-        //     screen: Notifications
-        // },
+        updateinformation: {
+            screen: Editprofile
+        },
         topprofile: {
             screen: TopProfilestackNavigation
         },

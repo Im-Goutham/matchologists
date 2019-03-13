@@ -14,6 +14,8 @@ import {
     Image,
     Clipboard,
     TouchableOpacity,
+    AlertIOS,
+    ToastAndroid
 } from 'react-native';
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
@@ -42,11 +44,11 @@ let IS_ANDROID = Platform.OS === 'android',
         },
         {
             "label": "top_label",
-            "action_Page": ""
+            "action_Page": "topprofile"
         },
         {
             "label": "mycalender_label",
-            "action_Page": ""
+            "action_Page": "calender"
         },
         {
             "label": "notification_label",
@@ -62,7 +64,7 @@ let IS_ANDROID = Platform.OS === 'android',
         },
         {
             "label": "setting_label",
-            "action_Page": ""
+            "action_Page": "setting"
         },
         {
             "label": "webinar_label",
@@ -70,7 +72,7 @@ let IS_ANDROID = Platform.OS === 'android',
         },
         {
             "label": "editprofilelabel",
-            "action_Page": "basicinfo"
+            "action_Page": "updateinformation"
         },
         {
             "label": "aboutuslabel",
@@ -151,7 +153,7 @@ class Sidebar extends BaseFormComponent {
         };
         let Is_update = true
         console.log("uploadFile", details)
-       await ApiManager.callRnFetchblobFileUploader('POST', 'api/uploadFile', header, details, (progress) => {
+        ApiManager.callRnFetchblobFileUploader('POST', 'api/uploadFile', header, details, (progress) => {
             console.log("uploadFile callRnFetchblobFileUploader progress", progress)
             // this.props.updateUploadingProgress(progress)
         }, (success) => {
@@ -179,7 +181,7 @@ class Sidebar extends BaseFormComponent {
         let header = {
             'Authorization': token
         }
-        await ApiManager.callwebservice('POST', 'api/updateUserProfilePic', header, body, (success) => {
+        ApiManager.callwebservice('POST', 'api/updateUserProfilePic', header, body, (success) => {
             let response = JSON.parse(success._bodyInit),
             userimage= response.data.profilePic;
 
@@ -187,7 +189,7 @@ class Sidebar extends BaseFormComponent {
             if (response.status === 0) {
                 return
             } else if (response.status === 1) {
-                this.showSimpleMessage("", { backgroundColor: "#009933" }, response.message, response.message)
+                this.showSimpleMessage("", { backgroundColor: "#009933" }, '', "profile picture updated successfully")
                 this.props.saveuserProifileimage(userimage)
             }
         }, (error) => {
@@ -233,7 +235,9 @@ class Sidebar extends BaseFormComponent {
                         IS_ANDROID ? undefined :<View style={{ height:20 }}/>}
                     <View style={styles.container}>
                         <View style={styles.profile}>
-                            <TouchableOpacity style={{ overflow: "hidden" ,width: 100, height: 100, alignItems: "center",  justifyContent: "space-around" }} onPress={()=>this.selectPhotoTapped()}>
+                            <TouchableOpacity 
+                            style={{ overflow: "hidden" ,width: 100, height: 100, alignItems: "center",  justifyContent: "space-around" }} 
+                            onPress={()=>this.selectPhotoTapped()}>
                                 <Image
                                     source={this.props.profileimage ? {uri: this.props.profileimage}:require('../../images/applogo.png')}
                                     style={{

@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Platform, Clipboard, AsyncStorage } from "react-native";
+import { View, Platform, Clipboard, AsyncStorage , YellowBox} from "react-native";
 import './i18n/I18n'
 import { Provider } from "react-redux";
 import store from "./store";
@@ -10,8 +10,12 @@ import FCM, { NotificationActionType } from "react-native-fcm";
 import { registerKilledListener, registerAppListener } from "./Listeners/index";
 // import firebaseClient from "./FirebaseClient";
 
+console.ignoredYellowBox = ['Remote debugger'];
 console.reportErrorsAsExceptions = false;
 registerKilledListener();
+YellowBox.ignoreWarnings([
+    'Unrecognized WebSocket connection option(s) `agent`, `perMessageDeflate`, `pfx`, `key`, `passphrase`, `cert`, `ca`, `ciphers`, `rejectUnauthorized`. Did you mean to put these under `headers`?'
+]);
 
 class Root extends React.Component {
 	constructor(props) {
@@ -209,7 +213,7 @@ class Root extends React.Component {
 	// }
 	render() {
 		let { token, tokenCopyFeedback } = this.state;
-		console.log(JSON.stringify(this.state.initNotif))
+		// console.log(JSON.stringify(this.state.initNotif))
 		return (
 			<Provider store={store}>
 				<View style={{ flex: 1 }}>

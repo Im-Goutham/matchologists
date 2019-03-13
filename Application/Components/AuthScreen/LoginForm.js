@@ -254,7 +254,8 @@ class LoginForm extends BaseFormComponent {
             ApiManager.callwebservice('POST', 'api/login', header, details, (success) => {
                 let response = JSON.parse(success._bodyInit),
                     token = response.access_token,
-                    data = response.data;
+                    data = response.data,
+                    userSettings={};
                     console.log("response callwebservice login", data)
                     AsyncStorage.setItem("userId", JSON.stringify(data))
                     // let userimage=   "" ;
@@ -263,13 +264,21 @@ class LoginForm extends BaseFormComponent {
                     return
                 } else if(response.status === 1){
                     let userimage=  response.data.profilePic ? response.data.profilePic : "" ;
+                    userSettings.compatibilityPercentage = response.data.compatibilityPercentage ? response.data.compatibilityPercentage : 0 ;
+                    userSettings.isAccountPrivate = response.data.isAccountPrivate ? response.data.isAccountPrivate : false;
+                    userSettings.newMatchNotification = response.data.newMatchNotification ? response.data.newMatchNotification : false;
+                    userSettings.newMessageNotification = response.data.newMessageNotification ? response.data.newMessageNotification : false;
+                    userSettings.newWinkNotification = response.data.newWinkNotification ? response.data.newWinkNotification : false;
+                    
+                    console.log("userSettings", userSettings)
+                    
                     this.showSimpleMessage("", { backgroundColor: "#009933" }, response.message, response.message)
                     if(response.data.verificationStatus){
                         this.setState({ is_loginSuccess: !this.state.is_loginSuccess})
                         // this.showSimpleMessage("", { backgroundColor: "#009933" }, '', response.message)
                         this.timeOutCall()
+                        AsyncStorage.setItem("localsetting", JSON.stringify(userSettings))
                         this.props.saveuserProifileimage(userimage)
-                        
                         this.props.login(email, password, token, data);    
     
                     }

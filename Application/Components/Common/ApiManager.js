@@ -134,7 +134,6 @@ let ApiManager = {
                 return fnSucess(responseData)
             })
             .catch((errorMessage, statusCode) => { return fnErr(errorMessage) })
-            .done();
     }
 }
 module.exports = ApiManager;

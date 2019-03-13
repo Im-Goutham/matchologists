@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Animated, Easing, AsyncStorage } from "react-native";
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Animated, Easing, AsyncStorage, TouchableWithoutFeedback } from "react-native";
 import CustomSlider from 'react-native-custom-slider';
 import LinearGradient from 'react-native-linear-gradient';
 import i18n from 'react-native-i18n'
@@ -9,6 +9,7 @@ import metrics from '../../config/metrics';
 
 const knobOffset = 25;
 var data = {};
+var localfilter={};
 export default class SettingsList extends Component {
     constructor(props) {
         super(props);
@@ -25,10 +26,15 @@ export default class SettingsList extends Component {
     saveUserSettings = async ()=> {
         var token = this.props.token;
         await AsyncStorage.setItem("localsetting", JSON.stringify(data))
-        await Apirequest.saveUserSettings(token, data, resolve => {
+        await AsyncStorage.setItem("localfilter", JSON.stringify(localfilter))
+        Apirequest.saveUserSettings(token, data, resolve => {
+
             console.log("saveUserSettings_resolve", resolve)
+        
         }, reject => {
+        
             console.log("saveUserSettings_reject", reject)
+        
         })
     }
     componentDidMount() {
@@ -39,45 +45,56 @@ export default class SettingsList extends Component {
     getlocalsetting = async () => {
         try {
             var Data = await AsyncStorage.getItem("localsetting")
-            if (Data && typeof Data == "string") {
-                Data = JSON.parse(Data);
-                // console.log('Data', Data);
-            }
-            console.log('Data', Data);
+            var filterData = await AsyncStorage.getItem("localfilter")
 
+            console.log("filterData", filterData)
+            if (Data && typeof Data == "string" && filterData && typeof filterData == "string") {
+                Data = JSON.parse(Data);
+                filterData = JSON.parse(filterData);
+                data = Data
+                // console.log('Data', Data);
+                this.setState({
+                    compatibilityPercentage : filterData && filterData.matchPercentage ? [parseInt(filterData.matchPercentage)] : [0],
+                    newmatch : Data && Data.newMatchNotification ? Data.newMatchNotification: false,
+                    newmsg : Data && Data.newMessageNotification ? Data.newMessageNotification: false,
+                    newwink : Data && Data.newWinkNotification ? Data.newWinkNotification: false,
+                    privateAccount : Data && Data.isAccountPrivate ? Data.isAccountPrivate: false,
+                })    
+            }
         } catch (error) {
             console.log("error", error)
         }
     }
     newMatch(state) {
         data.newMatchNotification = state
-        this.setState({ newmatch: state })
+        this.setState({ newmatch: state },()=>this.saveUserSettings())
     }
     newMessage(state) {
         data.newMessageNotification = state
-        this.setState({ newmsg: state })
+        this.setState({ newmsg: state },()=>this.saveUserSettings())
     }
     newWink(state) {
         data.newWinkNotification = state
-        this.setState({ newwink: state })
+        this.setState({ newwink: state },()=>this.saveUserSettings())
     }
     accontSetting(state) {
         data.isAccountPrivate = state;
-        this.setState({ privateAccount: state })
+        this.setState({ privateAccount: state },()=>this.saveUserSettings())
     }
     compatibilityPercentage(value) {
-        data.compatibilityPercentage = value.toString()
+        localfilter.matchPercentage = value.toString()
         this.setState({
             compatibilityPercentage: [value],
-        })
-        console.log("compatibilityPercentage", data)
+        },()=>this.saveUserSettings())
+        // console.log("compatibilityPercentage", data)
     }
     render() {
+        console.log("state", this.state)
         return (
             <View style={{ flex: 1 }}>
                 <ScrollView>
                     <View style={{ justifyContent: "flex-end", paddingHorizontal: 16, paddingTop: 16, paddingBottom: 4 }}>
-                        <Text style={{ fontFamily: "Avenir-Medium", lineHeight: 15, fontSize: 15, color: "#909096" }}>{i18n.t('notificationsettingsLabel')}</Text>
+                        <Text style={{ fontFamily: "Avenir-Medium",  fontSize: 15, color: "#909096" }}>{i18n.t('notificationsettingsLabel')}</Text>
                     </View>
                     <View style={{ height: 58, backgroundColor: "rgba(255,255,255,100)", paddingHorizontal: 16, borderBottomColor: "rgba(245,245,245,100)", borderBottomWidth: 1, flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
                         <Text style={{ fontFamily: "Avenir-Medium", fontSize: 17, color: "#3E3E47" }}>
@@ -115,15 +132,15 @@ export default class SettingsList extends Component {
                         />
                     </View>
                     <View style={{ paddingHorizontal: 16, paddingTop: 9, paddingBottom: 4 }}>
-                        <Text style={{ fontFamily: "Avenir-Medium", lineHeight: 19, fontSize: 13, color: "#909096" }}>{i18n.t('warningmsg')}</Text>
-                        <Text style={{ fontFamily: "Avenir-Medium", lineHeight: 25, fontSize: 15, color: "#909096", marginTop: 24 }}>{i18n.t('accountsettings')}</Text>
+                        <Text style={{ fontFamily: "Avenir-Medium",  fontSize: 13, color: "#909096" }}>{i18n.t('warningmsg')}</Text>
+                        <Text style={{ fontFamily: "Avenir-Medium",  fontSize: 15, color: "#909096", marginTop: 24 }}>{i18n.t('accountsettings')}</Text>
                     </View>
                     <View style={{ height: 58, backgroundColor: "rgba(255,255,255,100)", paddingHorizontal: 16, borderBottomColor: "rgba(245,245,245,100)", borderBottomWidth: 1, flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
                         <Text style={{ fontFamily: "Avenir-Medium", fontSize: 17, color: "#3E3E47" }}>Change Password</Text>
                     </View>
                     <View style={{ justifyContent: "space-between", paddingHorizontal: 16, paddingTop: 16, paddingBottom: 4, flexDirection: "row" }}>
-                        <Text style={{ fontFamily: "Avenir-Medium", lineHeight: 15, fontSize: 15, color: "#909096" }}>{i18n.t('compatibilitypercentagelable')}</Text>
-                        <Text style={{ fontFamily: "Avenir-Medium", lineHeight: 15, fontSize: 15, color: "#909096" }}>{this.state.compatibilityPercentage.toLocaleString()}</Text>
+                        <Text style={{ fontFamily: "Avenir-Medium",  fontSize: 15, color: "#909096" }}>{i18n.t('compatibilitypercentagelable')}</Text>
+                        <Text style={{ fontFamily: "Avenir-Medium",  fontSize: 15, color: "#000" }}>{this.state.compatibilityPercentage.toLocaleString()} %</Text>
                     </View>
                     <View style={{ height: 58, backgroundColor: "rgba(255,255,255,100)", paddingHorizontal: 16, borderBottomColor: "rgba(245,245,245,100)", borderBottomWidth: 1, flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
                         <CustomSlider
@@ -153,7 +170,7 @@ export default class SettingsList extends Component {
                                 borderWidth: 4,
                                 borderColor: "#FFF"
                             }}
-                            values={[this.state.compatibilityPercentage[0]]}
+                            values={[parseInt(this.state.compatibilityPercentage[0])]}
                             sliderLength={metrics.DEVICE_WIDTH * 0.9}
                             onValuesChange={(values) => this.compatibilityPercentage(values)}
                             min={0}
@@ -163,12 +180,12 @@ export default class SettingsList extends Component {
                             snapped
                         />
                     </View>
-                    <View style={{ paddingHorizontal: 16, paddingTop: 80, paddingBottom: 25 }}>
+                    <View style={{ paddingHorizontal: 16, paddingTop: 25, paddingBottom: 25 }}>
                         <LinearGradient
                             colors={['#DB3D88', '#273174']}
                             start={{ x: 0, y: 1 }}
                             end={{ x: 1, y: 1 }}
-                            style={{ borderRadius: 5, marginBottom: 32 }}>
+                            style={{ borderRadius: 5, marginBottom: 25 }}>
                             <CustomButton
                                 text={i18n.t('signoutButton')}
                                 textStyle={{ fontFamily: "Avenir-Heavy", fontSize: 17, color: "#FFFFFF" }}

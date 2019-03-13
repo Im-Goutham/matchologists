@@ -13,6 +13,7 @@ import {
     Image,
     ScrollView,
     TouchableOpacity,
+    AsyncStorage
 } from 'react-native';
 import { connect } from 'react-redux'
 // import { OT } from 'opentok-react-native';
@@ -34,22 +35,44 @@ class UserChatlist extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            allUserData : [],
-            isLoading : true,
+            allUserData: [],
+            recentUserList: [],
+            isLoading: true,
         }
     }
+    getallsavedUser = async () => {
+        try {
+            const value = await AsyncStorage.getItem('chatmessages');
+            console.log("AsyncStorage_value========>")
+            var userlist = []
+
+            if (value !== null) {
+                var chatmessages = JSON.parse(value);
+                for (var user = 0; user < chatmessages.length; user++) {
+                    userlist.push({ _id: chatmessages[user].userId, fullName: chatmessages[user].username, uri: chatmessages[user].image })
+                }
+                this.setState({
+                    recentUserList: userlist
+                })
+            }
+        } catch (error) {
+            console.log("error", error)
+        }
+    }
+
     componentDidMount = async () => {
         // console.log("enableLogs", OT.enableLogs(true))
         await this.sortAndFilterUsers()
+        this.getallsavedUser()
     }
     sortAndFilterUsers = async () => {
         ApiRequest.sortAndFilterUsers(this.props.token, (resolve) => {
             var alluserData = resolve.data.data;
             // console.log("sortAndFilterUsers", alluserData);
             var new_array = [];
-            if(resolve.data.data){
-                for(var i=0; i< alluserData.length; i++ ){
-                    var userObject={};
+            if (resolve.data.data) {
+                for (var i = 0; i < alluserData.length; i++) {
+                    var userObject = {};
                     userObject._id = alluserData[i]._id ? alluserData[i]._id : '';
                     userObject.fullName = alluserData[i].fullName ? alluserData[i].fullName : '';
                     userObject.uri = alluserData[i].profilePic ? alluserData[i].profilePic : '';
@@ -59,7 +82,7 @@ class UserChatlist extends Component {
                 }
                 this.setState({
                     allUserData: new_array,
-                    isLoading : false
+                    isLoading: false
                 })
             }
         }, (reject) => {
@@ -68,9 +91,9 @@ class UserChatlist extends Component {
 
     }
     render() {
-        if(this.state.isLoading){
-            return <Loading/>
-        }
+        // if(this.state.isLoading){
+        //     return <Loading/>
+        // }
         const { navigate } = this.props.navigation;
         // const opentokToken = this.props.data.opentokToken 
         return (
@@ -128,16 +151,14 @@ class UserChatlist extends Component {
                         <View style={styles.elevationView}>
                             <Text style={{ fontFamily: "Avenir-Medium", fontSize: 15, color: "#C1C0C9", lineHeight: 40, paddingLeft: 16 }}>ALL MATCHES</Text>
                             <View style={{}}>
-                                <OnlineUsers navigation={this.props.navigation} userdataList={this.state.allUserData} 
-                                // opentokToken={opentokToken}
-                                />
+                                {
+                                    this.state.isLoading ? <Loading/> : <OnlineUsers navigation={this.props.navigation} userdataList={this.state.allUserData} />
+                                }
                             </View>
                         </View>
                     </View>
                     <View style={styles.elevationView}>
-                        <Userlist navigation={this.props.navigation} userdataList={this.state.allUserData} 
-                        // opentokToken={opentokToken} 
-                        />
+                        <Userlist navigation={this.props.navigation} userdataList={this.state.recentUserList} />
                     </View>
                 </ScrollView>
             </View>

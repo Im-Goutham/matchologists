@@ -16,8 +16,8 @@ import { LoginManager, AccessToken, GraphRequest, GraphRequestManager } from 're
 class AuthLoadingScreen extends React.Component {
     constructor(props) {
         super(props);
-        this.socket = io(URL); 
-        this.socket.on('testSocket', (data) => { console.log(data)})
+        // this.socket = io(URL); 
+        // this.socket.on('testSocket', (data) => { console.log(data)})
         this.state = {
             appState: AppState.currentState,
         };
@@ -63,7 +63,7 @@ class AuthLoadingScreen extends React.Component {
         :
         !is_visitedquestionAnswer ? this.props.navigation.navigate('questionnaire') 
         : 
-        this.props.navigation.navigate('homePage')
+        this.props.navigation.navigate('setting')
     }
     render() {
         const { loading } = this.props

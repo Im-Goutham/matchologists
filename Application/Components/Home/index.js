@@ -66,7 +66,7 @@ class HomeScreen extends Component {
         console.log("URL", URL)
         this.socket = io(URL);
         this.socket.on('connect', () => {
-            console.log('connected!', connect)
+            // console.log('connected!', connect)
             // alert('connected!', connect);
         });
 
@@ -93,8 +93,8 @@ class HomeScreen extends Component {
     }
     componentWillUnmount() {
         var userId = this.props.data._id;
-       var sok= this.socket.emit('userDisconnect', {userId : userId })
-       console.log("componentWillUnmount", sok)
+       var sok = this.socket.emit('userDisconnect', {userId : userId })
+    //    console.log("componentWillUnmount", sok)
         // SocketChat.userdisConnect(userId, (resolve) => {
         //     console.log("SocketChat_userdisConnect", resolve)
         // })
@@ -102,7 +102,8 @@ class HomeScreen extends Component {
     }
     componentDidMount() {
         var userId = this.props.data._id;
-        this.socket.emit('userConnect', {userId : userId })
+        var sok = this.socket.emit('userConnect', { userId : userId })
+        console.log("componentDidMount_socket", sok)
 
         this.readfilterdata()
             .then(() => this.sortAndFilterUsers())
@@ -144,7 +145,7 @@ class HomeScreen extends Component {
             console.log('filterlocalstorage', filterlocalstorage);
             this.setState({
                 zipcode: filterlocalstorage.zipcode ? filterlocalstorage.zipcode : '',
-                profilematch: filterlocalstorage.matchPercentage ? [filterlocalstorage.matchPercentage] : [0],
+                profilematch: filterlocalstorage.matchPercentage ? [parseInt(filterlocalstorage.matchPercentage)] : [0],
                 agerange: filterlocalstorage.age ? [filterlocalstorage.age.min, filterlocalstorage.age.max] : [18, 100],
                 selectedquestions: filterlocalstorage.filterQuestions ? filterlocalstorage.filterQuestions : [],
                 today: filterlocalstorage.lastLogin ? filterlocalstorage.lastLogin.today : false,

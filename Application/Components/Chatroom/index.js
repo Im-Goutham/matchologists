@@ -1,22 +1,24 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux'
-import { 
-    View, 
+import {
+    View,
     Button,
-    SafeAreaView, 
-    TextInput, 
-    StyleSheet, 
+    SafeAreaView,
+    TextInput,
+    StyleSheet,
     Animated,
-    FlatList, 
-    Text, 
-    Image, 
-    Dimensions, 
-    Keyboard, 
-    TouchableOpacity, 
-    Platform, 
-    TouchableWithoutFeedback, 
-    KeyboardAvoidingView, 
-    AsyncStorage 
+    FlatList,
+    Text,
+    Image,
+    Dimensions,
+    Keyboard,
+    TouchableOpacity,
+    Platform,
+    TouchableWithoutFeedback,
+    KeyboardAvoidingView,
+    AsyncStorage,
+    DeviceEventEmitter,
+    Alert
 } from 'react-native';
 import { OTSession } from 'opentok-react-native';
 import LinearGradient from 'react-native-linear-gradient';
@@ -27,13 +29,13 @@ import ChatHeader from './ChatHeader';
 import * as global from '../../../global.json'
 import moreoptions from '../../images/icons/vertical-dot.png';
 import metrics from '../../config/metrics'
+import BaseFormComponent from "../Common/BaseFormComponent";
 let IS_ANDROID = Platform.OS === 'android'
 
 // import { reject } from 'rsvp';
-// import console = require('console');
 var { width, height } = Dimensions.get('window')
 const formStyle = { marginTop: 40 };
-class Chatroom extends Component {
+class Chatroom extends BaseFormComponent {
     constructor(props) {
         super(props);
         this.apiKey = '46244942',
@@ -47,6 +49,7 @@ class Chatroom extends Component {
                 token: '',
                 text: '',
                 messages: [],
+                keyboardHeightAnim: new Animated.Value(0)
             };
         this.sessionEventHandlers = {
             error: event => {
@@ -54,8 +57,6 @@ class Chatroom extends Component {
             },
             signal: (event) => {
                 console.log("sessionEventHandlers ========>", event)
-                // var currentdate = new Date();
-                // var datetime = currentdate.getHours() + ":" + currentdate.getMinutes() + ":" + currentdate.getSeconds();
                 if (event.data) {
                     const myConnectionId = this.session.getSessionInfo().connection.connectionId;
                     const oldMessages = this.state.messages;
@@ -76,17 +77,6 @@ class Chatroom extends Component {
                         }
                     }
                         ];
-                    // const messages = event.connectionId === myConnectionId ? [...oldMessages, {
-                    //     data: {
-                    //         msg: event.data,
-                    //         connectionId : event.connectionId,
-                    //         currentUser: true
-                    //     }
-                    // }] : [...oldMessages, { data: { 
-                    //     msg: event.data,  
-                    //     connectionId : myConnectionId,
-                    //     currentUser: false
-                    // } }];
                     this.saveMessages(messages)
                     this.getMessages()
                     // this.setState({
@@ -95,14 +85,42 @@ class Chatroom extends Component {
                 }
             },
         };
-        this.keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', this._scrollEnd);
-        this.keyboardDidShowListener = Keyboard.addListener('keyboardDidHide', this._scrollEnd);
     }
+    // componentWillMount() {
+    // this._registerEvents();
+    // }
+    _registerEvents() {
+        // this._keyboardDidShowSubscription = DeviceEventEmitter.addListener("keyboardDidShow", e => this._keyboardDidShow(e));
+        // this._keyboardDidHideSubscription = DeviceEventEmitter.addListener("keyboardDidHide", e => this._keyboardDidHide(e));
+        this._keyboardDidShowSubscription = Keyboard.addListener('keyboardDidShow', e => this._keyboardDidShow(e));
+        this._keyboardDidHideSubscription = Keyboard.addListener('keyboardDidHide', e => this._keyboardDidHide(e));
+
+    }
+
+    _unRegisterEvents() {
+        this._keyboardDidShowSubscription.remove();
+        this._keyboardDidHideSubscription.remove();
+    }
+
+    _keyboardDidShow(e) {
+        console.log("_keyboardDidShow", e)
+        Animated.spring(this.state.keyboardHeightAnim, { toValue: e.endCoordinates.height }).start();
+    }
+
+    _keyboardDidHide() {
+        console.log("_keyboardDidHide")
+        Animated.spring(this.state.keyboardHeightAnim, { toValue: 0 }).start();
+    }
+
     saveMessages = async (messages) => {
         const { state } = this.props.navigation;
         let userid = state.params.userId;
+        var fullName = state.params.fullName;
+        var imageUrl = state.params.image ? state.params.image : '';
         try {
-            await AsyncStorage.setItem("chatmessages", JSON.stringify([{ userId: userid, data: messages }]))
+            await AsyncStorage.setItem("chatmessages", JSON.stringify([
+                { userId: userid, username: fullName, image: imageUrl, data: messages }
+            ]))
         } catch (error) {
             console.log("error", error)
         }
@@ -127,6 +145,7 @@ class Chatroom extends Component {
         }
     }
     componentWillUnmount() {
+        this._unRegisterEvents();
         this.setState({
             sessionId: '',
             token: '',
@@ -163,9 +182,21 @@ class Chatroom extends Component {
     _keyExtractor = (item, index) => index;
     _renderItem = ({ item }) => (
         item && item.data.currentUser ?
-            <View style={{ backgroundColor: "#000", overflow: "hidden", marginVertical: 3, borderRadius: 10, flexDirection: "row" }}>
-                <Text style={[styles.item, { backgroundColor: "#F5F5F5" }]}>{item.data.msg}</Text>
+            <View style={{ marginVertical: 3, borderRadius: 5, flexDirection: "row" }}>
+                <View style={{ borderRadius: 10, overflow: "hidden", backgroundColor: "#F5F5F5" }}>
+                    {/* <LinearGradient
+            colors={['#DB3D88', '#273174']}
+            start={{ x: 0, y: 1 }}
+            end={{ x: 1, y: 1 }}
+            > */}
+                    <Text style={[styles.item, { backgroundColor: "#F5F5F5" }]}>{item.data.msg}</Text>
+                    {/* </LinearGradient> */}
+                </View>
             </View>
+
+            // <View style={{ backgroundColor: "#000", overflow: "hidden", marginVertical: 3, borderRadius: 10, flexDirection: "row" }}>
+            //     <Text style={[styles.item, { backgroundColor: "#F5F5F5" }]}>{item.data.msg}</Text>
+            // </View>
             :
             <View style={{ marginVertical: 3, borderRadius: 5, flexDirection: "row-reverse" }}>
                 <LinearGradient
@@ -177,25 +208,59 @@ class Chatroom extends Component {
                 </LinearGradient>
             </View>
     );
-    deletePost = () => {
+    clearChatHistory() {
         this.state.messages = []
         console.log("messages", this.state.messages)
         this.saveMessages(this.state.messages)
         this.getMessages()
     }
+    deletePost = () => {
+        Alert.alert(
+            'Clear Chat Hostory',
+            'Wolud you like to clear Chat history All messages will remove ',
+            [
+                {
+                    text: 'Cancel',
+                    onPress: () => console.log('Cancel Pressed'),
+                    style: 'cancel',
+                },
+                { text: 'OK', onPress: () => this.clearChatHistory() },
+            ],
+            { cancelable: false },
+        );
+    }
     _scrollEnd = (evt) => {
-        this.refs.flatList1.scrollToEnd({ animated: true });
+        // this.refs.flatList1.scrollToEnd({ animated: true });
+    }
+    askVideoCallPermission() {
+
+        const { goBack, navigate, state } = this.props.navigation;
+        let userid = state.params.userId;
+        var token = this.props.token;
+        var data = {
+            "permissionReceiverId": userid
+        };
+        ApiRequest.askVideoCallPermission(token, data, (resolve) => {
+            this.showSimpleMessage("", { backgroundColor: global.gradientsecondry }, '', resolve.message)
+            navigate('livecall', { sessionId: this.state.sessionId, token: this.state.token })
+
+            // console.log("askVideoCallPermission_resolve", resolve)
+        }, reject => {
+            console.log("askVideoCallPermission_reject", reject)
+        })
     }
     render() {
         const { goBack, navigate, state } = this.props.navigation;
         var fullName = state.params.fullName ? state.params.fullName : '';
+        var imageUrl = state.params.image ? state.params.image : '';
+
         if (this.state.loading) {
             return <></>
         }
-        console.log("this.state.messages", this.state.messages)
+        console.log("keyboardHeightAnim", this.state.keyboardHeightAnim)
         return (
             <Animated.View style={{ flex: 1, backgroundColor: "#fff" }}>
-              <SafeAreaView/>
+                <SafeAreaView />
                 <ChatHeader
                     left={
                         <TouchableOpacity
@@ -215,11 +280,16 @@ class Chatroom extends Component {
                     }
                     middle={
                         <View style={{ width: "59%", backgroundColor: "transparent", flexDirection: "row", alignItems: "center" }}>
-                            <Image
-                                source={require('../../images/Photo_7.png')}
-                                style={{ width: 34, height: 34, marginRight: 15 }}
-                                resizeMethod="resize"
-                                resizeMode="contain" />
+                            <View style={{ width: 34, height: 34, marginRight: 15, borderRadius: 17, overflow: "hidden" }}>
+                                <Image
+                                    source={{ uri: imageUrl }}
+                                    // source={require('../../images/Photo_7.png')}
+                                    style={{ width: '100%', height: "100%", }}
+                                    resizeMethod="resize"
+                                // resizeMode="contain"
+                                />
+                            </View>
+
                             <Text style={{ fontFamily: "Avenir-Heavy", fontSize: 17, color: "#3E3E47" }}>{fullName}</Text>
                         </View>
                     }
@@ -231,7 +301,9 @@ class Chatroom extends Component {
                             }}>
                             <TouchableOpacity
                                 style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
-                                onPress={() => navigate('livecall', { sessionId: this.state.sessionId, token: this.state.token })}>
+                                onPress={() => this.askVideoCallPermission()}
+                            // onPress={() => navigate('livecall', { sessionId: this.state.sessionId, token: this.state.token })}
+                            >
                                 <Image
                                     source={require('../../images/icons/video-camera.png')}
                                     style={{ width: 28, height: 18, left: 5 }}
@@ -243,7 +315,7 @@ class Chatroom extends Component {
                                     button={moreoptions}
                                     buttonStyle={styles.popupmenu}
                                     destructiveIndex={1}
-                                    options={["Delete Post", "Cancel"]}
+                                    options={["Clear history", "Cancel"]}
                                     actions={[this.deletePost, this.cancel]}
                                 />
                             </View>
@@ -280,6 +352,7 @@ class Chatroom extends Component {
                                     onChangeText={(text) => { this.setState({ text }); }}
                                     value={this.state.text}
                                     returnKeyType={'done'}
+                                    onFocus={() => this._registerEvents()}
                                     onSubmitEditing={() => this.sendSignal()}
                                 />
                                 <TouchableOpacity onPress={() => { this.sendSignal() }} style={{ marginTop: 8, width: '15%', height: 42, justifyContent: "center", alignItems: "center", marginLeft: 5 }}>
@@ -302,6 +375,7 @@ class Chatroom extends Component {
                                         style={{ height: 44, borderColor: '#F5F5F5', borderWidth: 1, borderRadius: 5, width: '85%' }}
                                         onChangeText={(text) => { this.setState({ text }); }}
                                         value={this.state.text}
+                                        onFocus={() => this._registerEvents()}
                                         // returnKeyType={'done'}
                                         onSubmitEditing={() => this.sendSignal()}
                                     />
