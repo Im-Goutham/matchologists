@@ -17,6 +17,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import i18n from 'react-native-i18n'
 import Header from '../Common/Header'
 import CalendarsScreen from './Calender'
+import CalenderAgenda from './CalenderAgenda'
 const IS_ANDROID = Platform.OS === 'android'
 import metrics from '../../config/metrics';
 const IMAGE_WIDTH = metrics.DEVICE_WIDTH * 0.05
@@ -96,7 +97,7 @@ export default class MyCalender extends Component {
                         />
                     </SafeAreaView>
                 </LinearGradient>
-                <CalendarsScreen/>
+                <CalenderAgenda/>
                 <SafeAreaView/>
             </View>
         );

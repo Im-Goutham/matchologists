@@ -1,10 +1,5 @@
 import React, { Component } from "react";
 import { View, Text, FlatList, Image, StyleSheet, TouchableOpacity, ScrollView } from "react-native";
-// import search_result from '../../images/search_result.png'
-// import search_result_2 from '../../images/search_result_2.png'
-// import search_result_3 from '../../images/search_result_3.png'
-// import search_result_4 from '../../images/search_result.png'
-// import search_result_5 from '../../images/search_result_4.png'
 
 class OnlineUsers extends Component {
     constructor(props) {
@@ -24,16 +19,27 @@ class OnlineUsers extends Component {
             />
         );
     };
+    userValidate(userDetail){
+        const { navigate } = this.props.navigation;
+        this.props.isUserFriend(userDetail)
+        // navigate('chatscreen', { 
+        //         userId: userDetail._id, 
+        //         opentokToken: this.props.opentokToken, 
+        //         fullName: userDetail.fullName ,
+        //         image : userDetail.uri
+        //     })
+    }
     renderRow = this.props.userdataList.map((item, index) => {
         const { navigate } = this.props.navigation;
         return (
-            <TouchableOpacity
-                onPress={() => navigate('chatscreen', { 
-                    userId: item._id, 
-                    opentokToken: this.props.opentokToken, 
-                    fullName: item.fullName ,
-                    image : item.uri
-                })}
+            <TouchableOpacity 
+            onPress={()=>this.userValidate(item)}
+                // onPress={() => navigate('chatscreen', { 
+                //     userId: item._id, 
+                //     opentokToken: this.props.opentokToken, 
+                //     fullName: item.fullName ,
+                //     image : item.uri
+                // })}
                 key={index}
                 style={{ flex: 1, alignItems: "center", justifyContent: "space-around", paddingHorizontal: 8 }}>
                 <View style={{ alignItems: "center",  shadowOffset: { width: 0, height: 2 },
@@ -71,6 +77,11 @@ class OnlineUsers extends Component {
     })
     handleClick = () => { }
     render() {
+        if(!this.props.userdataList.length){
+            return(
+                <Text> No user Found </Text>
+            )
+        }
         return (
             <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} style={{ height: 100, flexDirection: "row", paddingLeft: 8 }}>
                 {this.renderRow}
@@ -96,6 +107,10 @@ class Userlist extends Component {
             />
         );
     };
+    updateIsFirstStatus=(cb)=>{
+        alert(JSON.stringify(cb))
+    }
+
     renderRow = (item, index) => {
         const { navigate } = this.props.navigation;
         console.log("chatscreen", item)
@@ -105,7 +120,8 @@ class Userlist extends Component {
                     userId: item._id, 
                     opentokToken: this.props.opentokToken, 
                     fullName: item.fullName,
-                    image : item.uri
+                    image : item.uri,
+                    updateIsFirstStatus: this.updateIsFirstStatus.bind(this)
                 })}
                 key={index}
                 style={{ flex: 1, flexDirection: "row", paddingVertical: 16 }}>

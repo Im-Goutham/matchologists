@@ -10,6 +10,11 @@ public class MainActivity extends ReactActivity {
     protected void onCreate(Bundle savedInstanceState) {
         SplashScreen.show(this);  // here
         super.onCreate(savedInstanceState);
+            // setContentView(R.layout.launch_screen);
+    Intent intent = getIntent();
+    String action = intent.getAction();
+//    final Uri data = intent.getData();
+
     }
     /**
      * Returns the name of the main component registered from JavaScript.

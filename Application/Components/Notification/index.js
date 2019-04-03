@@ -16,7 +16,8 @@ import {
 import { connect } from 'react-redux'
 import LinearGradient from 'react-native-linear-gradient';
 import i18n from 'react-native-i18n'
-import Header from '../Common/Header'
+import Header from '../Common/Header';
+import BaseFormComponent from '../Common/BaseFormComponent'
 import NotificationsList from './NotificationsList';
 // import Loading from '../Loading/index'
 import Apirequest from '../Common/Apirequest'
@@ -25,7 +26,7 @@ import metrics from '../../config/metrics';
 const IMAGE_WIDTH = metrics.DEVICE_WIDTH * 0.05;
 const header_height = metrics.DEVICE_HEIGHT * 0.1;
 
-class Notification extends Component {
+class Notification extends BaseFormComponent {
     constructor(props) {
         super(props);
         this.state = {
@@ -51,6 +52,7 @@ class Notification extends Component {
             this.setState({
                 isloading: false
             },()=> navigate('livecall', { 
+                profileUserId: userid,
                 sessionId : resolve.data && resolve.data.session ? resolve.data.session : '', 
                 token : resolve.data && resolve.data.token ? resolve.data.token : ''
             }))
@@ -58,16 +60,47 @@ class Notification extends Component {
             console.log("getChatSessionId_reject", reject)
         })
     }
+    rsvpForSpeedDating = (speedDatingEventObj) => {
+        console.log("speedDatingEventObj", speedDatingEventObj)
+        var token = this.props.token;
+        var Data = {
+            "speedDatingEventDayId": speedDatingEventObj.eventInfo.eventDayId,
+            "linkThroughRSVP": speedDatingEventObj.eventInfo.inviteLink
+        }
+        console.log("rsvpForSpeedDating_Data", Data)
+        this.setState({ is_loading: true })
+        Apirequest.rsvpForSpeedDating(token, Data, resolve => {
+            console.log("rsvpForSpeedDating", resolve)
+            if (resolve.message) {
+                this.showSimpleMessage("", { backgroundColor: global.gradientsecondry }, '', resolve.message)
+                speedDatingEventObj.isSeen = true;
+                this.setState({
+                    notificationData: this.state.notificationData,
+                    is_loading: false,
+                })
+            }
+        }, reject => {
+            console.log("getMatchPercentage_reject", reject)
+            if (reject.message) {
+                this.showSimpleMessage("", { backgroundColor: global.gradientsecondry }, '', reject.message)
+                this.setState({
+                    is_loading: false,
+                })
+            }
+        })
+
+    }
     getNotifications() {
         let data = [];
         var token = this.props.token;
         Apirequest.getNotifications(token, resolve => {
             if (resolve.data) {
-                console.log("resolve", resolve.data.data)
+                console.log("getNotificationsresolveers", resolve.data.data)
                 var datasource = resolve.data.data;
                 for (var i = 0; i < datasource.length; i++) {
                     let dataobject = {};
                     dataobject._id = datasource[i] && datasource[i]._id ? datasource[i]._id : '';
+                    dataobject.eventInfo = datasource[i] && datasource[i].eventInfo ? datasource[i].eventInfo : {};
                     dataobject.updatedAt = datasource[i] && datasource[i].updatedAt ? datasource[i].updatedAt : '';
                     dataobject.createdAt = datasource[i] && datasource[i].createdAt ? datasource[i].createdAt : '';
                     dataobject.senderId = datasource[i] && datasource[i].senderId && datasource[i].senderId._id ? datasource[i].senderId._id : ''; dataobject.senderId = datasource[i] && datasource[i].senderId && datasource[i].senderId._id ? datasource[i].senderId._id : '';
@@ -193,6 +226,7 @@ class Notification extends Component {
                     token={this.props.token}
                     navigate={navigate}
                     respondToVideoCallPermission={this.respondToVideoCallPermission.bind(this)}
+                    rsvpForSpeedDating={this.rsvpForSpeedDating.bind(this)}
                 />
                 <SafeAreaView />
             </View>

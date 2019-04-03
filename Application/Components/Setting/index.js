@@ -95,7 +95,10 @@ class SettingScreen extends Component {
                         />
                     </SafeAreaView>
                 </LinearGradient>
-                <SettingsList token={token}/> 
+                <SettingsList 
+                token={token}
+                navigate={navigate}
+                /> 
                 <SafeAreaView/>
             </View>
         );

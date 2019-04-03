@@ -14,6 +14,8 @@ import AppDrawerNavigator from './Appdrawer';
 import Basicinfo from '../Components/Basicinfo'
 import AuthLoadingScreen from './AuthLoading';
 import CmsContent from '../Components/CmsContent';
+import BranchMethods from '../Components/BranchMetrics';
+import Userblocked from '../Components/Common/Userblocked'
 // import RangeSlider from '../Components/RangeSlider'
 forVertical = (props) => {
     const { layout, position, scene } = props,
@@ -34,6 +36,7 @@ forVertical = (props) => {
 
 const AppStack = createStackNavigator(
     {
+        BranchMethods: { screen: BranchMethods },
         auth: { screen: AuthScreen },
         login: { screen: LoginForm },
         signup: { screen: SignupForm },
@@ -42,7 +45,7 @@ const AppStack = createStackNavigator(
         questionnaire: { screen: Questionnaire },
         basicinfo: { screen: Basicinfo },
         cmscontent: { screen: CmsContent },
-        // rangeslider:{screen:RangeSlider}
+        userblocked: { screen: Userblocked }
     },
     {
         mode: "modal",
@@ -66,7 +69,7 @@ const App = createSwitchNavigator(
     {
         initialRouteName: 'AuthLoading',
         // initialRoute:'',
-        resetOnBlur:true,
+        resetOnBlur: true,
         // paths:""
     }
 );

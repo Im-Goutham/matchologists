@@ -406,11 +406,13 @@ class Filter extends BaseFormComponent {
                     <View style={{ marginTop: 8 }} />
                     <View style={{ paddingHorizontal: 16 }}>
                         <Text style={{ fontFamily: "Avenir-Medium", fontSize: 11, color: "#D43C87" }}>{I18n.t('aboutparnerLabel', { locale: language })}</Text>
-                        <TouchableOpacity onPress={this.props.questionanswerModalToggle}>
-                            <Image source={require('../../images/applogo.png')} style={{ width: 120, height: 120 }} resizeMethod="resize" resizeMode="contain" />
+                        <TouchableOpacity 
+                        style={{ flexDirection:"row", justifyContent:"space-between", alignItems:"center", borderTopWidth:1, borderBottomWidth:1, borderColor:"#F5F5F5"}} 
+                        onPress={()=>this.props.questionanswerModalToggle()}>
+                        <Image source={require('../../images/applogo.png')} style={{ width: 60, height: 60 }} resizeMethod="resize" resizeMode="contain" />
+                        <Image source={require('../../images/icons/right-arrow.png')} style={{ width: 30, height: 30 }} resizeMethod="resize" resizeMode="contain" />
                         </TouchableOpacity>
                     </View>
-
                     <LinearGradient
                         colors={['#DB3D88', '#273174']}
                         start={{ x: 0, y: 1 }}

@@ -39,10 +39,6 @@ let IS_ANDROID = Platform.OS === 'android',
             "action_Page": "homePage"
         },
         {
-            "label": "match_label",
-            "action_Page": ""
-        },
-        {
             "label": "top_label",
             "action_Page": "topprofile"
         },
@@ -54,13 +50,13 @@ let IS_ANDROID = Platform.OS === 'android',
             "label": "notification_label",
             "action_Page": "notification"
         },
-        // {
-        //     "label": "feedback_label",
-        //     "action_Page": "feedback"
-        // },
         {
             "label": "message_label",
             "action_Page": "message"
+        },
+        {
+            "label": "myeventLabel",
+            "action_Page": "eventList"
         },
         {
             "label": "setting_label",
@@ -81,7 +77,7 @@ let IS_ANDROID = Platform.OS === 'android',
     ];
     let shareOptions = {
         title: "React Native",
-        message: "Hola mundo",
+        message: I18n.t("invitationmsg"),
         url: "https://itunes.apple.com/us/app/zero-2-two-app/id1374303629?ls=1&mt=8",
         subject: "Share Link"
     };

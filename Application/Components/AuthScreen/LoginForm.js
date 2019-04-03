@@ -50,20 +50,24 @@ class LoginForm extends BaseFormComponent {
     }
     async componentDidMount() {
         this._configureGoogleSignIn();
-        await this._getCurrentUser();
+        // await this._getCurrentUser();
         console.log("componentDidMount");
 
-        FCM.getFCMToken().then(token => {
-            console.log("getFCMToken", token);
-            this.setState({ deviceToken: token || "" });
-        });
         if (Platform.OS === "ios") {
             console.log("APNS TOKEN (getFCMToken) before");
             FCM.getAPNSToken().then(token => {
                 console.log("APNS TOKEN (getFCMToken) after", token);
                 this.setState({ deviceToken: token || "" });
+                return
             });
         }
+
+        FCM.getFCMToken().then(token => {
+            console.log("getFCMToken", token);
+            if(Platform.OS==='android'){
+                this.setState({ deviceToken: token || "" });
+            }
+        });
     }
 
     async _configureGoogleSignIn() {
@@ -128,7 +132,7 @@ class LoginForm extends BaseFormComponent {
                                     userdata.facebookId = result.id
                                     userdata.fullName = result.name
                                     // console.log('user data is ', user)
-                                    SplashScreen.hide();
+                                    // SplashScreen.hide();
                                     self.setState({ userdata, error: null });
                                     self.social_login(userdata)
                                     //  self.facebookLogin(user);
@@ -196,18 +200,30 @@ class LoginForm extends BaseFormComponent {
         ApiManager.callwebservice('POST', 'api/sociallogin', header, details, (success) => {
             let response = JSON.parse(success._bodyInit),
                 token = response.access_token,
-                data = response.data;
+                data = response.data,
+                userSettings={};
+
             if (response.status === 0) {
                 this.showSimpleMessage("danger", { backgroundColor: "#DC6666" }, response.message, response.message)
                 return
             }
+            let userimage=  response.data.profilePic ? response.data.profilePic : "" ;
+            userSettings.compatibilityPercentage = response.data.compatibilityPercentage ? response.data.compatibilityPercentage : 0 ;
+            userSettings.isAccountPrivate = response.data.isAccountPrivate ? response.data.isAccountPrivate : false;
+            userSettings.newMatchNotification = response.data.newMatchNotification ? response.data.newMatchNotification : false;
+            userSettings.newMessageNotification = response.data.newMessageNotification ? response.data.newMessageNotification : false;
+            userSettings.newWinkNotification = response.data.newWinkNotification ? response.data.newWinkNotification : false;
+            userSettings.speeddatingSettings = response.data.speeddatingSettings ? response.data.speeddatingSettings :[];
             this.setState({
                 is_loginSuccess: !this.state.is_loginSuccess
             })
             let password = '';
             AsyncStorage.setItem("userId", JSON.stringify(data))
             this.props.login(details.emailId, password, token, data);
+            this.props.saveuserProifileimage(userimage)
             this.timeOutCall()
+            AsyncStorage.setItem("localsetting", JSON.stringify(userSettings))
+
 
         }, (error) => {
             console.log("error", error)
@@ -252,9 +268,10 @@ class LoginForm extends BaseFormComponent {
             header = {};
         if (this.validation()) {
             ApiManager.callwebservice('POST', 'api/login', header, details, (success) => {
+                console.log("login_success", success)
                 let response = JSON.parse(success._bodyInit),
-                    token = response.access_token,
-                    data = response.data,
+                    token = response && response.access_token ? response.access_token : '',
+                    data = response && response.data ? response.data : [],
                     userSettings={};
                     console.log("response callwebservice login", data)
                     AsyncStorage.setItem("userId", JSON.stringify(data))
@@ -269,6 +286,7 @@ class LoginForm extends BaseFormComponent {
                     userSettings.newMatchNotification = response.data.newMatchNotification ? response.data.newMatchNotification : false;
                     userSettings.newMessageNotification = response.data.newMessageNotification ? response.data.newMessageNotification : false;
                     userSettings.newWinkNotification = response.data.newWinkNotification ? response.data.newWinkNotification : false;
+                    userSettings.speeddatingSettings = response.data.speeddatingSettings ? response.data.speeddatingSettings :[];
                     
                     console.log("userSettings", userSettings)
                     

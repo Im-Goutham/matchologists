@@ -22,7 +22,7 @@ import {
     FlatList,
     AsyncStorage
 } from 'react-native';
-import io from 'socket.io-client'; // 2.0.4
+// import io from 'socket.io-client'; // 2.0.4
 
 import ApiManager from "../Common/ApiManager";
 import { connect } from 'react-redux'
@@ -63,12 +63,12 @@ let sortremotecallData = {}
 class HomeScreen extends Component {
     constructor(props) {
         super(props);
-        console.log("URL", URL)
-        this.socket = io(URL);
-        this.socket.on('connect', () => {
-            // console.log('connected!', connect)
-            // alert('connected!', connect);
-        });
+        // console.log("URL", URL)
+        // this.socket = io(URL);
+        // this.socket.on('connect', () => {
+        // console.log('connected!', connect)
+        // alert('connected!', connect);
+        // });
 
         this.state = {
             sortArray: sortarray,
@@ -91,47 +91,27 @@ class HomeScreen extends Component {
             lastPress: 0
         }
     }
-    componentWillUnmount() {
-        var userId = this.props.data._id;
-       var sok = this.socket.emit('userDisconnect', {userId : userId })
-    //    console.log("componentWillUnmount", sok)
-        // SocketChat.userdisConnect(userId, (resolve) => {
-        //     console.log("SocketChat_userdisConnect", resolve)
-        // })
-
-    }
     componentDidMount() {
-        var userId = this.props.data._id;
-        var sok = this.socket.emit('userConnect', { userId : userId })
-        console.log("componentDidMount_socket", sok)
-
         this.readfilterdata()
             .then(() => this.sortAndFilterUsers())
             .then(() => this.getAboutYourPartnerQuestions());
-        // .done()
     }
     readfilterdata = async () => {
 
         var filterlocalstorage = await AsyncStorage.getItem('localfilter');
         if (filterlocalstorage && typeof filterlocalstorage == "string") {
             filterlocalstorage = JSON.parse(filterlocalstorage);
-            console.log("this.state.sortArray", this.state.sortArray);
+            // console.log("this.state.sortArray", this.state.sortArray);
             await _.map(this.state.sortArray, (sort) => {
                 if (_.has(filterlocalstorage, sort.key)) {
                     sort.order = filterlocalstorage[sort.key];
                     sort.order == 'asc' ? sort.image = ascending : sort.order == "desc" ? sort.image = descending : sort.image = null;
-                    console.log('sort in if ', sort);
+                    // console.log('sort in if ', sort);
                 }
             });
             data = filterlocalstorage;
-            console.log("filterlocalstorage", data)
-            console.log("sortarray from local", sortarray);
-
-
-
-            // for(var i=0; i< sortarrayData.length; i++){
-            //     alert("sortarrayData")
-            // }
+            // console.log("filterlocalstorage", data)
+            // console.log("sortarray from local", sortarray);
             this.setState({
                 selectedquestions: filterlocalstorage.filterQuestions ? filterlocalstorage.filterQuestions : [],
                 sortArray: this.state.sortArray
@@ -167,6 +147,7 @@ class HomeScreen extends Component {
         this.setState({ filterModal: !this.state.filterModal })
     }
     sortAndFilterUsers = async () => {
+        const { navigate } =  this.props.navigation
         let header = {
             'Authorization': this.props.token,
         }
@@ -178,6 +159,9 @@ class HomeScreen extends Component {
             let newData = [];
 
             if (response.status === 0) {
+                if(response.message){
+                    // navigate('userblocked', { message : response.message ? response.message :""})
+                   }
                 return
             } else if (response.status === 1) {
                 let responseData = response.data.data
@@ -208,6 +192,7 @@ class HomeScreen extends Component {
                 is_loading: false,
             })
         }, (error) => {
+           
             alert("netwrok fail")
             console.log("error", error)
         })
@@ -547,46 +532,40 @@ class HomeScreen extends Component {
                     </SafeAreaView>
                 </LinearGradient>
                 {/* <SearchButton navigation={this.props.navigation} /> */}
-                <View style={{ backgroundColor: "transparent", top: 0 }}>
+                {
+                    !this.state.filterModal ? 
+                    <View style={{ backgroundColor: "transparent", top: 0 }}>
                     <Userlist
                         userList={this.state.userList}
                         is_loading={this.state.is_loading}
                         navigation={this.props.navigation} />
                 </View>
+                :
+                <ScrollView contentContainerStyle={{ flex: 1 }}>
+                <Filter
+                    getFilteredUsers={this.getFilteredUsers.bind(this)}
+                    closemodal={() => this.setState({ filterModal: false })}
+                    profilematch={this.changeProfilematch.bind(this)}
+                    profilematch_values={this.state.profilematch}
+                    multiSliderValuesChange={this.multiSliderValuesChangematch.bind(this)}
+                    agerange_values={this.state.agerange}
+                    zipcode={this.state.zipcode}
+                    is_today={this.state.today}
+                    is_week={this.state.week}
+                    is_month={this.state.month}
+                    resetFilter={this.resetFilter.bind(this)}
+                    updateToday={this.updateToday.bind(this)}
+                    handleZipcode={this.handleZipcode.bind(this)}
+                    searchbyFilter={this.searchbyFilter.bind(this)}
+                    questionanswerModalToggle={this.questionanswerModalToggle.bind(this)}
+                // updateWeek={this.updateWeek.bind(this)}
+                // updateMonth={this.updateMonth.bind(this)}
+                />
+            </ScrollView>
+
+                }
                 <SafeAreaView style={{ backgroundColor: "#fff" }} />
-                <Modal
-                    backdropOpacity={0.3}
-                    isVisible={this.state.filterModal}
-                    onSwipe={() => this.setState({ filterModal: false })}
-                    swipeDirection="down"
-                    scrollTo={this.handleScrollTo}
-                    onBackdropPress={() => this.setState({ filterModal: false })}
-                    onBackButtonPress={() => this.setState({ filterModal: false })}
-                    style={styles.bottomModal}>
-                    <View style={{ height: '90%', backgroundColor: "#FFF" }}>
-                        <ScrollView contentContainerStyle={{ flex: 1 }}>
-                            <Filter
-                                getFilteredUsers={this.getFilteredUsers.bind(this)}
-                                closemodal={() => this.setState({ filterModal: false })}
-                                profilematch={this.changeProfilematch.bind(this)}
-                                profilematch_values={this.state.profilematch}
-                                multiSliderValuesChange={this.multiSliderValuesChangematch.bind(this)}
-                                agerange_values={this.state.agerange}
-                                zipcode={this.state.zipcode}
-                                is_today={this.state.today}
-                                is_week={this.state.week}
-                                is_month={this.state.month}
-                                resetFilter={this.resetFilter.bind(this)}
-                                updateToday={this.updateToday.bind(this)}
-                                handleZipcode={this.handleZipcode.bind(this)}
-                                searchbyFilter={this.searchbyFilter.bind(this)}
-                                questionanswerModalToggle={this.questionanswerModalToggle.bind(this)}
-                            // updateWeek={this.updateWeek.bind(this)}
-                            // updateMonth={this.updateMonth.bind(this)}
-                            />
-                        </ScrollView>
-                    </View>
-                </Modal>
+
                 <Modal
                     backdropOpacity={0.3}
                     isVisible={this.state.sortingModal}
@@ -596,8 +575,11 @@ class HomeScreen extends Component {
                     onBackdropPress={() => this.setState({ sortingModal: false })}
                     onBackButtonPress={() => this.setState({ sortingModal: false })}
                     style={styles.bottomModal}>
-                    <View style={{ backgroundColor: "#FFF" }}>
-                        <View style={{ flexDirection: "row", justifyContent: "space-between", flex: 0 }}>
+                    <View style={{ backgroundColor: "#FFF" ,}}>
+                        <View style={{ flexDirection: "row", justifyContent: "space-between", flex: 0 ,
+                        // borderBottomWidth: 1,
+                        // borderColor: "#CED0CE",
+}}>
                             <TouchableOpacity onPress={() => this.setState({ sortingModal: false })} style={{ width: '20%', paddingHorizontal: 16, height: 54, justifyContent: 'center' }}>
                                 <Image
                                     source={require('../../images/icons/downarrow.png')}
@@ -627,9 +609,9 @@ class HomeScreen extends Component {
                                                     backgroundColor: "transparent",
                                                     height: 42,
                                                     // justifyContent: 'center',
-                                                    alignItems: "flex-start",
+                                                    alignItems: "center",
                                                     paddingHorizontal: 16,
-                                                    borderBottomWidth: 1,
+                                                    borderTopWidth: 1,
                                                     borderColor: "#CED0CE",
                                                     flexDirection: "row",
                                                     justifyContent: "space-between"
@@ -677,9 +659,6 @@ class HomeScreen extends Component {
                 <Modal
                     backdropOpacity={0.3}
                     isVisible={this.state.questionanswerModal}
-                    // onSwipe={() => this.setState({ questionanswerModal: false })}
-                    // swipeDirection="down"
-                    // scrollTo={this.handleScrollTo}
                     onBackdropPress={() => this.setState({ questionanswerModal: false })}
                     onBackButtonPress={() => this.setState({ questionanswerModal: false })}
                     style={{ padding: 0, margin: 0 }}>
@@ -688,7 +667,7 @@ class HomeScreen extends Component {
                             isSearcrchbar={false}
                             left={
                                 <TouchableOpacity
-                                    onPress={() => this.questionanswerModalToggle()}
+                                    onPress={() => this.setState({ questionanswerModal: false })}
                                     style={{
                                         width: "15%",
                                         backgroundColor: "transparent",
@@ -720,7 +699,6 @@ class HomeScreen extends Component {
                         <View style={{
                             height: '90%',
                             justifyContent: "center",
-                            // alignItems: "center", 
                             paddingVertical: 8
                         }}>
                             <ScrollView contentContainerStyle={{ flexWrap: 'wrap', flexDirection: "row" }}>
@@ -793,8 +771,8 @@ class HomeScreen extends Component {
     }
     async resetFilter() {
         await AsyncStorage.removeItem('localfilter');
-        data={};
-        sortremotecallData={};
+        data = {};
+        sortremotecallData = {};
         this.setState({
             zipcode: '',
             location: {},
@@ -805,7 +783,7 @@ class HomeScreen extends Component {
             week: false,
             month: false,
             sortArray: sortarray
-        },()=>this.sortAndFilterUsers())
+        }, () => this.sortAndFilterUsers())
     }
 
     updateToday(key) {
@@ -890,3 +868,36 @@ mapStateToProps = (state) => {
     }
 }
 export default connect(mapStateToProps, mapDispatchToProps)(HomeScreen);
+                // <Modal
+                //     backdropOpacity={0.3}
+                //     isVisible={this.state.filterModal}
+                //     onSwipe={() => this.setState({ filterModal: false })}
+                //     swipeDirection="down"
+                //     scrollTo={this.handleScrollTo}
+                //     onBackdropPress={() => this.setState({ filterModal: false })}
+                //     onBackButtonPress={() => this.setState({ filterModal: false })}
+                //     style={styles.bottomModal}>
+                //     <View style={{ height: '90%', backgroundColor: "#FFF" }}>
+                //         <ScrollView contentContainerStyle={{ flex: 1 }}>
+                //             <Filter
+                //                 getFilteredUsers={this.getFilteredUsers.bind(this)}
+                //                 closemodal={() => this.setState({ filterModal: false })}
+                //                 profilematch={this.changeProfilematch.bind(this)}
+                //                 profilematch_values={this.state.profilematch}
+                //                 multiSliderValuesChange={this.multiSliderValuesChangematch.bind(this)}
+                //                 agerange_values={this.state.agerange}
+                //                 zipcode={this.state.zipcode}
+                //                 is_today={this.state.today}
+                //                 is_week={this.state.week}
+                //                 is_month={this.state.month}
+                //                 resetFilter={this.resetFilter.bind(this)}
+                //                 updateToday={this.updateToday.bind(this)}
+                //                 handleZipcode={this.handleZipcode.bind(this)}
+                //                 searchbyFilter={this.searchbyFilter.bind(this)}
+                //                 questionanswerModalToggle={this.questionanswerModalToggle.bind(this)}
+                //             // updateWeek={this.updateWeek.bind(this)}
+                //             // updateMonth={this.updateMonth.bind(this)}
+                //             />
+                //         </ScrollView>
+                //     </View>
+                // </Modal>

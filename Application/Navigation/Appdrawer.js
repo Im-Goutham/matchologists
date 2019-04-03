@@ -12,9 +12,10 @@ import CalenderStacknavigation from './CalenderStacknavigation'
 import NotificationStacknavigation from './NotificationStacknavigation'
 import FeedbackStacknavigation from './FeedbackStacknavigation';
 import WebinarStackNavigation from './WebinarStackNavigation';
-import MessageStackNavigation from './MessageStackNavigation';
+import SpeedDatingStacknavigation from './SpeedDatingStacknavigation';
+import ChatFeedbackStacknavigation from './ChatFeedbackStacknavigation';
 import Editprofile from '../Components/Basicinfo/Editprofile';
-
+import EventListStacknavigation  from "./EventListStacknavigation";
 const window_width = metrics.DEVICE_WIDTH
 
 export default createDrawerNavigator(
@@ -44,7 +45,13 @@ export default createDrawerNavigator(
             screen: WebinarStackNavigation
         },
         message: {
-            screen: MessageStackNavigation
+            screen: ChatFeedbackStacknavigation
+        },
+        eventList : {
+            screen: EventListStacknavigation
+        },
+        speeddating : {
+            screen:SpeedDatingStacknavigation
         }
     },
     {

@@ -94,7 +94,7 @@ class UserProfile extends BaseFormComponent {
                     if (galaryData[i] && galaryData[i].isVideo === true) {
                         arr.isVideo = true;
                         arr.uri = galaryData[i].thumbImage ? galaryData[i].thumbImage : '';
-                        arr.url = galaryData[i].url ? galaryData[i].url: '';
+                        arr.url = galaryData[i].url ? galaryData[i].url : '';
                     } else {
                         arr.isVideo = false;
                         arr.uri = galaryData[i].url;
@@ -166,10 +166,10 @@ class UserProfile extends BaseFormComponent {
             this.showSimpleMessage("info", { backgroundColor: global.gradientsecondry }, '', resolve.message ? resolve.message : '')
         }, (reject) => {
             console.log("reject", reject)
-            this.showSimpleMessage("", { backgroundColor: global.gradientsecondry }, '', reject.message? reject.message : '')
+            this.showSimpleMessage("", { backgroundColor: global.gradientsecondry }, '', reject.message ? reject.message : '')
         })
     }
-    pokeUser = async()=>{
+    pokeUser = async () => {
         const { state } = this.props.navigation;
         ApiRequest.pokeUser(this.props.token, state.params.userId, (resolve) => {
             console.log("resolve", resolve)
@@ -180,11 +180,11 @@ class UserProfile extends BaseFormComponent {
             this.showSimpleMessage("", { backgroundColor: global.gradientsecondry }, '', resolve.message ? resolve.message : '')
         }, (reject) => {
             console.log("reject", reject)
-            this.showSimpleMessage("", { backgroundColor: global.gradientsecondry }, '',reject.message? reject.message : '')
+            this.showSimpleMessage("", { backgroundColor: global.gradientsecondry }, '', reject.message ? reject.message : '')
         })
 
     }
-    sendFriendRequest= async()=>{
+    sendFriendRequest = async () => {
         const { state } = this.props.navigation;
         ApiRequest.sendFriendRequest(this.props.token, state.params.userId, (resolve) => {
             console.log("resolve", resolve)
@@ -195,7 +195,7 @@ class UserProfile extends BaseFormComponent {
             this.showSimpleMessage("", { backgroundColor: global.gradientsecondry }, '', resolve.message ? resolve.message : '')
         }, (reject) => {
             console.log("reject", reject)
-            this.showSimpleMessage("", { backgroundColor: global.gradientsecondry }, '',reject.message? reject.message : '')
+            this.showSimpleMessage("", { backgroundColor: global.gradientsecondry }, '', reject.message ? reject.message : '')
         })
     }
     render() {
@@ -215,35 +215,35 @@ class UserProfile extends BaseFormComponent {
                     </TouchableOpacity>
                     <ScrollView style={styles.container} bounces={false}>
                         <View style={styles.imageSlider}>
-                        {
-                            this.state.imgList && this.state.imgList.length > 1 ? 
-                            <Swiper
-                            loadMinimal
-                            loadMinimalSize={1}
-                            loop={false}
-                            bounces={false}
-                            showsButtons={false}
-                            // paginationStyle={{
-                            //     bottom: 35,
-                            //     colors: "#000"
-                            // }}
-                            dot={<View style={styles.dots} />}
-                            activeDot={<View style={styles.activedots} />} >
                             {
-                                this.state.imgList.map((item, i) =>
-                                    <Slide
-                                        loadHandle={this.loadHandle}
-                                        loaded={!!this.state.loadQueue[i]}
-                                        uri={item}
-                                        i={i}
-                                        key={i}
-                                        playVideo={this.playVideo.bind(this)} />
-                                )
+                                this.state.imgList && this.state.imgList.length > 1 ?
+                                    <Swiper
+                                        loadMinimal
+                                        loadMinimalSize={1}
+                                        loop={false}
+                                        bounces={false}
+                                        showsButtons={false}
+                                        // paginationStyle={{
+                                        //     bottom: 35,
+                                        //     colors: "#000"
+                                        // }}
+                                        dot={<View style={styles.dots} />}
+                                        activeDot={<View style={styles.activedots} />} >
+                                        {
+                                            this.state.imgList.map((item, i) =>
+                                                <Slide
+                                                    loadHandle={this.loadHandle}
+                                                    loaded={!!this.state.loadQueue[i]}
+                                                    uri={item}
+                                                    i={i}
+                                                    key={i}
+                                                    playVideo={this.playVideo.bind(this)} />
+                                            )
+                                        }
+                                    </Swiper>
+                                    :
+                                    <Image source={require('../../images/applogo.png')} style={{ flex: 1, height: null, width: null }} resizeMethod="resize" resizeMode="contain" />
                             }
-                        </Swiper>
-                            :
-                             <Image source={require('../../images/applogo.png')} style={{ flex:1 ,height:null, width:null }} resizeMethod="resize" resizeMode="contain"/>
-                        }
                         </View>
                         <View style={styles.detail}>
                             <View style={styles.namefield}>
@@ -265,12 +265,12 @@ class UserProfile extends BaseFormComponent {
                                 <Text style={styles.areainterest} numberOfLines={4}>{datastores.bio} </Text>
                             </View>
                             <View style={styles.mutualfriendsarea}>
-                                <View style={styles.label}>
+                                {/* <View style={styles.label}>
                                     <Text style={styles.mutualfriendsLabel}>{I18n.t('mutualfriendsLabel', { locale: language })} </Text>
                                 </View>
                                 <View style={{ height: 66 }}>
                                     <MutualFriends />
-                                </View>
+                                </View> */}
                                 <View style={styles.label}>
                                     <Text style={styles.mutualfriendsLabel} >{I18n.t('basicprofileLabel', { locale: language })} </Text>
                                 </View>
@@ -294,7 +294,12 @@ class UserProfile extends BaseFormComponent {
                                                 resizeMode="contain"
                                                 style={styles.bottomimageButton} />
                                         </TouchableOpacity>
-                                        <TouchableOpacity style={styles.footerButtons} onPress={() => navigate('message')}>
+                                        <TouchableOpacity style={styles.footerButtons} onPress={() => navigate('chatscreen', {
+                                            userId: datastores._id,
+                                            fullName: datastores.fullName,
+                                            image: datastores.profilePic
+
+                                        })}>
                                             <Image
                                                 source={require('../../images/icons/msg.png')}
                                                 resizeMethod="resize"

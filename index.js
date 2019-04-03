@@ -10,3 +10,4 @@ import Root from './Application/Root';
 // import App  from "./shape/index";
 
 AppRegistry.registerComponent(appName, () => Root);
+require('./Application/Subscribe')

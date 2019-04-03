@@ -6,6 +6,7 @@ author : abhishekkalia
 import { createStackNavigator } from 'react-navigation';
 import Chatroom from '../Components/Chatroom'
 import ChatScreen from '../Components/Chatroom/ChatScreen'
+import SpeeddatingliveCall from '../Components/Chatroom/SpeeddatingliveCall';
 import UserChatlist from '../Components/Chatroom/UserChatlist'
 import LiveCall from '../Components/Chatroom/LiveCall'
 

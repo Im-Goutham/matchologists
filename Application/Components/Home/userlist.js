@@ -43,7 +43,7 @@ class Userlist extends Component {
         })
     }
     componentWillReceiveProps(nextState, nextProps) {
-        console.log("nextState_hello", nextState.userList)
+        // console.log("nextState_hello", nextState.userList)
         this.setState({
             data: nextState.userList,
             is_loading: this.props.is_loading

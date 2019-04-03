@@ -16,15 +16,15 @@ import {
     Picker
 } from "react-native";
 import LinearGradient from 'react-native-linear-gradient';
+import _ from 'lodash';
 import BaseFormComponent from '../Common/BaseFormComponent'
 import * as global from '../../../global.json';
 import checked from '../../../assets/icons/checked.png';
 import unchecked from '../../../assets/icons/unchecked.png';
 import Modal from "react-native-modal";
-import Loading from '../Loading'
-import Apirequest from '../Common/Apirequest'
-import _ from 'lodash'
-
+import Loading from '../Loading';
+import Apirequest from '../Common/Apirequest';
+import CustomTextInput from "../CustomTextInput";
 let IS_ANDROID = Platform.OS === 'android';
 if (Platform.OS === 'android') UIManager.setLayoutAnimationEnabledExperimental(true)
 var days = [
@@ -53,7 +53,7 @@ export default class FriendrequestFeedback extends BaseFormComponent {
         const { state } = this.props.navigation
         var token = state.params.token;
         var data = state.params.data;
-        Apirequest.getFeedbackQuestions(token, 'invitefeedback', resolve => {
+        Apirequest.getFeedbackQuestions(token, state.params.eventNamepoint, resolve => {
             console.log("getFeedbackQuestions_resolve", resolve)
             if (resolve.data && resolve.data.questionAnswers) {
                 this.setState({
@@ -92,14 +92,34 @@ export default class FriendrequestFeedback extends BaseFormComponent {
             console.log("updateNotificationStatus_reject", reject)
         })
     }
+    changeChatStatus = () => {
+        const { state, goBack } = this.props.navigation
+        var token = state.params.token;
+        var chatReceiverId = state.params.data;
+        var Data = {
+            "profileUserId": chatReceiverId.receiverId
+        }
+        console.log("changeChatStatus_token", token)
+        console.log("changeChatStatus_Data", Data)
+        Apirequest.changeChatStatus(token, Data, resolve => {
+            console.log("changeChatStatus_resolve", resolve)
+
+            state.params.checkemitRequest(Data)
+            // data = {}
+            goBack()
+
+        }, reject => {
+            console.log("changeChatStatus_reject", reject)
+        })
+    }
     selectanswerForRadio = async (answer, availableanswer) => {
         const { questionData, questionindex } = this.state;
         const { state } = this.props.navigation
         var usersData = state.params.data;
-
+        console.log("usersData", usersData)
         let currentQuestion = questionData[questionindex];
         await _.map(currentQuestion.answers, (answer) => { return answer.selected = false });
-        data.feedbackReceiver = usersData.receiverId;
+        data.feedbackReceiver =  usersData && usersData.receiverId ? usersData.receiverId: usersData.userId;
         data.feedbackType = currentQuestion._id.category;
         data.questionId = currentQuestion._id._id;
         data.answerId = answer._id;
@@ -117,6 +137,7 @@ export default class FriendrequestFeedback extends BaseFormComponent {
         const { questionData, questionindex } = this.state;
         const { state, goBack } = this.props.navigation
         var token = state.params.token;
+        console.log("saveUserFeedback_data", data)
         Apirequest.saveUserFeedback(token, data, resolve => {
             console.log("resolve", resolve)
             data = {}
@@ -153,6 +174,7 @@ export default class FriendrequestFeedback extends BaseFormComponent {
         })
     }
     renderMultipleOption(availableanswer) {
+        // console.log("renderMultipleOption----------->", availableanswer)
         return <Checkbox
             selectedDate={this.state.selectedDate}
             showDatePicker={this.showDatePicker.bind(this)}
@@ -162,86 +184,46 @@ export default class FriendrequestFeedback extends BaseFormComponent {
         />
 
     }
-    selectAnswerCheckbox(answer) {
+    selectAnswerCheckbox(answer, datechoosen) {
+        console.log("answer++++***", answer)
+        // console.log("datechoosen++++***", datechoosen)
         const { questionData, questionindex } = this.state;
         const { state } = this.props.navigation
         var usersData = state.params.data;
         let currentQuestion = questionData[questionindex];
-
-        console.log("currentQuestion", answer)
-
-        _.map(currentQuestion.answers, (answer) => { return answer.selected = false });
-
+        console.log("selectAnswerCheckbox_usersData", usersData)
+        _.map(currentQuestion.answers, (answer) => { return answer.selected = false, answer.dynamicvalue = ''; });
         answer && answer.selected ? answer.selected = false : answer ? answer.selected = true : undefined;
-        answer && answer.selected ? undefined : answer.dynamicvalue = 2
-
-        data.feedbackReceiver = usersData.receiverId;
+        answer && answer.selected ? answer.dynamicvalue = datechoosen : answer.dynamicvalue = 2
+        data.feedbackReceiver = usersData && usersData.senderId ? usersData.senderId : usersData.receiverId ? usersData.receiverId : usersData.userId ;
         data.feedbackType = currentQuestion._id.category;
         data.questionId = currentQuestion._id._id;
         data.answerId = answer._id;
         answer.containVariable ? data.variableValue = { days: answer.dynamicvalue } : data.variableValue = {}
+        answer.isDisplayTextBox ? data.variableValue = { textMessage: datechoosen } : data.variableValue = {}
         this.setState({
             questionData: this.state.questionData,
             saveanswer: !answer.selected ? false : true
         });
-        console.log("sendDatatoserver", data)
+        console.log("selectAnswerCheckbox_+++++===>", data)
     }
 
-    //    selectAnswerCheckbox(answer) {
-    //         const { questionData, questionindex } = this.state;
-    //         const { state } = this.props.navigation
-    //         var usersData = state.params.data;
-    //         let currentQuestion = questionData[questionindex - 1];
-    //         console.log("selectAnswerCheckbox", answer)
-
-    //         // answer && answer.selected ? answer.selected = false : answer ? answer.selected = true : undefined;
-    //         // answer && answer.selected ? undefined : answer.dynamicvalue = 2
-
-    //         let selected_answer_ids = [];
-    //         // if (currentQuestion.answers) {
-    //             // selected_answer_ids = _.filter(currentQuestion.answers, (ans) => { return ans.selected });
-    //         //     selected_answer_ids = _.map(selected_answer_ids, (ans) => { return ans && ans._id ? ans._id : "" });
-    //         // }
-    //         _.map(currentQuestion.answers, (answer) => { return answer.selected = false });
-    //         answer && answer.selected ? answer.selected = false : answer ? answer.selected = true : undefined;
-    //         answer && answer.selected ? undefined : answer.dynamicvalue = 2
-
-    //         data.feedbackReceiver = usersData.receiverId;
-    //         data.feedbackType = currentQuestion._id.category;
-    //         data.questionId = currentQuestion._id._id;
-    //         data.answerId = answer._id;
-    //         answer.containVariable ? data.variableValue = { days: answer.dynamicvalue } : data.variableValue = {}
-    //         // if (answer) {
-    //         //     answer.selected = true;
-    //         // }
-
-    //         this.setState({
-    //             questionData: this.state.questionData,
-    //             saveanswer: !answer.selected ? false : true
-    //         });
-    //         console.log("sendDatatoserver", data)
-    //         // console.log("selectAnswerCheckbox_questionData", questionData)
-    //         // console.log("selectAnswerCheckbox_currentQuestion", currentQuestion)
-
-    //     }
-    // callmyCheckbox(data) {
-    //     console.log("callmyCheckbox", data)
-    // }
-    // setActiveButton() { }
     saveUserFeedback(availableanswer) {
         const { questionData, questionindex } = this.state;
         const { state, goBack } = this.props.navigation
         var token = state.params.token;
         let currentQuestion = questionData[questionindex];
-
         console.log("saveUserFeedback_data", data)
         console.log("currentQuestion", currentQuestion)
-
         Apirequest.saveUserFeedback(token, data, resolve => {
             console.log("saveUserFeedback_resolve", resolve)
             this.showSimpleMessage("", { backgroundColor: global.gradientsecondry }, "", resolve.message)
             console.log("currentQuestion_isPositive", currentQuestion._id.isPositive)
             console.log("currentQuestion_isNegative", currentQuestion._id.isNegative)
+            if (state.params.eventNamepoint === 'chatfeedback') {
+                this.changeChatStatus()
+                return
+            }
             if (currentQuestion && currentQuestion._id && currentQuestion._id.isPositive) {
                 console.log("going to positive")
                 this.updateNotificationStatus()
@@ -250,23 +232,11 @@ export default class FriendrequestFeedback extends BaseFormComponent {
                 console.log("going to negative")
                 this.updateNotificationStatus()
             }
-
         }, reject => {
             console.log("saveUserFeedback_reject", reject)
             this.showSimpleMessage("", { backgroundColor: global.gradientsecondry }, "", reject.message)
-            // remove this after complete 
-            // if (questionindex >= questionData.length) {
-            //     goBack()
-            // }
-            // 
-
         })
     }
-    // selectDate(date) {
-    //     var answer = this.state.questionData;
-    //     console.log("selectDate", answer)
-    //     this.showDatePicker(answer, date)
-    // }
     showDatePicker(answer, date) {
         answer.dynamicvalue = date ? date : 1
         console.log("showDatePicker_answer", answer)
@@ -283,7 +253,6 @@ export default class FriendrequestFeedback extends BaseFormComponent {
                 onPress={this.selectDate.bind(this, value)}>
                 <Text>{value}</Text>
             </TouchableOpacity>
-
         })
     }
     getmyvalue(available) {
@@ -322,7 +291,7 @@ export default class FriendrequestFeedback extends BaseFormComponent {
                     <ScrollView contentContainerStyle={{ paddingHorizontal: 16 }} nestedScrollEnabled={true} >
                         <View style={{}}>
                             <View style={styles.questionBox}>
-                                <Text style={styles.questionTitle}>{currentQuestion._id.questionFor}</Text>
+                                {/* <Text style={styles.questionTitle}>{currentQuestion._id.questionFor}</Text> */}
                                 <Text style={styles.question}>{_.replace(currentQuestion._id.question, new RegExp("{{memberName}}"), invitationname)}</Text>
                             </View>
                         </View>
@@ -423,147 +392,161 @@ class Checkbox extends Component {
     }
 
     selectDayValue = (itemValue, itemIndex, answers) => {
-        answers.dynamicvalue = itemValue;
-        // answers.selected = true;
+        // answers.dynamicvalue = itemValue;
         this.setState({ showDate: false })
         console.log("selectDayValue", answers)
 
-        this.props.selectAnswer(answers)
+        this.props.selectAnswer(answers, itemValue)
     }
-    selectOptions(itemValue, itemIndex, answers) {
-        answers.dynamicvalue = itemValue;
-        this.setState({ showDate: false })
-        this.props.selectAnswer(answers)
-    }
-    renderPickeroption() {
-        return days.map((facility, i) => {
-            return <Picker.Item key={i} value={facility.id} label={facility.label} />
-        })
-    }
-    renderOptions(answer, dynamicvalue) {
-        return days.map((facility, i) => {
-            return (
-                <TouchableOpacity
-                    key={i}
-                    style={{ backgroundColor: dynamicvalue === facility.label ? "#F5F5F5" : "#fff", height: 42, justifyContent: "center", paddingHorizontal: 16 }}
-                    onPress={() => this.selectOptions(facility.label, facility.i, answer)}>
-                    <Text style={{ color: dynamicvalue === facility.label ? global.gradientsecondry : "#000" }}> {facility.label} </Text>
-                </TouchableOpacity>
-            )
-        })
+    // selectOptions(itemValue, itemIndex, answers) {
+    // console.log("selectOptions_itemValue",itemValue)
+    // console.log("selectOptions_itemIndex",itemIndex)
+    // console.log("selectOptions_answers",answers)
+    //     answers.dynamicvalue = itemValue;
+    //     this.setState({ showDate: false })
+    //     this.props.selectAnswer(answers)
+    // }
+    // renderPickeroption() {
+    //     return days.map((facility, i) => {
+    //         return <Picker.Item key={i} value={facility.id} label={facility.label} />
+    //     })
+    // }
+    // renderOptions(answer, dynamicvalue) {
+    //     return days.map((facility, i) => {
+    //         return (
+    //             <TouchableOpacity
+    //                 key={i}
+    //                 style={{ backgroundColor: dynamicvalue === facility.label ? "#F5F5F5" : "#fff", height: 42, justifyContent: "center", paddingHorizontal: 16 }}
+    //                 onPress={() => this.selectOptions(facility.label, facility.i, answer)}>
+    //                 <Text style={{ color: dynamicvalue === facility.label ? global.gradientsecondry : "#000" }}> {facility.label} </Text>
+    //             </TouchableOpacity>
+    //         )
+    //     })
+    // }
+    // otherOptions=(answers)=>{
+    //     this.props.selectAnswer(answers, itemValue)
+    // }
+    getOtherValue = (cbvalue) => {
+        this.props.selectAnswer(cbvalue.answer, cbvalue.inputValue)
+        // console.log("getOtherValue", cbvalue)
     }
     renderCheckboxes() {
         return this.props.data.map((answer, key) => {
             return <View key={key} style={{}}>
                 {
-                    answer.selected ?
-                        <TouchableOpacity style={styles.row} onPress={() => this.props.selectAnswer(answer)}>
+                    // answer.selected ?
+                    //     <TouchableOpacity style={styles.row} onPress={() => this.props.selectAnswer(answer)}>
+                    //         <View style={{ backgroundColor: "transparent", flex: 2 }}>
+                    //             <Image source={checked}
+                    //                 style={{
+                    //                     width: 24, height: 24,
+                    //                 }}
+                    //                 resizeMethod='resize'
+                    //                 resizeMode="contain"
+                    //             />
+                    //         </View>
+                    //         <View style={{ backgroundColor: "transparent", flex: 8 }}>
+                    //             <Text style={[styles.answerTxt]}>{answer.containVariable ? _.replace(answer.answer, new RegExp("{{days}}"), answer.dynamicvalue ? answer.dynamicvalue : 2) : answer.answer}</Text>
+                    //         </View>
+                    //     </TouchableOpacity>
+                    //     :
+                    answer.containVariable ?
+                        <View style={styles.row}>
                             <View style={{ backgroundColor: "transparent", flex: 2 }}>
-                                <Image source={checked}
-                                    style={{
-                                        width: 24, height: 24,
-                                    }}
-                                    resizeMethod='resize'
-                                    resizeMode="contain"
-                                />
-                            </View>
-                            <View style={{ backgroundColor: "transparent", flex: 8 }}>
-                                <Text style={[styles.answerTxt]}>{answer.containVariable ? _.replace(answer.answer, new RegExp("{{days}}"), answer.dynamicvalue ? answer.dynamicvalue : 2) : answer.answer}</Text>
-                            </View>
-                        </TouchableOpacity>
-                        :
-                        answer.containVariable ?
-                            <View style={styles.row}>
-                                <View style={{ backgroundColor: "transparent", flex: 2 }}>
-                                    <Image
-                                        source={unchecked}
-                                        style={{
-                                            width: 24,
-                                            height: 24,
-                                        }}
-                                        resizeMethod='resize'
-                                        resizeMode="contain"
-                                    />
-                                </View>
                                 {
-                                    IS_ANDROID ?
-                                        <>
-                                            <TouchableOpacity
-                                                style={{ backgroundColor: "transparent", flex: 8 }}
-                                                onPress={() => this.setState({ showDate: true })}
-                                            >
-                                                <Text style={[styles.answerTxt]}>
-                                                    {answer.containVariable ? _.replace(answer.answer, new RegExp("{{days}}"), answer.dynamicvalue ? answer.dynamicvalue : 2) : answer.answer}
-                                                </Text>
-                                            </TouchableOpacity>
-                                            <Modal backdropOpacity={0.5}
-                                                isVisible={this.state.showDate}
-                                                onBackdropPress={() => this.setState({ showDate: false })}
-                                                onBackButtonPress={() => this.setState({ showDate: false })}
-                                                style={{ padding: 0, marginTop: '50%' }}>
-                                                <View>
-                                                    {
-                                                        this.renderOptions(answer, answer.dynamicvalue ? answer.dynamicvalue : 2)
-                                                    }
-                                                </View>
-                                            </Modal>
-                                        </>
+                                    answer.selected ?
+                                        <Image source={checked}
+                                            style={{
+                                                width: 24, height: 24,
+                                            }}
+                                            resizeMethod='resize'
+                                            resizeMode="contain"
+                                        />
                                         :
-                                        <>
-                                            <TouchableOpacity
-                                                style={{ backgroundColor: "transparent", flex: 8 }}
-                                                onPress={() => this.setState({ showDate: true })}
-                                            >
-                                                <Text style={[styles.answerTxt]}>
-                                                    {answer.containVariable ? _.replace(answer.answer, new RegExp("{{days}}"), answer.dynamicvalue ? answer.dynamicvalue : 2) : answer.answer}
-                                                </Text>
-                                            </TouchableOpacity>
-                                            <Modal backdropOpacity={0.5}
-                                                isVisible={this.state.showDate}
-                                                onBackdropPress={() => this.setState({ showDate: false })}
-                                                onBackButtonPress={() => this.setState({ showDate: false })}
-                                                style={{ padding: 0, margin: 0 }}>
-                                                <View style={{ marginTop: "80%", backgroundColor: "#FFF", }}>
-                                                    <View style={{ backgroundColor: "#FFF", height: 200 }}>
-                                                        <Picker
-                                                            selectedValue={answer.dynamicvalue}
-                                                            style={{ height: 50, width: IS_ANDROID ? 80 : undefined }}
-                                                            onValueChange={(itemValue, itemIndex) => this.selectDayValue(itemValue, itemIndex, answer)}
-                                                            itemStyle={styles.answerTxt}
-                                                        >
-                                                            {
-                                                                this.renderPickeroption()
-                                                            }
-                                                        </Picker>
-                                                    </View>
-                                                    <View style={{ flexDirection: "row", height: 50, backgroundColor: "#FFF", borderTopWidth: 1 }}>
-                                                        <TouchableOpacity style={{ flex: 1, height: 50, justifyContent: "center", alignItems: "center" }} onPress={() => this.setState({ showDate: false })}>
-                                                            <Text>Cancel</Text>
-                                                        </TouchableOpacity>
-                                                    </View>
-                                                </View>
-                                            </Modal>
-                                        </>
+                                        <Image
+                                            source={unchecked}
+                                            style={{
+                                                width: 24,
+                                                height: 24,
+                                            }}
+                                            resizeMethod='resize'
+                                            resizeMode="contain"
+                                        />
                                 }
                             </View>
+                            {
+                                <RenderOptions
+                                    answer={answer}
+                                    showDate={this.state.showDate}
+                                    dynamicvalue={2}
+                                    selectOptions={this.selectDayValue.bind(this)}
+                                    selectDayValue={this.selectDayValue.bind(this)}
+                                />
+                            }
+                        </View>
+                        :
+                        answer.isDisplayTextBox ?
+                            <View style={{ paddingBottom: 30 }}> 
+                                <TouchableOpacity style={styles.row} onPress={() => this.props.selectAnswer(answer)}>
+                                    <View style={{ backgroundColor: "transparent", flex: 2 }}>
+                                    {
+                                    answer.selected ?
+                                        <Image source={checked}
+                                            style={{
+                                                width: 24, height: 24,
+                                            }}
+                                            resizeMethod='resize'
+                                            resizeMode="contain"
+                                        />
+                                        :
+                                        <Image
+                                            source={unchecked}
+                                            style={{
+                                                width: 24,
+                                                height: 24,
+                                            }}
+                                            resizeMethod='resize'
+                                            resizeMode="contain"
+                                        />
+                                }
+                                    </View>
+                                    <View style={{ backgroundColor: "transparent", flex: 8 }}>
+                                        <Text style={[styles.answerTxt]}>{answer.containVariable ? _.replace(answer.answer, new RegExp("{{days}}"), answer.dynamicvalue ? answer.dynamicvalue : 2) : answer.answer} </Text>{}
+                                    </View>
+                                </TouchableOpacity>
+                                <InputContainer
+                                    answer={answer}
+                                    getOtherValue={this.getOtherValue.bind(this)}
+                                />
+                            </View>
                             :
-                            <TouchableOpacity  style={styles.row} onPress={() => this.props.selectAnswer(answer)}>
+                            <TouchableOpacity style={styles.row} onPress={() => this.props.selectAnswer(answer)}>
                                 <View style={{ backgroundColor: "transparent", flex: 2 }}>
-                                    <Image
-                                        source={unchecked}
-                                        style={{
-                                            width: 24,
-                                            height: 24,
-                                        }}
-                                        resizeMethod='resize'
-                                        resizeMode="contain"
-                                    />
+                                {
+                                    answer.selected ?
+                                        <Image source={checked}
+                                            style={{
+                                                width: 24, height: 24,
+                                            }}
+                                            resizeMethod='resize'
+                                            resizeMode="contain"
+                                        />
+                                        :
+                                        <Image
+                                            source={unchecked}
+                                            style={{
+                                                width: 24,
+                                                height: 24,
+                                            }}
+                                            resizeMethod='resize'
+                                            resizeMode="contain"
+                                        />
+                                }
                                 </View>
                                 <View style={{ backgroundColor: "transparent", flex: 8 }}>
                                     <Text style={[styles.answerTxt]}>{answer.containVariable ? _.replace(answer.answer, new RegExp("{{days}}"), answer.dynamicvalue ? answer.dynamicvalue : 2) : answer.answer} </Text>{}
                                 </View>
                             </TouchableOpacity>
-                            
                 }
             </View>
         })
@@ -578,4 +561,135 @@ class Checkbox extends Component {
         )
     }
 
+}
+class InputContainer extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            otherOption: ""
+        }
+    }
+    handleValueChange = (otherOption) => {
+        // this.setState({
+        //     otherOption
+        // }, () => this.props.getOtherValue({ inputValue: otherOption, answer: this.props.answer }))
+        this.props.getOtherValue({ inputValue: otherOption, answer: this.props.answer })
+    }
+    render() {
+        // console.log("InputContainer.answer", this.props.answer.dynamicvalue)
+        return (
+            <>
+                {
+                    this.props.answer.selected ?
+                    <CustomTextInput
+                        value={this.props.answer.dynamicvalue}
+                        placeholder="Type your reason here"
+                        onChangeText={this.handleValueChange.bind(this)}
+                    />
+                    : undefined
+                }
+            </>
+        )
+    }
+}
+class RenderOptions extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            showDate: false
+        }
+    }
+    selectDate(label, indexValue, answer) {
+        // console.log("label",label)
+        // console.log("indexValue",indexValue)
+        // console.log("answer", answer)
+        this.setState({
+            showDate: !this.state.showDate
+        }, () => this.props.selectOptions(label, indexValue, answer))
+    }
+    renderOptions(answer, dynamicvalue) {
+        return days.map((facility, i) => {
+            return (
+                <TouchableOpacity
+                    key={i}
+                    style={{ backgroundColor: dynamicvalue === facility.label ? "#F5F5F5" : "#fff", height: 42, justifyContent: "center", paddingHorizontal: 16 }}
+                    onPress={() => this.selectDate(facility.label, facility.i, answer)}>
+                    <Text style={{ color: dynamicvalue === facility.label ? global.gradientsecondry : "#000" }}> {facility.label} </Text>
+                </TouchableOpacity>
+            )
+        })
+    }
+    renderPickeroption() {
+        return days.map((facility, i) => {
+            return <Picker.Item key={i} value={facility.id} label={facility.label} />
+        })
+    }
+    render() {
+        return (
+            <>
+                {
+                    IS_ANDROID ?
+                        <>
+                            <TouchableOpacity
+                                style={{ backgroundColor: "transparent", flex: 8 }}
+                                onPress={() => this.setState({ showDate: true })}
+                            >
+                                <Text style={[styles.answerTxt]}>
+
+                                    {this.props.answer.containVariable ? _.replace(this.props.answer.answer, new RegExp("{{days}}"), this.props.answer.dynamicvalue ? this.props.answer.dynamicvalue : 2) : this.props.answer.answer}
+                                </Text>
+                            </TouchableOpacity>
+                            <Modal backdropOpacity={0.5}
+                                isVisible={this.state.showDate}
+                                onBackdropPress={() => this.setState({ showDate: false })}
+                                onBackButtonPress={() => this.setState({ showDate: false })}
+                                style={{ padding: 0, marginTop: '50%' }}>
+                                <View>
+                                    {
+                                        this.renderOptions(this.props.answer, this.props.dynamicvalue)
+                                    }
+                                </View>
+                            </Modal>
+                        </>
+                        :
+                        <>
+                            <TouchableOpacity
+                                style={{ backgroundColor: "transparent", flex: 8 }}
+                                onPress={() => this.setState({ showDate: true })}
+                            >
+                                <Text style={[styles.answerTxt]}>
+                                    {this.props.answer.containVariable ? _.replace(this.props.answer.answer, new RegExp("{{days}}"), this.props.answer.dynamicvalue ? this.props.answer.dynamicvalue : 2) : this.props.answer.answer}
+                                </Text>
+                            </TouchableOpacity>
+                            <Modal backdropOpacity={0.5}
+                                isVisible={this.state.showDate}
+                                onBackdropPress={() => this.setState({ showDate: false })}
+                                onBackButtonPress={() => this.setState({ showDate: false })}
+                                style={{ padding: 0, margin: 0 }}>
+                                <View style={{ marginTop: "80%", backgroundColor: "#FFF", }}>
+                                    <View style={{ backgroundColor: "#FFF", height: 200 }}>
+                                        <Picker
+                                            selectedValue={this.props.dynamicvalue}
+                                            style={{ height: 50, width: IS_ANDROID ? 80 : undefined }}
+                                            onValueChange={(itemValue, itemIndex) => this.selectDate(itemValue, itemIndex, this.props.answer)}
+                                            itemStyle={styles.answerTxt}
+                                        >
+                                            {
+                                                this.renderPickeroption()
+                                            }
+                                        </Picker>
+                                    </View>
+                                    <View style={{ flexDirection: "row", height: 50, backgroundColor: "#FFF", borderTopWidth: 1 }}>
+                                        <TouchableOpacity style={{ flex: 1, height: 50, justifyContent: "center", alignItems: "center" }} onPress={() => this.setState({ showDate: false })}>
+                                            <Text>Cancel</Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                </View>
+                            </Modal>
+                        </>
+                }
+            </>
+
+        )
+    }
 }

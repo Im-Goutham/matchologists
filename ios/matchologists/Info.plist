@@ -25,6 +25,7 @@
 		<dict>
 			<key>CFBundleURLSchemes</key>
 			<array>
+				<string>matchologists</string>
 				<string>fb592045231241420</string>
 			</array>
 		</dict>

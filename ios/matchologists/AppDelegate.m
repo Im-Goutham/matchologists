@@ -8,11 +8,13 @@
 #import "RNFIRMessaging.h"
 
 #import "AppDelegate.h"
-#import <AppCenterReactNativePush/AppCenterReactNativePush.h>
-#import <AppCenterReactNativeCrashes/AppCenterReactNativeCrashes.h>
-#import <AppCenterReactNativeAnalytics/AppCenterReactNativeAnalytics.h>
-#import <AppCenterReactNative/AppCenterReactNative.h>
-//#import <react-native-branch/RNBranch.h>
+//#import <AppCenterReactNativePush/AppCenterReactNativePush.h>
+//#import <AppCenterReactNativePush.h>
+//#import <AppCenterReactNativeCrashes/AppCenterReactNativeCrashes.h>
+//#import <AppCenterReactNativeAnalytics/AppCenterReactNativeAnalytics.h>
+//#import <AppCenterReactNativeAnalytics.h>
+//#import <AppCenterReactNative/AppCenterReactNative.h>
+#import "RNBranch.h"
 
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTRootView.h>
@@ -20,13 +22,25 @@
 #import <RNGoogleSignin/RNGoogleSignin.h>
 #import <React/RCTPushNotificationManager.h>
 #import "RNSplashScreen.h"
+#import <React/RCTLinkingManager.h>
 
 
 
 @implementation AppDelegate
 
+- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url
+  sourceApplication:(NSString *)sourceApplication annotation:(id)annotation
+{
+  return [RCTLinkingManager application:application openURL:url
+                      sourceApplication:sourceApplication annotation:annotation];
+}
+
+// Only if your app is using [Universal Links](https://developer.apple.com/library/prerelease/ios/documentation/General/Conceptual/AppSearch/UniversalLinks.html).
+
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+//  [RNBranch initSessionWithLaunchOptions:launchOptions isReferrable:YES]; // <-- add this for branch
+
   [GIDSignIn sharedInstance].clientID = @"984386186860-qv2koo0b98mp88uihgnu3hba37mbnjl3.apps.googleusercontent.com";
   [GIDSignIn sharedInstance].serverClientID = @"984386186860-qv2koo0b98mp88uihgnu3hba37mbnjl3.apps.googleusercontent.com";
 
@@ -35,13 +49,13 @@
 
   NSURL *jsCodeLocation;
 
-  [AppCenterReactNativePush register];  // Initialize AppCenter push
-
-  [AppCenterReactNativeCrashes registerWithAutomaticProcessing];  // Initialize AppCenter crashes
-
-  [AppCenterReactNativeAnalytics registerWithInitiallyEnabled:true];  // Initialize AppCenter analytics
-
-  [AppCenterReactNative register];  // Initialize AppCenter 
+//  [AppCenterReactNativePush register];  // Initialize AppCenter push
+//
+//  [AppCenterReactNativeCrashes registerWithAutomaticProcessing];  // Initialize AppCenter crashes
+//
+//  [AppCenterReactNativeAnalytics registerWithInitiallyEnabled:true];  // Initialize AppCenter analytics
+//
+//  [AppCenterReactNative register];  // Initialize AppCenter
 
  [[FBSDKApplicationDelegate sharedInstance] application:application
                            didFinishLaunchingWithOptions:launchOptions];
@@ -104,6 +118,14 @@ fetchCompletionHandler:(nonnull void (^)(UIBackgroundFetchResult))completionHand
                   application:application openURL:url sourceApplication:options[UIApplicationOpenURLOptionsSourceApplicationKey]
                   annotation:options[UIApplicationOpenURLOptionsAnnotationKey]
                   ];
+  //  branch io start
+
+  if (![RNBranch.branch application:application openURL:url options:options]) {
+    // do other deep link routing for the Facebook SDK, Pinterest SDK, etc
+
+  }
+  //  branch io close
+
   // Add any custom logic here.
   BOOL googlehandle = [RNGoogleSignin application:application
                                           openURL:url
@@ -115,6 +137,19 @@ fetchCompletionHandler:(nonnull void (^)(UIBackgroundFetchResult))completionHand
 - (void)applicationDidBecomeActive:(UIApplication *)application {
   [FBSDKAppEvents activateApp];
 }
+//  branch io
+//  - (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options {
+//    if (![RNBranch.branch application:app openURL:url options:options]) {
+//      // do other deep link routing for the Facebook SDK, Pinterest SDK, etc
+//    }
+//    return YES;
+//  }
+  
+- (BOOL)application:(UIApplication *)application continueUserActivity:(NSUserActivity *)userActivity restorationHandler:(void (^)(NSArray *restorableObjects))restorationHandler {
+  
+  return  [RCTLinkingManager application:application continueUserActivity:userActivity restorationHandler:restorationHandler] || [RNBranch continueUserActivity:userActivity] ;
+}
+//  branch io close
 
  // Required to register for notifications
 // - (void)application:(UIApplication *)application didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings

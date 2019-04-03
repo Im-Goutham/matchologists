@@ -1,6 +1,6 @@
 import ApiManager from "./ApiManager";
 const ApiRequest = {
-    visitProfile(token, userId ){
+    visitProfile(token, userId) {
         let header = {
             'Authorization': token,
         }
@@ -14,10 +14,26 @@ const ApiRequest = {
             } else if (response.status === 1) {
             }
         }, (error) => {
-            console.log("error", error)
+            console.log("error_visitProfile", error)
         })
     },
-    addToFavourite(token, userId, resolve, reject){
+    changePassword(token, data, resolve, reject) {
+        let header = {
+            'Authorization': token,
+        }
+        ApiManager.callwebservice('POST', 'api/changePassword', header, data, (success) => {
+            let response = JSON.parse(success._bodyInit);
+            // console.log("addVisitedProfileUser", response)
+            if (response.status === 0) {
+                return reject(response);
+            } else if (response.status === 1) {
+                return resolve(response);
+            }
+        }, (error) => {
+            console.log("error_changePassword", error)
+        })
+    },
+    addToFavourite(token, userId, resolve, reject) {
         let header = {
             'Authorization': token,
         }
@@ -33,11 +49,11 @@ const ApiRequest = {
                 return resolve(response);
             }
         }, (error) => {
-            console.log("error", error)
+            console.log("error_addToFavourite", error)
         })
 
     },
-    pokeUser(token, userId, resolve, reject){
+    pokeUser(token, userId, resolve, reject) {
         let header = {
             'Authorization': token,
         }
@@ -53,10 +69,10 @@ const ApiRequest = {
                 return resolve(response);
             }
         }, (error) => {
-            console.log("error", error)
+            console.log("error_pokeUser", error)
         })
     },
-    sendFriendRequest(token, userId, resolve, reject){
+    sendFriendRequest(token, userId, resolve, reject) {
         let header = {
             'Authorization': token,
         }
@@ -71,10 +87,10 @@ const ApiRequest = {
                 return resolve(response);
             }
         }, (error) => {
-            console.log("error", error)
+            console.log("error_sendFriendRequest", error)
         })
     },
-    getChatSessionId(token, userid, resolve, reject){
+    getChatSessionId(token, userid, resolve, reject) {
         let header = {
             'Authorization': token,
         }
@@ -91,10 +107,10 @@ const ApiRequest = {
                 return resolve(response);
             }
         }, (error) => {
-            console.log("error", error)
+            console.log("error_getChatSessionId", error)
         })
     },
-    sortAndFilterUsers(token,  resolve, reject){
+    sortAndFilterUsers(token, resolve, reject) {
         let header = {
             'Authorization': token,
         }
@@ -109,10 +125,11 @@ const ApiRequest = {
                 return resolve(response);
             }
         }, (error) => {
-            console.log("error", error)
+            console.log("error_sortAndFilterUsers", error)
+            return reject(error);
         })
     },
-    getNotifications(token,  resolve, reject){
+    getNotifications(token, resolve, reject) {
         let header = {
             'Authorization': token,
         }
@@ -124,14 +141,14 @@ const ApiRequest = {
                 return resolve(response);
             }
         }, (error) => {
-            console.log("error", error)
+            console.log("error_getNotifications", error)
         })
     },
-    getFeedbackQuestions(token,invitefeedback,  resolve, reject){
+    getFeedbackQuestions(token, invitefeedback, resolve, reject) {
         let header = {
             'Authorization': token,
         }
-        ApiManager.callwebservice('GET', `api/getFeedbackQuestions${"/"+invitefeedback}`, header, '', (success) => {
+        ApiManager.callwebservice('GET', `api/getFeedbackQuestions${"/" + invitefeedback}`, header, '', (success) => {
             let response = JSON.parse(success._bodyInit);
             if (response.status === 0) {
                 return reject(response);
@@ -139,10 +156,10 @@ const ApiRequest = {
                 return resolve(response);
             }
         }, (error) => {
-            console.log("error", error)
+            console.log("error_getFeedbackQuestions", error)
         })
     },
-    saveUserFeedback(token, data ,resolve, reject){
+    saveUserFeedback(token, data, resolve, reject) {
         let header = {
             'Authorization': token,
         }
@@ -154,10 +171,10 @@ const ApiRequest = {
                 return resolve(response);
             }
         }, (error) => {
-            console.log("error", error)
+            console.log("error_saveUserFeedback", error)
         })
     },
-    updateNotificationStatus(token, data, resolve, reject){
+    updateNotificationStatus(token, data, resolve, reject) {
         let header = {
             'Authorization': token,
         }
@@ -169,10 +186,10 @@ const ApiRequest = {
                 return resolve(response);
             }
         }, (error) => {
-            console.log("error", error)
+            console.log("error_updateNotificationStatus", error)
         })
     },
-    saveUserSettings(token, data, resolve, reject){
+    saveUserSettings(token, data, resolve, reject) {
         let header = {
             'Authorization': token,
         }
@@ -184,10 +201,10 @@ const ApiRequest = {
                 return resolve(response);
             }
         }, (error) => {
-            console.log("error", error)
+            console.log("error_saveUserSettings", error)
         })
     },
-    getFavouriteUsers(token, data, resolve, reject){
+    getFavouriteUsers(token, data, resolve, reject) {
         let header = {
             'Authorization': token,
         }
@@ -199,10 +216,10 @@ const ApiRequest = {
                 return resolve(response);
             }
         }, (error) => {
-            console.log("error", error)
+            console.log("error_getFavouriteUsers", error)
         })
     },
-    addFavouriteUserAsMonogamous(token, data, resolve, reject){
+    addFavouriteUserAsMonogamous(token, data, resolve, reject) {
         let header = {
             'Authorization': token,
         }
@@ -214,13 +231,13 @@ const ApiRequest = {
                 return resolve(response);
             }
         }, (error) => {
-            console.log("error", error)
+            console.log("error_addFavouriteUserAsMonogamous", error)
         })
     },
-    removeFavouriteUser(token, data, resolve, reject){
+    removeFavouriteUser(token, data, resolve, reject) {
         let header = {
             'Authorization': token,
-            'Content-Type':"application/json"
+            'Content-Type': "application/json"
         }
         // console.log("api/removeFavouriteUser", header)
         // console.log("api/removeFavouriteUser_data", data)
@@ -236,10 +253,10 @@ const ApiRequest = {
             console.log("error_removeFavouriteUser", error)
         })
     },
-    removeMonogamousUser(token, data, resolve, reject){
+    removeMonogamousUser(token, data, resolve, reject) {
         let header = {
             'Authorization': token,
-            'Content-Type':"application/json"
+            'Content-Type': "application/json"
         }
         ApiManager.callwebservice('POST', 'api/removeMonogamousUser', header, data, (success) => {
             let response = JSON.parse(success._bodyInit);
@@ -249,14 +266,14 @@ const ApiRequest = {
                 return resolve(response);
             }
         }, (error) => {
-            console.log("error_removeFavouriteUser", error)
+            console.log("error_removeMonogamousUser", error)
         })
     },
     // new call
-    askVideoCallPermission(token, data, resolve, reject){
+    askVideoCallPermission(token, data, resolve, reject) {
         let header = {
             'Authorization': token,
-            'Content-Type':"application/json"
+            'Content-Type': "application/json"
         }
         ApiManager.callwebservice('POST', 'api/askVideoCallPermission', header, data, (success) => {
             let response = JSON.parse(success._bodyInit);
@@ -266,13 +283,13 @@ const ApiRequest = {
                 return resolve(response);
             }
         }, (error) => {
-            console.log("error_removeFavouriteUser", error)
+            console.log("error_askVideoCallPermission", error)
         })
     },
-    respondToVideoCallPermission(token, data, resolve, reject){
+    respondToVideoCallPermission(token, data, resolve, reject) {
         let header = {
             'Authorization': token,
-            'Content-Type':"application/json"
+            'Content-Type': "application/json"
         }
         ApiManager.callwebservice('POST', 'api/respondToVideoCallPermission', header, data, (success) => {
             let response = JSON.parse(success._bodyInit);
@@ -282,13 +299,13 @@ const ApiRequest = {
                 return resolve(response);
             }
         }, (error) => {
-            console.log("error_removeFavouriteUser", error)
+            console.log("error_respondToVideoCallPermission", error)
         })
     },
-    reportUser(token, data, resolve, reject){
+    reportUser(token, data, resolve, reject) {
         let header = {
             'Authorization': token,
-            'Content-Type':"application/json"
+            'Content-Type': "application/json"
         }
         ApiManager.callwebservice('POST', 'api/reportUser', header, data, (success) => {
             let response = JSON.parse(success._bodyInit);
@@ -298,8 +315,246 @@ const ApiRequest = {
                 return resolve(response);
             }
         }, (error) => {
-            console.log("error_removeFavouriteUser", error)
+            console.log("error_reportUser", error)
+        })
+    },
+    startArchive(token, data, resolve, reject) {
+        let header = {
+            'Authorization': token,
+            'Content-Type': "application/json"
+        }
+        ApiManager.callwebservice('POST', 'api/startArchive', header, data, (success) => {
+            let response = JSON.parse(success._bodyInit);
+            if (response.status === 0) {
+                return reject(response);
+            } else if (response.status === 1) {
+                return resolve(response);
+            }
+        }, (error) => {
+            console.log("error_startArchive", error)
+        })
+
+    },
+    changeChatStatus(token, data, resolve, reject) {
+        let header = {
+            'Authorization': token,
+            'Content-Type': "application/json"
+        }
+        ApiManager.callwebservice('POST', 'api/changeChatStatus', header, data, (success) => {
+            let response = JSON.parse(success._bodyInit);
+            if (response.status === 0) {
+                return reject(response);
+            } else if (response.status === 1) {
+                return resolve(response);
+            }
+        }, (error) => {
+            console.log("error_changeChatStatus", error)
+        })
+    },
+    startArchive(token, data, resolve, reject) {
+        let header = {
+            'Authorization': token,
+            'Content-Type': "application/json"
+        }
+        ApiManager.callwebservice('POST', 'api/startArchive', header, data, (success) => {
+            let response = JSON.parse(success._bodyInit);
+            if (response.status === 0) {
+                return reject(response);
+            } else if (response.status === 1) {
+                return resolve(response);
+            }
+        }, (error) => {
+            console.log("error_startArchive", error)
+            return reject(error);
+        })
+    },
+    stopArchive(token, data, resolve, reject) {
+        let header = {
+            'Authorization': token,
+            'Content-Type': "application/json"
+        }
+        ApiManager.callwebservice('POST', 'api/stopArchive', header, data, (success) => {
+            let response = JSON.parse(success._bodyInit);
+            if (response.status === 0) {
+                return reject(response);
+            } else if (response.status === 1) {
+                return resolve(response);
+            }
+        }, (error) => {
+            console.log("error_stopArchive", error)
+            return reject(error);
+        })
+    },
+    getSpeedDatingEvents(token, resolve, reject) {
+        let header = {
+            'Authorization': token,
+            'Content-Type': "application/json"
+        }
+        ApiManager.callwebservice('GET', 'api/getSpeedDatingEvents', header, '', (success) => {
+            let response = JSON.parse(success._bodyInit);
+            console.log("response", response)
+            if (response.status === 0) {
+                return reject(response);
+
+            } else if (response.status === 1) {
+                return resolve(response);
+            }
+        }, (error) => {
+            console.log("error_getSpeedDatingEvents", error)
+            return reject(error);
+        })
+    },
+    getMatchPercentage(token, resolve, reject) {
+        let header = {
+            'Authorization': token,
+            'Content-Type': "application/json"
+        }
+        ApiManager.callwebservice('GET', 'api/getMatchPercentage', header, '', (success) => {
+            let response = JSON.parse(success._bodyInit);
+            console.log("response", response)
+            if (response.status === 0) {
+                return reject(response);
+
+            } else if (response.status === 1) {
+                return resolve(response);
+            }
+        }, (error) => {
+            console.log("error_getSpeedDatingEvents", error)
+            return reject(error);
+        })
+    },
+    sendNotificationForVideoCall(token, Data, resolve, reject) {
+        let header = {
+            'Authorization': token,
+            'Content-Type': "application/json"
+        }
+        ApiManager.callwebservice('POST', 'api/sendNotificationForVideoCall', header, Data, (success) => {
+            let response = JSON.parse(success._bodyInit);
+            console.log("response", response)
+            if (response.status === 0) {
+                return reject(response);
+
+            } else if (response.status === 1) {
+                return resolve(response);
+            }
+        }, (error) => {
+            console.log("error_getSpeedDatingEvents", error)
+            return reject(error);
+        })
+    },
+    inviteUserForSpeedDatingEvent(token, Data, resolve, reject) {
+        let header = {
+            'Authorization': token,
+            'Content-Type': "application/json"
+        }
+        ApiManager.callwebservice('POST', 'api/inviteUserForSpeedDatingEvent', header, Data, (success) => {
+            let response = JSON.parse(success._bodyInit);
+            console.log("response", response)
+            if (response.status === 0) {
+                return reject(response);
+
+            } else if (response.status === 1) {
+                return resolve(response);
+            }
+        }, (error) => {
+            console.log("error_getSpeedDatingEvents", error)
+            return reject(error);
+        })
+    },
+    rsvpForSpeedDating(token, Data, resolve, reject) {
+        let header = {
+            'Authorization': token,
+            'Content-Type': "application/json"
+        }
+        ApiManager.callwebservice('POST', 'api/rsvpForSpeedDating', header, Data, (success) => {
+            let response = JSON.parse(success._bodyInit);
+            console.log("response", response)
+            if (response.status === 0) {
+                return reject(response);
+
+            } else if (response.status === 1) {
+                return resolve(response);
+            }
+        }, (error) => {
+            console.log("error_getSpeedDatingEvents", error)
+            return reject(error);
+        })
+    },
+    cancleRSVPForSpeedDatingEvent(token, Data, resolve, reject) {
+        let header = {
+            'Authorization': token,
+            'Content-Type': "application/json"
+        }
+        ApiManager.callwebservice('POST', 'api/rsvpForSpeedDating', header, Data, (success) => {
+            let response = JSON.parse(success._bodyInit);
+            console.log("response", response)
+            if (response.status === 0) {
+                return reject(response);
+
+            } else if (response.status === 1) {
+                return resolve(response);
+            }
+        }, (error) => {
+            console.log("error_getSpeedDatingEvents", error)
+            return reject(error);
+        })
+    },
+    isUserFriend(token, Data, resolve, reject) {
+        let header = {
+            'Authorization': token,
+            'Content-Type': "application/json"
+        }
+        ApiManager.callwebservice('POST', 'api/isUserFriend', header, Data, (success) => {
+            let response = JSON.parse(success._bodyInit);
+            console.log("response", response)
+            if (response.status === 0) {
+                return reject(response);
+
+            } else if (response.status === 1) {
+                return resolve(response);
+            }
+        }, (error) => {
+            console.log("error_getSpeedDatingEvents", error)
+            return reject(error);
+        })
+    },
+    getUsersPairForSpeedDating(token, Data, resolve, reject) {
+        let header = {
+            'Authorization': token,
+            'Content-Type': "application/json"
+        }
+        ApiManager.callwebservice('POST', 'api/getUsersPairForSpeedDating', header, Data, (success) => {
+            let response = JSON.parse(success._bodyInit);
+            console.log("response", response)
+            if (response.status === 0) {
+                return reject(response);
+
+            } else if (response.status === 1) {
+                return resolve(response);
+            }
+        }, (error) => {
+            console.log("error_getSpeedDatingEvents", error)
+            return reject(error);
+        })
+    },
+    generateSessionIdAgain(token, Data, resolve, reject) {
+        let header = {
+            'Authorization': token,
+            'Content-Type': "application/json"
+        }
+        ApiManager.callwebservice('POST', 'api/generateSessionIdAgain', header, Data, (success) => {
+            let response = JSON.parse(success._bodyInit);
+            console.log("response", response)
+            if (response.status === 0) {
+                return reject(response);
+
+            } else if (response.status === 1) {
+                return resolve(response);
+            }
+        }, (error) => {
+            console.log("error_getSpeedDatingEvents", error)
+            return reject(error);
         })
     }
 }
-module.exports=ApiRequest
+module.exports = ApiRequest

@@ -2190,7 +2190,7 @@ cosmiconfig@^5.0.5:
     js-yaml "^3.9.0"
     parse-json "^4.0.0"
 
-create-react-class@^15.6.3:
+create-react-class@^15.6.0, create-react-class@^15.6.3:
   version "15.6.3"
   resolved "https://registry.yarnpkg.com/create-react-class/-/create-react-class-15.6.3.tgz#2d73237fb3f970ae6ebe011a9e66f46dbca80036"
   integrity sha512-M+/3Q6E6DLO6Yx3OwrWjwHBnvfXXYA7W+dFjt/ZDBemHO1DDZhsalX/NUtnTYclN6GfnBDRh4qRHjcDHmlJBJg==
@@ -5689,6 +5689,13 @@ query-string@^6.1.0:
     decode-uri-component "^0.2.0"
     strict-uri-encode "^2.0.0"
 
+raf@^3.1.0:
+  version "3.4.1"
+  resolved "https://registry.yarnpkg.com/raf/-/raf-3.4.1.tgz#0742e99a4a6552f445d73e3ee0328af0ff1ede39"
+  integrity sha512-Sq4CW4QhwOHE8ucn6J34MqtZCeWFP2aQSmrlroYgqAV1PjStIhJXxYuTgUIfkEk7zTLjmIjLmU5q+fbD1NnOJA==
+  dependencies:
+    performance-now "^2.1.0"
+
 randomatic@^3.0.0:
   version "3.1.1"
   resolved "https://registry.yarnpkg.com/randomatic/-/randomatic-3.1.1.tgz#b776efc59375984e36c537b2f51a1f0aff0da1ed"
@@ -5758,10 +5765,10 @@ react-native-branch@^2.3.3:
   resolved "https://registry.yarnpkg.com/react-native-branch/-/react-native-branch-2.3.3.tgz#4fefc733b6c2cbf996f47c7af733d6e10e32a3ca"
   integrity sha1-T+/HM7bCy/mW9Hx69zPW4Q4yo8o=
 
-react-native-calendars@^1.21.0:
-  version "1.21.0"
-  resolved "https://registry.yarnpkg.com/react-native-calendars/-/react-native-calendars-1.21.0.tgz#c8df92a131c7ebd3f9cf38d271e1b1cba4f8792d"
-  integrity sha512-L1tG96BGMzZSwdz5LRJAK7VnW2g/iW4bLjo5gLqXeKDurXRP5sNpGvZ6nwG6x/3+LK7JDDLVK4ymIz7h8Skkzw==
+react-native-calendars@^1.24.0:
+  version "1.24.0"
+  resolved "https://registry.yarnpkg.com/react-native-calendars/-/react-native-calendars-1.24.0.tgz#988439e5e64d09f6eba6ee64d632521ee63b724c"
+  integrity sha512-oYAksIyE7JPQKXjQOMlVZPDCo5YcFhUYKZxYO3bmQf5pVunT4m4En19SM4y7b+BRyATbbGrPgqnZivsL9aPq1g==
   dependencies:
     lodash.get "^4.4.2"
     lodash.isequal "^4.5.0"
@@ -6020,6 +6027,15 @@ react-native-splash-screen@^3.1.1:
   resolved "https://registry.yarnpkg.com/react-native-splash-screen/-/react-native-splash-screen-3.1.1.tgz#1a4e46c9fdce53ff52af2a2cb4181788c4e30b30"
   integrity sha512-PU2YocOSGbLjL9Vgcq/cwMNuHHKNjjuPpa1IPMuWo+6EB/fSZ5VOmxSa7+eucQe3631s3NhGuk3eHKahU03a4Q==
 
+react-native-swipeout@^2.3.6:
+  version "2.3.6"
+  resolved "https://registry.yarnpkg.com/react-native-swipeout/-/react-native-swipeout-2.3.6.tgz#47dac8a835825cf3f2eef9e495574a3d9ab6d3fa"
+  integrity sha512-t9suUCspzck4vp2pWggWe0frS/QOtX6yYCawHnEes75A7dZCEE74bxX2A1bQzGH9cUMjq6xsdfC94RbiDKIkJg==
+  dependencies:
+    create-react-class "^15.6.0"
+    prop-types "^15.5.10"
+    react-tween-state "^0.1.5"
+
 react-native-swiper@^1.5.14:
   version "1.5.14"
   resolved "https://registry.yarnpkg.com/react-native-swiper/-/react-native-swiper-1.5.14.tgz#1c6f949ca377186300f972bb0f30d24062c899aa"
@@ -6211,6 +6227,14 @@ react-transform-hmr@^1.0.4:
   dependencies:
     global "^4.3.0"
     react-proxy "^1.1.7"
+
+react-tween-state@^0.1.5:
+  version "0.1.5"
+  resolved "https://registry.yarnpkg.com/react-tween-state/-/react-tween-state-0.1.5.tgz#e98b066551efb93cb92dd1be14995c2e3deae339"
+  integrity sha1-6YsGZVHvuTy5LdG+FJlcLj3q4zk=
+  dependencies:
+    raf "^3.1.0"
+    tween-functions "^1.0.1"
 
 react@16.6.1:
   version "16.6.1"
@@ -7230,6 +7254,11 @@ tunnel-agent@^0.6.0:
   integrity sha1-J6XeoGs2sEoKmWZ3SykIaPD8QP0=
   dependencies:
     safe-buffer "^5.0.1"
+
+tween-functions@^1.0.1:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/tween-functions/-/tween-functions-1.2.0.tgz#1ae3a50e7c60bb3def774eac707acbca73bbc3ff"
+  integrity sha1-GuOlDnxguz3vd06scHrLynO7w/8=
 
 tweetnacl@^0.14.3, tweetnacl@~0.14.0:
   version "0.14.5"

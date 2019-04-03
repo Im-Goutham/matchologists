@@ -20,6 +20,8 @@ const formStyle = { marginTop: 40 };
 import Modal from "react-native-modal";
 import ApiManager from "../Common/ApiManager";
 import FCM from "react-native-fcm";
+import KeyboardSpacer from '../Chatroom/KeyboardSpacer'
+
 import { TextInputMask } from 'react-native-masked-text'
 import _ from 'lodash';
 
@@ -69,7 +71,8 @@ class SignupForm extends BaseFormComponent {
         const { language } = this.props;
         var email_reg = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
         // var password_xpression=/^[]{6,12}$/;
-        var password_xpression= /^(?=.*[0-9])[a-zA-Z0-9]{7,12}$/;
+        var password_xpression= /(?=.*[0-9])[a-zA-Z0-9]/;
+        // var password_xpression= /^(?=.*[0-9])[a-zA-Z0-9]{7,12}$/;
         // var password_xpression = /^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{6,12}$/;
         if (!fullname.length) {
             this.showSimpleMessage("info", { backgroundColor: global.gradientsecondry }, I18n.t('validation.fullname_label', { locale: language }), I18n.t('validation.fullname_title', { locale: language }))
@@ -100,6 +103,8 @@ class SignupForm extends BaseFormComponent {
             this.showSimpleMessage("info", { backgroundColor: global.gradientsecondry }, I18n.t('validation.passwordlabel', { locale: language }), I18n.t('validation.passwordtitle', { locale: language }))
             return false
         }
+        // console.log("password_password", password)
+        // console.log("password_xpression.test(password)", password_xpression.test(password))
         if (password_xpression.test(password) === false) {
             this.showSimpleMessage("info", { backgroundColor: global.gradientsecondry }, I18n.t('validation.validpasswordlabel', { locale: language }), I18n.t('validation.validpasswordtitle', { locale: language }))
             return false
@@ -333,6 +338,7 @@ class SignupForm extends BaseFormComponent {
                                         onChangeText={(password) => this.setState({ password })}
                                         isEnabled={!isLoading}
                                     />
+                                    <Text style={[styles.label, { marginTop:5 }]}> * {I18n.t('passwordhintText', { locale: language })}</Text>
                                     <Text style={{ lineHeight: 18, color: "#909096", fontFamily: "Avenir-Heavy", fontSize: 13, marginTop: 25 }} onPress={() => navigate('cmscontent')}>
                                         {I18n.t('termslabel', { locale: language })}
                                         <Text style={{ color: "#71367D" }}> {I18n.t('termsandservicelabel', { locale: language })}</Text> {I18n.t('andlabel', { locale: language })}
@@ -361,6 +367,7 @@ class SignupForm extends BaseFormComponent {
                                 color: "#909096", fontWeight: 'bold',
                             }}>{I18n.t('alreadyhaveanacount', { locale: language })}<Text style={{ fontFamily: "Avenir-Heavy", color: '#5B357A' }}>{I18n.t('Signintitle', { locale: language })}</Text> </Text>
                         </TouchableOpacity>
+                        <KeyboardSpacer/>
                     </ScrollView>
                 </View>
                 <Modal

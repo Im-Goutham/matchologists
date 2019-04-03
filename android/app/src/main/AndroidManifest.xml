@@ -32,7 +32,7 @@
         android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
         android:windowSoftInputMode="adjustResize"
         android:screenOrientation="portrait"
-        android:launchMode="singleTop">
+        android:launchMode="singleTask">
         <intent-filter>
             <action android:name="android.intent.action.MAIN" />
             <category android:name="android.intent.category.LAUNCHER" />
@@ -52,7 +52,11 @@
        <action android:name="com.google.firebase.MESSAGING_EVENT"/>
      </intent-filter>
    </service>
-
+   <!-- deeplink -->
+   <!-- <intent-filter> -->
+            <!-- <data android:scheme="matchologists" android:host="" /> -->
+<!-- </intent-filter> -->
+<!-- deeplink -->
    <service android:name="com.evollu.react.fcm.InstanceIdService" android:exported="false">
      <intent-filter>
        <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>

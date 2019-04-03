@@ -374,6 +374,7 @@ class Editprofile extends BaseFormComponent {
                     // this.getUserprofile()
                     // this.props.saveprofileStatus()
                     this.setState({ is_Loading: !this.state.is_Loading })
+                    navigate('questionnaire');
                 }
             }, (error) => {
                 console.log("error", error)
