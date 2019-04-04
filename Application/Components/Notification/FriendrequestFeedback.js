@@ -72,7 +72,7 @@ export default class FriendrequestFeedback extends BaseFormComponent {
         })
     }
 
-    updateNotificationStatus = () => {
+    updateNotificationStatus = async () => {
         const { questionData, questionindex } = this.state;
         const { state, goBack } = this.props.navigation
         var token = state.params.token;
@@ -86,7 +86,6 @@ export default class FriendrequestFeedback extends BaseFormComponent {
             console.log("questionData_length", questionData.length)
             console.log("updateNotificationStatus_resolve", resolve)
             state.params.checkemitRequest()
-
             goBack()
         }, reject => {
             console.log("updateNotificationStatus_reject", reject)
@@ -227,10 +226,12 @@ export default class FriendrequestFeedback extends BaseFormComponent {
             if (currentQuestion && currentQuestion._id && currentQuestion._id.isPositive) {
                 console.log("going to positive")
                 this.updateNotificationStatus()
+                return
             }
             else if (currentQuestion && currentQuestion._id && currentQuestion._id.isNegative) {
                 console.log("going to negative")
                 this.updateNotificationStatus()
+                return
             }
         }, reject => {
             console.log("saveUserFeedback_reject", reject)

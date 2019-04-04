@@ -11,25 +11,22 @@ import {
     View,
     Image,
     TouchableOpacity,
+    AsyncStorage,
     ScrollView,
     Alert,
 } from 'react-native';
 import io from 'socket.io-client'; // 2.0.4
 import TimerMixin from 'react-timer-mixin';
-
+import _ from 'lodash';
 import { connect } from 'react-redux'
-import LinearGradient from 'react-native-linear-gradient';
 import BaseFormComponent from '../Common/BaseFormComponent';
 import i18n from 'react-native-i18n';
 import Loading from '../Loading'
-import Header from '../Common/Header';
 import SpeeddatingliveCall from "../Chatroom/SpeeddatingliveCall";
-import SpeedDatingUser from './SpeedDatingUser';
 import Apirequest from '../Common/Apirequest';
 import * as global from '../../../global.json';
 import metrics from '../../config/metrics';
 import { baseurl as URL } from '../../../app.json';
-
 const IS_ANDROID = Platform.OS === 'android';
 const IMAGE_WIDTH = metrics.DEVICE_WIDTH * 0.05;
 const header_height = metrics.DEVICE_HEIGHT * 0.1;
@@ -53,22 +50,89 @@ class SpeedDatingCall extends BaseFormComponent {
             isloading: true
         }
     }
+    speedDatingUserStore = async (speeddatingusers, heighlightedUserIndex) => {
+        var speeddatingevent,
+            heighlightedUserIndex;
+        console.log("speeddatingusers", speeddatingusers)
+        console.log("heighlightedUserIndex", heighlightedUserIndex)
+        try {
+            AsyncStorage.multiSet([['heighlightedUserIndex', JSON.stringify(heighlightedUserIndex)], ['speeddatingevent', JSON.stringify(speeddatingusers)]], () => {
+                AsyncStorage.multiGet(["speeddatingevent", "heighlightedUserIndex"], (error, stores) => {
+
+                    speeddatingevent = stores[0][1] ? JSON.parse(stores[0][1]) : []
+                    heighlightedUserIndex = stores[1][1] ? JSON.parse(stores[1][1]) : []
+                    if (Array.isArray(speeddatingevent) && heighlightedUserIndex !== '') {
+                        this.setState({
+                            speedDatingUser: speeddatingevent,
+                            userIndex: heighlightedUserIndex
+                        }, () => this.sendNotificationForVideoCall(speeddatingevent, heighlightedUserIndex))
+                    }
+                })
+            });
+
+        } catch (error) {
+            console.log("error", error)
+        }
+    }
+    speedDatingUserget = async () => {
+        var data = "5ca19973992b010533f3cd91";
+        var speeddatingevent,
+            heighlightedUserIndex;
+        try {
+            AsyncStorage.multiGet(["speeddatingevent", "heighlightedUserIndex"], (error, stores) => {
+                speeddatingevent = JSON.parse(stores[0][1])
+                heighlightedUserIndex = JSON.parse(stores[1][1])
+
+                if (Array.isArray(speeddatingevent) && heighlightedUserIndex !== '') {
+                    console.log("speeddatingevent", speeddatingevent)
+                    console.log("heighlightedUserIndex", heighlightedUserIndex)
+                    if (speeddatingevent[heighlightedUserIndex] && speeddatingevent[heighlightedUserIndex].callStatus === "completed" && speeddatingevent[heighlightedUserIndex].feedback) {
+                        this.setState({
+                            speedDatingUser: speeddatingevent,
+                        }, () => this.sendNotificationForVideoCall(speeddatingevent, ++heighlightedUserIndex))
+                    }else {
+                        this.setState({
+                            speedDatingUser: speeddatingevent,
+                        }, () => this.sendNotificationForVideoCall(speeddatingevent, heighlightedUserIndex))    
+                    }
+                } else {
+                    this.getUsersPairForSpeedDating(data)
+                }
+            })
+
+        } catch (error) {
+            console.log("speeddatingevent_error", error)
+        }
+    }
+    speedDatinguserRemove = async () => {
+        let keys = ['speeddatingevent', 'heighlightedUserIndex'];
+        try {
+            AsyncStorage.multiRemove(keys, (error) => {
+                console.log("error", error)
+            });
+            return true;
+        }
+        catch (exception) {
+            return false;
+        }
+    }
+
     userInterval() {
         TimerMixin.setTimeout(() => {
             this.callnextuserforspeedDating()
-        }, 500);
-        
+        }, 480000);
     }
-    componentDidMount = async () => {
-        var data = "5ca19973992b010533f3cd91";
-        this.getUsersPairForSpeedDating(data)
-        // this.callnextuserforspeedDating()
+
+    componentDidMount = () => {
+        // this.speedDatinguserRemove()
+        // var data = "5ca19973992b010533f3cd91";
+        // this.getUsersPairForSpeedDating(data);
+        this.speedDatingUserget()
     }
     getUsersPairForSpeedDating(speedDatingEventDayId) {
         let data = {
             "speedDatingEventDayId": speedDatingEventDayId
         }
-        // console.log("getUsersPairForSpeedDating", data)
         var token = this.props.token;
         var speedDatingUsers = []
         Apirequest.getUsersPairForSpeedDating(token, data, resolve => {
@@ -84,9 +148,15 @@ class SpeedDatingCall extends BaseFormComponent {
                     speedDatingUsers.push(dataobject);
                 }
                 if (speedDatingUsers && speedDatingUsers.length) {
-                    this.setState({
-                        speedDatingUser: speedDatingUsers,
-                    }, () => this.sendNotificationForVideoCall())
+                    const CurrentspeedDatingusers = _.map(speedDatingUsers, (obj, key) => {
+                        return key == 0 ?
+                            { ...obj, isHighlight: true, callStatus: "pending", feedback: false }
+                            :
+                            { ...obj, callStatus: "pending", feedback: false }
+                    });
+                    console.log("CurrentspeedDatingusers", CurrentspeedDatingusers)
+                    var heighlightedUserIndex = 0
+                    this.speedDatingUserStore(CurrentspeedDatingusers, heighlightedUserIndex)
                 } else {
                     this.setState({
                         speedDatingUser: [],
@@ -101,14 +171,19 @@ class SpeedDatingCall extends BaseFormComponent {
             console.log("getSpeedDatingEvents_reject", reject)
         })
     }
-    sendNotificationForVideoCall() {
-        const { speedDatingUser, userIndex } = this.state;
-        console.log("callReceiverId", speedDatingUser[userIndex])
-        var callReceiverId = speedDatingUser[userIndex].userId
+    sendNotificationForVideoCall(speedDatingUser, userIndex) {
+        // const { userIndex } = this.state;
+        console.log("speedDatingUser", speedDatingUser)
+        console.log("userIndex", userIndex)
+        // var callReceiverId = _.filter(speedDatingUser, (obj) => { return obj.isHighlight })
+        callReceiverId = Array.isArray(speedDatingUser) && speedDatingUser[userIndex] && speedDatingUser[userIndex].userId ? speedDatingUser[userIndex].userId : ''
+        console.log("callReceiverId", callReceiverId)
         var token = this.props.token;
         var data = {
             "callReceiverId": callReceiverId
         }
+        console.log("sendNotificationForVideoCall_speedDatingUser", data)
+
         Apirequest.sendNotificationForVideoCall(token, data, resolve => {
             console.log("sendNotificationForVideoCall_resolve", resolve)
             if (resolve.message) {
@@ -140,48 +215,49 @@ class SpeedDatingCall extends BaseFormComponent {
             eventNamepoint: 'speeddatingfeedback'
         })
     }
-    userCancelForSpeedDating=()=>{
-        Alert.alert(
-            i18n.t('appname'),
-            'if you cancel you have to wait 7 min to connect next user ',
-            [
-                { text: 'OK', onPress: () => this.userInterval() },
-            ],
-            { cancelable: false },
-        );
-    }
     callnextuserforspeedDating = () => {
+        const { speedDatingUser, userIndex } = this.state;
+        var heighlightedUserIndex = userIndex;
+        speedDatingUser[heighlightedUserIndex]["feedback"] = true;
+        speedDatingUser[heighlightedUserIndex]["callStatus"] = "completed";
+        speedDatingUser[heighlightedUserIndex]["isHighlight"] = false;
+        var speedDaterIndex = userIndex;
+        console.log("speedDaterIndex======", speedDaterIndex);
         this.setState({
             isloading: true
         })
+        // }, () => this.speedDatingUserStore(speedDatingUser, (speedDaterIndex + 1)))
+
         Alert.alert(
             i18n.t('appname'),
-            'Would you like to connect next User',
-            [
-                { text: 'Ask me later', onPress: () => console.log('Ask me later pressed') },
+            'Would you like to connect next User {{ username}} \n if you press cancel you have to wait for next to user connect with you.', [
+                // { text: 'Ask me later', onPress: () => console.log('Ask me later pressed') },
                 {
                     text: 'Cancel',
-                    onPress: () => this.userCancelForSpeedDating(),
+                    onPress: () => this.userInterval(),
                     style: 'cancel',
                 },
-                { text: 'OK', onPress: () => this.getNextUser() },
+                { text: 'OK', onPress: () => this.getNextUser(speedDatingUser, speedDaterIndex) },
             ],
             { cancelable: false },
         );
     }
-    getNextUser = () => {
-        const { speedDatingUser, userIndex } = this.state;
-        console.log("speedDatingUser_length", userIndex)
-        if (speedDatingUser.length > userIndex) {
-            this.state.userIndex++;
-            this.setState({
-                userIndex: this.state.userIndex,
-                isloading: false
-            })
-        }
-        else {
-            alert("user is not found")
-        }
+    getNextUser = (speedDatingUser, speedDaterIndex) => {
+        this.speedDatingUserStore(speedDatingUser, (speedDaterIndex + 1))
+
+        // const { speedDatingUser, userIndex } = this.state;
+
+        // console.log("speedDatingUser_length", userIndex)
+        // if (speedDatingUser.length > userIndex) {
+        //     this.state.userIndex++;
+        //     this.setState({
+        //         userIndex: this.state.userIndex,
+        //         isloading: false
+        //     })
+        // }
+        // else {
+        //     alert("user is not found")
+        // }
     }
     render() {
         const { isloading, userIndex } = this.state;

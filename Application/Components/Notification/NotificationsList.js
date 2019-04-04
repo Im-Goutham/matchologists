@@ -7,6 +7,7 @@ import {
     View,
     Alert,
     Image,
+    RefreshControl,
     TouchableOpacity
 } from 'react-native';
 import Apirequest from '../Common/Apirequest';
@@ -19,7 +20,8 @@ export default class NotificationsList extends Component {
         super(props);
         this.state = {
             notificationData: [],
-            isloading: true
+            isloading: true,
+            isRefreshing: false, //for pull to refresh
         };
     }
     renderSeparator = () => {
@@ -41,7 +43,8 @@ export default class NotificationsList extends Component {
     componentWillReceiveProps(nextProps, nextState) {
         this.setState({
             notificationData: nextProps.notificationData,
-            isloading: nextProps.isloading
+            isloading: nextProps.isloading,
+            isRefreshing: false,
         })
 
     }
@@ -52,12 +55,12 @@ export default class NotificationsList extends Component {
         }
         Apirequest.updateNotificationStatus(token, Data, resolve => {
             console.log("updateNotificationStatus_resolve", resolve)
-            this.props.navigate( "livecall",{ profileUserId: item.senderId })
+            this.props.navigate("livecall", { profileUserId: item.senderId })
         }, reject => {
             console.log("updateNotificationStatus_reject", reject)
         })
     }
-
+    
     render() {
         const { notificationData, isloading } = this.state;
         if (isloading) {
@@ -73,6 +76,12 @@ export default class NotificationsList extends Component {
                 renderItem={({ item }) => this.renderRow(item)}
                 ItemSeparatorComponent={this.renderSeparator}
                 keyExtractor={(item, index) => index.toString()}
+                refreshControl={
+                    <RefreshControl
+                    refreshing={this.state.isRefreshing}
+                    onRefresh={this.props.onRefresh}
+                    />
+                }
             // ListHeaderComponent={<>}
             // getItemLayout={(data, index) => ({ length: 20, offset: 20 * index, index})}            
             />

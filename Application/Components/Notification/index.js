@@ -65,7 +65,8 @@ class Notification extends BaseFormComponent {
         var token = this.props.token;
         var Data = {
             "speedDatingEventDayId": speedDatingEventObj.eventInfo.eventDayId,
-            "linkThroughRSVP": speedDatingEventObj.eventInfo.inviteLink
+            "linkThroughRSVP": speedDatingEventObj.eventInfo.inviteLink,
+            "invitedByUserId": speedDatingEventObj.senderId
         }
         console.log("rsvpForSpeedDating_Data", Data)
         this.setState({ is_loading: true })
@@ -77,10 +78,10 @@ class Notification extends BaseFormComponent {
                 this.setState({
                     notificationData: this.state.notificationData,
                     is_loading: false,
-                })
+                },()=>this.updateNotificationStatus(speedDatingEventObj._id))              
             }
         }, reject => {
-            console.log("getMatchPercentage_reject", reject)
+            console.log("rsvpForSpeedDating_reject", reject)
             if (reject.message) {
                 this.showSimpleMessage("", { backgroundColor: global.gradientsecondry }, '', reject.message)
                 this.setState({
@@ -166,6 +167,11 @@ class Notification extends BaseFormComponent {
             scrollOffset: event.nativeEvent.contentOffset.y
         });
     };
+    onRefresh=()=>{
+        this.setState({ 
+            isRefreshing: true
+        },()=> this.getNotifications());
+    }
     render() {
         const { notificationData, isloading } = this.state;
         const { navigate } = this.props.navigation;
@@ -227,6 +233,7 @@ class Notification extends BaseFormComponent {
                     navigate={navigate}
                     respondToVideoCallPermission={this.respondToVideoCallPermission.bind(this)}
                     rsvpForSpeedDating={this.rsvpForSpeedDating.bind(this)}
+                    onRefresh={this.onRefresh.bind(this)}
                 />
                 <SafeAreaView />
             </View>
