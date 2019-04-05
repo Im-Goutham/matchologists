@@ -34,20 +34,21 @@ const header_height = metrics.DEVICE_HEIGHT * 0.1;
 class SpeedDatingCall extends BaseFormComponent {
     constructor(props) {
         super(props);
-        this.socket = io(URL);
-        this.socket.on("speedDatingEventStarted", data => {
-            console.log("userConnect_speedDatingEventStarted", data)
-            if (data && data.speedDatingEventDayId) {
-                this.getUsersPairForSpeedDating(data.speedDatingEventDayId)
-            }
-        }
-        );
+        // this.socket = io(URL);
+        // this.socket.on("speedDatingEventStarted", data => {
+        //     console.log("userConnect_speedDatingEventStarted", data)
+        //     if (data && data.speedDatingEventDayId) {
+        //         this.getUsersPairForSpeedDating(data.speedDatingEventDayId)
+        //     }
+        // }
+        // );
         this.state = {
             userIndex: 0,
             visibleModal: false,
             speedDatingUser: [],
             scrollOffset: '',
-            isloading: true
+            isloading: true,
+            startEvent: false
         }
     }
     speedDatingUserStore = async (speeddatingusers, heighlightedUserIndex) => {
@@ -61,6 +62,7 @@ class SpeedDatingCall extends BaseFormComponent {
 
                     speeddatingevent = stores[0][1] ? JSON.parse(stores[0][1]) : []
                     heighlightedUserIndex = stores[1][1] ? JSON.parse(stores[1][1]) : []
+                    console.log("speedDatingUserStore_heighlightedUserIndex", heighlightedUserIndex)
                     if (Array.isArray(speeddatingevent) && heighlightedUserIndex !== '') {
                         this.setState({
                             speedDatingUser: speeddatingevent,
@@ -75,13 +77,18 @@ class SpeedDatingCall extends BaseFormComponent {
         }
     }
     speedDatingUserget = async () => {
-        var data = "5ca19973992b010533f3cd91";
+        const { state } = this.props.navigation;
+        console.log("speedDatingUserget_state", state)
+        var speedDatingEventDayId = state && state.params && state.params.speedDatingEventDayId ? state.params.speedDatingEventDayId : ''
+        // var speedDatingEventDayId = "5ca19973992b010533f3cd91";
+        console.log("speedDatingUserget_speedDatingEventDayId", speedDatingEventDayId)
         var speeddatingevent,
             heighlightedUserIndex;
         try {
             AsyncStorage.multiGet(["speeddatingevent", "heighlightedUserIndex"], (error, stores) => {
+                console.log("multiGet_stores", stores)
                 speeddatingevent = JSON.parse(stores[0][1])
-                heighlightedUserIndex = JSON.parse(stores[1][1])
+                heighlightedUserIndex = stores[1][1] ? JSON.parse(stores[1][1]) : 0
 
                 if (Array.isArray(speeddatingevent) && heighlightedUserIndex !== '') {
                     console.log("speeddatingevent", speeddatingevent)
@@ -90,13 +97,13 @@ class SpeedDatingCall extends BaseFormComponent {
                         this.setState({
                             speedDatingUser: speeddatingevent,
                         }, () => this.sendNotificationForVideoCall(speeddatingevent, ++heighlightedUserIndex))
-                    }else {
+                    } else {
                         this.setState({
                             speedDatingUser: speeddatingevent,
-                        }, () => this.sendNotificationForVideoCall(speeddatingevent, heighlightedUserIndex))    
+                        }, () => this.sendNotificationForVideoCall(speeddatingevent, heighlightedUserIndex))
                     }
                 } else {
-                    this.getUsersPairForSpeedDating(data)
+                    this.getUsersPairForSpeedDating(speedDatingEventDayId)
                 }
             })
 
@@ -172,6 +179,12 @@ class SpeedDatingCall extends BaseFormComponent {
         })
     }
     sendNotificationForVideoCall(speedDatingUser, userIndex) {
+        const { state } = this.props.navigation;
+        console.log("sendNotificationForVideoCall_state", state)
+
+        var speedDatingEventDayId = state && state.params && state.params.speedDatingEventDayId ? state.params.speedDatingEventDayId : ''
+        // var speedDatingEventDayId = "5ca19973992b010533f3cd91";
+
         // const { userIndex } = this.state;
         console.log("speedDatingUser", speedDatingUser)
         console.log("userIndex", userIndex)
@@ -180,7 +193,9 @@ class SpeedDatingCall extends BaseFormComponent {
         console.log("callReceiverId", callReceiverId)
         var token = this.props.token;
         var data = {
-            "callReceiverId": callReceiverId
+            "callReceiverId": callReceiverId,
+            "type": 'speeddatingcall',
+            "eventDayId": speedDatingEventDayId
         }
         console.log("sendNotificationForVideoCall_speedDatingUser", data)
 
@@ -211,7 +226,7 @@ class SpeedDatingCall extends BaseFormComponent {
             checkemitRequest: this.callnextuserforspeedDating.bind(this),
             data: dataItems,
             token: this.props.token,
-            invitationname: "abshiehk kalia",
+            invitationname: dataItems.fullName,
             eventNamepoint: 'speeddatingfeedback'
         })
     }
@@ -222,15 +237,17 @@ class SpeedDatingCall extends BaseFormComponent {
         speedDatingUser[heighlightedUserIndex]["callStatus"] = "completed";
         speedDatingUser[heighlightedUserIndex]["isHighlight"] = false;
         var speedDaterIndex = userIndex;
+        console.log("speedDatingUser======", speedDatingUser);
         console.log("speedDaterIndex======", speedDaterIndex);
         this.setState({
-            isloading: true
+            isloading: true,
         })
         // }, () => this.speedDatingUserStore(speedDatingUser, (speedDaterIndex + 1)))
-
+        var nextUsername = speedDatingUser && speedDatingUser[speedDaterIndex + 1] ? speedDatingUser[speedDaterIndex + 1].fullName : ''
+        // console.log("nextUsername", nextUsername)
         Alert.alert(
             i18n.t('appname'),
-            'Would you like to connect next User {{ username}} \n if you press cancel you have to wait for next to user connect with you.', [
+            `Would you like to connect next User ${nextUsername} \n if you press cancel you have to wait for next to user connect with you.`, [
                 // { text: 'Ask me later', onPress: () => console.log('Ask me later pressed') },
                 {
                     text: 'Cancel',
@@ -259,11 +276,23 @@ class SpeedDatingCall extends BaseFormComponent {
         //     alert("user is not found")
         // }
     }
+    updatSpeedDatingEvent= async(event)=>{
+
+    }
+
     render() {
-        const { isloading, userIndex } = this.state;
+        const { isloading, userIndex, startEvent } = this.state;
         console.log("userIndex", userIndex)
         if (isloading) {
             return <Loading />
+        }
+        if (!startEvent) {
+            return (<View style={[styles.container, { justifyContent:"center", alignItems: "center" }]}>
+                <TouchableOpacity onPress={() => this.setState({ startEvent: true })}>
+                    <Text>Start SpeedDating Event</Text>
+                </TouchableOpacity>
+            </View>
+            )
         }
         return (
             <View style={styles.container}>
@@ -280,10 +309,12 @@ class SpeedDatingCall extends BaseFormComponent {
                 */}
                 <SpeeddatingliveCall
                     navigation={this.props.navigation}
+                    speedDateruserObj = {this.state.speedDatingUser[userIndex]}
                     userId={this.state.speedDatingUser[userIndex].userId}
                     isloading={this.state.isloading}
                     callnextuserforspeedDating={this.callnextuserforspeedDating.bind(this)}
                     speeddatingfeedback={this.speeddatingfeedback.bind(this)}
+                    updatSpeedDatingEvent={this.updatSpeedDatingEvent.bind(this)}
                 />
             </View>
         );

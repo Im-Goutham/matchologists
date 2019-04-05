@@ -52,7 +52,7 @@ export default class NotificationsList extends Component {
         var token = this.props.token;
         var Data = {
             "notificationIds": [item._id]
-        }
+        };
         Apirequest.updateNotificationStatus(token, Data, resolve => {
             console.log("updateNotificationStatus_resolve", resolve)
             this.props.navigate("livecall", { profileUserId: item.senderId })
@@ -67,7 +67,11 @@ export default class NotificationsList extends Component {
             return <Loading />
         }
         if (!notificationData.length) {
-            return <Text style={{ alignSelf: "center", marginTop: 50 }}> No Notification found </Text>
+            return <> 
+            <Text style={{ alignSelf: "center", marginTop: 50 }}> No Notification found </Text>
+            <Text 
+            style={{ alignSelf: "center", marginTop: 50 }} onPress={()=>this.props.onRefresh()} > refresh List </Text>
+        </>
         }
         return (
             <FlatList
@@ -320,8 +324,13 @@ export default class NotificationsList extends Component {
     notification(item) {
         return <></>
     }
-    speeddatingcall() {
-        return <></>
+    speeddatingcall(item) {
+        return <>
+        <TouchableOpacity onPress={()=>this.props.navigate('speeddatinglivecall',{ 
+            speedDatingEventDayId:  item && item.eventInfo && item.eventInfo.eventDayId ? item.eventInfo.eventDayId : ''})}>
+            <Text>Join speed dating call</Text>
+        </TouchableOpacity>
+        </>
     }
     renderRow(item) {
         return (

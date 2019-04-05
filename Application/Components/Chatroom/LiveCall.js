@@ -15,6 +15,7 @@ import { OTSession, OTPublisher, OTSubscriber, EventData, OT } from 'opentok-rea
 import LinearGradient from 'react-native-linear-gradient';
 import BaseFormComponent from '../../Components/Common/BaseFormComponent';
 import Apirequest from '../Common/Apirequest';
+import Loading from '../Loading'
 import * as global from '../../../global.json';
 
 const IS_ANDROID = Platform.OS === 'android';
@@ -161,20 +162,6 @@ class LiveCall extends BaseFormComponent {
             console.log("reject", reject)
         })
     }
-    sendNotificationForVideoCall() {
-        const { goBack, state } = this.props.navigation;
-        var Data = {
-            "callReceiverId": state.params.profileUserId,
-        }
-        Apirequest.sendNotificationForVideoCall(this.props.token, Data, resolve => {
-            console.log("sendNotificationForVideoCall_resolve", resolve)
-        }, reject => {
-            if (reject && reject.message) {
-                this.showSimpleMessage("info", { backgroundColor: global.gradientsecondry }, '', reject.message)
-            }
-            console.log("sendNotificationForVideoCall_reject", reject)
-        })
-    }
     render() {
         const { goBack, state } = this.props.navigation;
         const { sessionId, token } = this.state;
@@ -182,7 +169,7 @@ class LiveCall extends BaseFormComponent {
         // console.log("sessionId", sessionId);
         // console.log("token", token);
         if (this.state.loading) {
-            return <Text>Loading</Text>
+            return <Loading/>
         }
         return (
             <View style={styles.container}>
@@ -234,17 +221,17 @@ class LiveCall extends BaseFormComponent {
                         {
                             // this.state.videocallconnect
                             //     ?
-                            //     <TouchableOpacity onPress={() => this.stopArchive()}>
-                            //         <Image source={require('../../images/icons/stopvideocall.png')} style={{ width: 60, height: 60 }} resizeMethod="resize" resizeMode="contain" />
-                            //     </TouchableOpacity>
-                            //     :
-                                <TouchableOpacity onPress={() => this.sendNotificationForVideoCall()}>
-                                    <Image source={require('../../images/icons/videocall.png')} style={{ width: 60, height: 60 }} resizeMethod="resize" resizeMode="contain" />
+                                <TouchableOpacity onPress={() => this.stopArchive()}>
+                                    <Image source={require('../../images/icons/stopvideocall.png')} style={{ width: 90, height: 90 }} resizeMethod="resize" resizeMode="contain" />
                                 </TouchableOpacity>
+                            //     :
+                                // <TouchableOpacity onPress={() => this.sendNotificationForVideoCall()}>
+                                //     <Image source={require('../../images/icons/videocall.png')} style={{ width: 60, height: 60 }} resizeMethod="resize" resizeMode="contain" />
+                                // </TouchableOpacity>
                         }
                     </View>
                     <View style={styles.commonButton}>
-                        <LinearGradient
+                        {/* <LinearGradient
                             colors={['#DB3D88', '#273174']}
                             start={{ x: 0, y: 1 }}
                             end={{ x: 1, y: 1 }}
@@ -259,8 +246,7 @@ class LiveCall extends BaseFormComponent {
                                     resizeMethod="resize"
                                 />
                             </TouchableOpacity>
-                            {/* <Icons name="ios-reverse-camera" size={30} color="#fff" /> */}
-                        </LinearGradient>
+                        </LinearGradient> */}
                     </View>
 
                 </View>

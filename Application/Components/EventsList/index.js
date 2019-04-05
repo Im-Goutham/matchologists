@@ -199,6 +199,7 @@ class EventsList extends Component {
                     isloading={this.state.isloading}
                     eventlistData={this.state.eventlistData}
                     token={this.props.token}
+                    onRefresh = {this.getSpeedDatingEvents.bind(this)}
                 />
                 <SafeAreaView />
             </View>

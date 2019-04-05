@@ -36,11 +36,11 @@ class Notification extends BaseFormComponent {
             isloading: true
         }
     }
-    
+
     componentDidMount = async () => {
         this.getNotifications()
     }
-    getChatSessionId(callback){
+    getChatSessionId(callback) {
         this.setState({
             isloading: true
         })
@@ -51,10 +51,10 @@ class Notification extends BaseFormComponent {
             console.log("getChatSessionId_resolve", resolve.session)
             this.setState({
                 isloading: false
-            },()=> navigate('livecall', { 
+            }, () => navigate('livecall', {
                 profileUserId: userid,
-                sessionId : resolve.data && resolve.data.session ? resolve.data.session : '', 
-                token : resolve.data && resolve.data.token ? resolve.data.token : ''
+                sessionId: resolve.data && resolve.data.session ? resolve.data.session : '',
+                token: resolve.data && resolve.data.token ? resolve.data.token : ''
             }))
         }, (reject) => {
             console.log("getChatSessionId_reject", reject)
@@ -78,7 +78,7 @@ class Notification extends BaseFormComponent {
                 this.setState({
                     notificationData: this.state.notificationData,
                     is_loading: false,
-                },()=>this.updateNotificationStatus(speedDatingEventObj._id))              
+                }, () => this.updateNotificationStatus(speedDatingEventObj._id))
             }
         }, reject => {
             console.log("rsvpForSpeedDating_reject", reject)
@@ -137,7 +137,7 @@ class Notification extends BaseFormComponent {
         }
         Apirequest.respondToVideoCallPermission(this.props.token, data, resolve => {
             this.updateNotificationStatus(callback)
-            this.getChatSessionId(callback)
+            // this.getChatSessionId(callback)
             // navigate("livecall")
 
         }, reject => {
@@ -167,10 +167,10 @@ class Notification extends BaseFormComponent {
             scrollOffset: event.nativeEvent.contentOffset.y
         });
     };
-    onRefresh=()=>{
-        this.setState({ 
+    onRefresh = () => {
+        this.setState({
             isRefreshing: true
-        },()=> this.getNotifications());
+        }, () => this.getNotifications());
     }
     render() {
         const { notificationData, isloading } = this.state;

@@ -13,6 +13,7 @@ import {
     Image,
     ScrollView,
     TouchableOpacity,
+    AsyncStorage
 } from 'react-native';
 import { connect } from "react-redux";
 import LinearGradient from 'react-native-linear-gradient';
@@ -124,6 +125,19 @@ class TopProfile extends Component {
         )
 
     }
+    speedDatinguserRemove = async () => {
+        let keys = ['speeddatingevent', 'heighlightedUserIndex'];
+        try {
+            AsyncStorage.multiRemove(keys, (error) => {
+                console.log("error", error)
+            });
+            return true;
+        }
+        catch (exception) {
+            return false;
+        }
+    }
+
     render() {
         console.log("devices are", Platform)
         const { navigate } = this.props.navigation;
@@ -165,7 +179,7 @@ class TopProfile extends Component {
                             }
                             right={
                                 <TouchableOpacity
-                                    onPress={() => this.setState({ visibleModal: true })}
+                                    onPress={() => this.speedDatinguserRemove()}
                                     style={{
                                         width: "15%",
                                         backgroundColor: "transparent",

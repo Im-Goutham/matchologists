@@ -94,6 +94,7 @@
     "speeddatingsettingslabel":"Speed Dating",
     "speeddatingsettingtitle": "Speed Dating",
     "allopenLabel": "All open",
+    "speedDatingCalllabel" : "Start SpeedDating Event",
     "passwordhintText": "Password should contain least 1 uppercase 1 lowercase minimum 7 maximum 12 digit",
     "validation": {
         "emaillabel":"Email is required", 

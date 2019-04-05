@@ -51,7 +51,7 @@ class Chatroom extends BaseFormComponent {
             token: '',
             text: '',
             messages: [],
-            savetoLocalStore:{},
+            savetoLocalStore: {},
             keyboardHeightAnim: new Animated.Value(0)
         };
         this.sessionEventHandlers = {
@@ -149,7 +149,7 @@ class Chatroom extends BaseFormComponent {
 
                         this.setState({
                             messages: chatmessages[i] && chatmessages[i].data ? chatmessages[i].data : [],
-                            savetoLocalStore : chatmessages[i]
+                            savetoLocalStore: chatmessages[i]
                         })
                     }
                 }
@@ -260,6 +260,24 @@ class Chatroom extends BaseFormComponent {
     _scrollEnd = (evt) => {
         // this.refs.flatList1.scrollToEnd({ animated: true });
     }
+    sendNotificationForVideoCall() {
+        const { navigate, state } = this.props.navigation;
+        var Data = {
+            "callReceiverId": state.params.userId,
+        }
+        ApiRequest.sendNotificationForVideoCall(this.props.token, Data, resolve => {
+            console.log("sendNotificationForVideoCall_resolve", resolve)
+            if (resolve) {
+                navigate('livecall', { sessionId: this.state.sessionId, token: this.state.token, profileUserId: state.params.userId })
+            }
+        }, reject => {
+            if (reject && reject.message) {
+                this.showSimpleMessage("info", { backgroundColor: global.gradientsecondry }, '', reject.message)
+            }
+            console.log("sendNotificationForVideoCall_reject", reject)
+        })
+    }
+
     askVideoCallPermission() {
         const { goBack, navigate, state } = this.props.navigation;
         let userid = state.params.userId;
@@ -268,7 +286,8 @@ class Chatroom extends BaseFormComponent {
             "permissionReceiverId": userid
         };
         if (this.state.data && this.state.data.isVideoPermission) {
-            navigate('livecall', { sessionId: this.state.sessionId, token: this.state.token, profileUserId: state.params.userId })
+            this.sendNotificationForVideoCall()
+            // navigate('livecall', { sessionId: this.state.sessionId, token: this.state.token, profileUserId: state.params.userId })
         } else {
             ApiRequest.askVideoCallPermission(token, data, (resolve) => {
                 this.showSimpleMessage("", { backgroundColor: global.gradientsecondry }, '', resolve.message)

@@ -34,12 +34,18 @@ class Root extends React.Component {
         //     console.log("userDisconnected_socket", data)
         // })
 
-        // this.socket.on("speedDatingEventStarted", data => {
-        //     console.log("userConnect_speedDatingEventStarted", data)
-        //     // if (data && data.speedDatingEventDayId) {
-        //     // }
-        // }
-        // );
+        this.socket.on("speedDatingEventStarted", data => {
+            console.log("userConnect_speedDatingEventStarted", data)
+            if (data && data.speedDatingEventDayId) {
+                this.navigator.dispatch({
+                    type: NavigationActions.NAVIGATE,
+                    routeName: 'speeddatinglivecall',
+                    params: { speedDatingEventDayId: data.speedDatingEventDayId }
+                });
+    
+            }
+        }
+        );
 
         this.state = {
             token: "",

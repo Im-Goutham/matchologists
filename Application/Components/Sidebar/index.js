@@ -71,6 +71,10 @@ let IS_ANDROID = Platform.OS === 'android',
             "action_Page": "updateinformation"
         },
         {
+            "label": "speedDatingCalllabel",
+            "action_Page": "speeddating"
+        },
+        {
             "label": "aboutuslabel",
             "action_Page": "aboutus"
         }

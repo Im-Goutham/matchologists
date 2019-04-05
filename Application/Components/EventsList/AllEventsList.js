@@ -7,6 +7,7 @@ import {
     View,
     Alert,
     Image,
+    RefreshControl,
     TouchableOpacity
 } from 'react-native';
 import Loading from '../Loading/index';
@@ -32,6 +33,7 @@ export default class AllEventsList extends BaseFormComponent {
         this.state = {
             eventlistData: [],
             isloading: true,
+            isRefreshing: false, //for pull to refresh
             sectionID: '',
             invitefriendView: false,
             speedDatingEventDayId: ''
@@ -61,7 +63,8 @@ export default class AllEventsList extends BaseFormComponent {
         console.log("nextProps", nextProps)
         this.setState({
             eventlistData: nextProps.eventlistData,
-            isloading: nextProps.isloading
+            isloading: nextProps.isloading,
+            isRefreshing: false,
         })
 
     }
@@ -89,6 +92,13 @@ export default class AllEventsList extends BaseFormComponent {
                     renderItem={({ item }) => this.renderRow(item)}
                     ItemSeparatorComponent={this.renderSeparator}
                     keyExtractor={(item, index) => index.toString()}
+                    refreshControl={
+                        <RefreshControl
+                        refreshing={this.state.isRefreshing}
+                        onRefresh={this.props.onRefresh}
+                        />
+                    }
+    
                 />
                 {
                     this.state.invitefriendView ?

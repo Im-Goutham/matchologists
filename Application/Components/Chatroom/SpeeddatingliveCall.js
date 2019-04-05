@@ -181,7 +181,7 @@ class SpeeddatingliveCall extends BaseFormComponent {
                         {
                             <Timer
                                 beat={false}
-                                seconds={20}
+                                seconds={120}
                                 radius={50}
                                 borderWidth={3}
                                 color="#C52957"
