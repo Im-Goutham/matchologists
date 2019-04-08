@@ -12,6 +12,7 @@ import {
     View,
     Image,
     TouchableOpacity,
+    AsyncStorage,
     Alert,
 } from 'react-native';
 import io from 'socket.io-client'; // 2.0.4
@@ -30,17 +31,15 @@ import { baseurl as URL } from '../../../app.json';
 class SpeedDating extends Component {
     constructor(props) {
         super(props);
-        this.socket = io(URL);
-        this.socket.on("speedDatingEventStarted", data => {
-            console.log("userConnect_speedDatingEventStarted", data)
-            if (data && data.speedDatingEventDayId) {
-
-                this.getUsersPairForSpeedDating(data.speedDatingEventDayId)
-                
-                // alert("hello speed dating start")
-            }
-        }
-        );
+        // this.socket = io(URL);
+        // this.socket.on("speedDatingEventStarted", data => {
+        //     console.log("userConnect_speedDatingEventStarted", data)
+        //     if (data && data.speedDatingEventDayId) {
+        // this.getUsersPairForSpeedDating(data.speedDatingEventDayId)                
+        // alert("hello speed dating start")
+        //     }
+        // }
+        // );
         this.state = {
             visibleModal: false,
             speedDatingUser: [],
@@ -49,49 +48,63 @@ class SpeedDating extends Component {
         }
     }
     componentDidMount = async () => {
-        var  data = "5ca19973992b010533f3cd91";
-        this.getUsersPairForSpeedDating(data)
+        this.getUsersPairForSpeedDating()
     }
-    getUsersPairForSpeedDating(speedDatingEventDayId) {
-        let data = {
-            "speedDatingEventDayId": speedDatingEventDayId
-        }
-        console.log("getUsersPairForSpeedDating", data)
-        var token = this.props.token;
-        var speedDatingUsers = []
-        Apirequest.getUsersPairForSpeedDating(token, data, resolve => {
-            if (resolve.data) {
-                console.log("getUsersPairForSpeedDating_resolve", resolve)
-                var datasource = resolve.data;
-                for (var i = 0; i < datasource.length; i++) {
-                    let dataobject = {};
-                    dataobject.userId = datasource[i] && datasource[i].userId ? datasource[i].userId : '';
-                    dataobject.fullName = datasource[i] && datasource[i].fullName ? datasource[i].fullName : '';
-                    dataobject.age = datasource[i] && datasource[i].age ? datasource[i].age : '';
-                    dataobject.profilePic = datasource[i] && datasource[i].profilePic ? datasource[i].profilePic : '';
-                    speedDatingUsers.push(dataobject);
-                }
-                console.log("speedDatingUser", speedDatingUsers)
-                if (speedDatingUsers && speedDatingUsers.length) {
-                    this.setState({
-                        speedDatingUser: speedDatingUsers,
-                        isloading: false
-                    })
-                } else {
-                    this.setState({
-                        eventlistData: [],
-                        isloading: false
-                    })
-                }
+    getUsersPairForSpeedDating = async () => {
+        try {
+            var speeddatingevent = await AsyncStorage.getItem("speeddatingevent");
+            speeddatingevent = JSON.parse(speeddatingevent)
+            console.log("speeddatingevent_new", speeddatingevent)
+            if (speeddatingevent) {
+                this.setState({
+                    speedDatingUser: speeddatingevent,
+                    isloading: false
+                })
             }
-        }, reject => {
-            this.setState({
-                eventlistData: [],
-                isloading: false
-            })
-            console.log("getSpeedDatingEvents_reject", reject)
-        })
+        } catch (error) {
+            console.log("error", error)
+        }
     }
+    // getUsersPairForSpeedDating(speedDatingEventDayId) {
+    //     let data = {
+    //         "speedDatingEventDayId": speedDatingEventDayId
+    //     }
+    //     console.log("getUsersPairForSpeedDating", data)
+    //     var token = this.props.token;
+    //     var speedDatingUsers = []
+    //     Apirequest.getUsersPairForSpeedDating(token, data, resolve => {
+    //         if (resolve.data) {
+    //             console.log("getUsersPairForSpeedDating_resolve", resolve)
+    //             var datasource = resolve.data;
+    //             for (var i = 0; i < datasource.length; i++) {
+    //                 let dataobject = {};
+    //                 dataobject.userId = datasource[i] && datasource[i].userId ? datasource[i].userId : '';
+    //                 dataobject.fullName = datasource[i] && datasource[i].fullName ? datasource[i].fullName : '';
+    //                 dataobject.age = datasource[i] && datasource[i].age ? datasource[i].age : '';
+    //                 dataobject.profilePic = datasource[i] && datasource[i].profilePic ? datasource[i].profilePic : '';
+    //                 speedDatingUsers.push(dataobject);
+    //             }
+    //             console.log("speedDatingUser", speedDatingUsers)
+    //             if (speedDatingUsers && speedDatingUsers.length) {
+    //                 this.setState({
+    //                     speedDatingUser: speedDatingUsers,
+    //                     isloading: false
+    //                 })
+    //             } else {
+    //                 this.setState({
+    //                     eventlistData: [],
+    //                     isloading: false
+    //                 })
+    //             }
+    //         }
+    //     }, reject => {
+    //         this.setState({
+    //             eventlistData: [],
+    //             isloading: false
+    //         })
+    //         console.log("getSpeedDatingEvents_reject", reject)
+    //     })
+    // }
     rulesForRsvp = () => {
         Alert.alert({
         })
@@ -115,9 +128,7 @@ class SpeedDating extends Component {
                     colors={['#DB3D88', '#273174']}
                     start={{ x: 0, y: 1 }}
                     end={{ x: 1, y: 1 }}
-                    style={{
-                        // marginBottom : IS_ANDROID ? 30 :20
-                    }}>
+                    style={{}}>
                     <SafeAreaView>
                         <Header
                             isSearcrchbar={false}

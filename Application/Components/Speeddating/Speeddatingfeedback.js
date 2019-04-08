@@ -15,7 +15,7 @@ import {
     ActivityIndicator,
     Picker
 } from "react-native";
-import {connect} from 'react-redux'
+import { connect } from 'react-redux'
 import LinearGradient from 'react-native-linear-gradient';
 import _ from 'lodash';
 import BaseFormComponent from '../Common/BaseFormComponent'
@@ -112,10 +112,10 @@ class Speeddatingfeedback extends BaseFormComponent {
         const { questionData, questionindex } = this.state;
         const { state } = this.props.navigation
         var usersData = state.params.data;
-
+console.log("usersData======>", usersData)
         let currentQuestion = questionData[questionindex];
         await _.map(currentQuestion.answers, (answer) => { return answer.selected = false });
-        data.feedbackReceiver = usersData.receiverId;
+        data.feedbackReceiver = usersData && usersData.receiverId ? usersData.receiverId : usersData.userId ;
         data.feedbackType = currentQuestion._id.category;
         data.questionId = currentQuestion._id._id;
         data.answerId = answer._id;
@@ -133,6 +133,8 @@ class Speeddatingfeedback extends BaseFormComponent {
         const { questionData, questionindex } = this.state;
         const { state, goBack } = this.props.navigation
         var token = state.params.token;
+        console.log("saveFeedback_data", data)
+
         Apirequest.saveUserFeedback(token, data, resolve => {
             console.log("resolve", resolve)
             data = {}
@@ -190,7 +192,7 @@ class Speeddatingfeedback extends BaseFormComponent {
         _.map(currentQuestion.answers, (answer) => { return answer.selected = false, answer.dynamicvalue = ''; });
         answer && answer.selected ? answer.selected = false : answer ? answer.selected = true : undefined;
         answer && answer.selected ? answer.dynamicvalue = datechoosen : answer.dynamicvalue = 2
-        data.feedbackReceiver = usersData.receiverId;
+        data.feedbackReceiver = usersData && usersData.receiverId ? usersData.receiverId : usersData.userId ;
         data.feedbackType = currentQuestion._id.category;
         data.questionId = currentQuestion._id._id;
         data.answerId = answer._id;
@@ -215,14 +217,17 @@ class Speeddatingfeedback extends BaseFormComponent {
             console.log("currentQuestion_isPositive", currentQuestion._id.isPositive)
             console.log("currentQuestion_isNegative", currentQuestion._id.isNegative)
             if (state.params.eventNamepoint === 'chatfeedback') {
+                data={}
                 this.changeChatStatus()
                 return
             }
             if (currentQuestion && currentQuestion._id && currentQuestion._id.isPositive) {
                 console.log("going to positive")
+                data={}
                 this.updateNotificationStatus()
             }
             else if (currentQuestion && currentQuestion._id && currentQuestion._id.isNegative) {
+                data={}
                 console.log("going to negative")
                 this.updateNotificationStatus()
             }
@@ -239,16 +244,7 @@ class Speeddatingfeedback extends BaseFormComponent {
             questionData: this.state.questionData
         })
     }
-    showDays() {
-        var arr = [1, 2, 3, 4, 5];
-        return arr.map((value, index) => {
-            return <TouchableOpacity key={index}
-                style={{ borderRadius: 22, marginVertical: 3, height: 44, backgroundColor: "#FFF", justifyContent: "center", paddingHorizontal: 16 }}
-                onPress={this.selectDate.bind(this, value)}>
-                <Text>{value}</Text>
-            </TouchableOpacity>
-        })
-    }
+    
     getmyvalue(available) {
         this.setState({
             selectedDate: available
@@ -264,6 +260,8 @@ class Speeddatingfeedback extends BaseFormComponent {
         }
         let currentQuestion = questionData[questionindex];
         let availableanswer = questionData[questionindex].answers;
+        var invitationname = state.params.invitationname;
+
         return (
             <>
                 <SafeAreaView style={{ flex: 1, backgroundColor: "rgba(255,255,255,100)" }}>
@@ -282,8 +280,9 @@ class Speeddatingfeedback extends BaseFormComponent {
                     <ScrollView contentContainerStyle={{ paddingHorizontal: 16 }} nestedScrollEnabled={true} >
                         <View style={{}}>
                             <View style={styles.questionBox}>
-                                {/* <Text style={styles.questionTitle}>{currentQuestion._id.questionFor}</Text> */}
-                                <Text style={styles.question}>{currentQuestion._id.question}</Text>
+                                {/* <Text style={styles.question}>{currentQuestion._id.question}</Text> */}
+                                <Text style={styles.question}>{_.replace(currentQuestion._id.question, new RegExp("{{memberName}}"), invitationname)}</Text>
+
                             </View>
                         </View>
                         {
@@ -352,7 +351,7 @@ const styles = {
     },
     row: {
         flex: 1,
-        justifyContent: 'space-between',
+        // justifyContent: 'space-between',
         flexDirection: 'row',
         paddingVertical: 5,
         marginVertical: 10
@@ -366,13 +365,6 @@ class Checkbox extends Component {
             showDate: false
         }
     }
-    // uncheckData(key, data) {
-    //     let options = this.state.selectedOptions;
-    //     let array_index = this.state.selectedOptions.indexOf(data._id)
-    //     options.splice(array_index, 1);
-    //     data.selected = false;
-    //     this.props.callmyCheckbox(this.state.selectedOptions)
-    // }
     componentDidMount() {
         this.state.selectedOptions = [];
     }
@@ -389,34 +381,6 @@ class Checkbox extends Component {
 
         this.props.selectAnswer(answers, itemValue)
     }
-    // selectOptions(itemValue, itemIndex, answers) {
-    // console.log("selectOptions_itemValue",itemValue)
-    // console.log("selectOptions_itemIndex",itemIndex)
-    // console.log("selectOptions_answers",answers)
-    //     answers.dynamicvalue = itemValue;
-    //     this.setState({ showDate: false })
-    //     this.props.selectAnswer(answers)
-    // }
-    // renderPickeroption() {
-    //     return days.map((facility, i) => {
-    //         return <Picker.Item key={i} value={facility.id} label={facility.label} />
-    //     })
-    // }
-    // renderOptions(answer, dynamicvalue) {
-    //     return days.map((facility, i) => {
-    //         return (
-    //             <TouchableOpacity
-    //                 key={i}
-    //                 style={{ backgroundColor: dynamicvalue === facility.label ? "#F5F5F5" : "#fff", height: 42, justifyContent: "center", paddingHorizontal: 16 }}
-    //                 onPress={() => this.selectOptions(facility.label, facility.i, answer)}>
-    //                 <Text style={{ color: dynamicvalue === facility.label ? global.gradientsecondry : "#000" }}> {facility.label} </Text>
-    //             </TouchableOpacity>
-    //         )
-    //     })
-    // }
-    // otherOptions=(answers)=>{
-    //     this.props.selectAnswer(answers, itemValue)
-    // }
     getOtherValue = (cbvalue) => {
         this.props.selectAnswer(cbvalue.answer, cbvalue.inputValue)
         // console.log("getOtherValue", cbvalue)
@@ -425,22 +389,6 @@ class Checkbox extends Component {
         return this.props.data.map((answer, key) => {
             return <View key={key} style={{}}>
                 {
-                    // answer.selected ?
-                    //     <TouchableOpacity style={styles.row} onPress={() => this.props.selectAnswer(answer)}>
-                    //         <View style={{ backgroundColor: "transparent", flex: 2 }}>
-                    //             <Image source={checked}
-                    //                 style={{
-                    //                     width: 24, height: 24,
-                    //                 }}
-                    //                 resizeMethod='resize'
-                    //                 resizeMode="contain"
-                    //             />
-                    //         </View>
-                    //         <View style={{ backgroundColor: "transparent", flex: 8 }}>
-                    //             <Text style={[styles.answerTxt]}>{answer.containVariable ? _.replace(answer.answer, new RegExp("{{days}}"), answer.dynamicvalue ? answer.dynamicvalue : 2) : answer.answer}</Text>
-                    //         </View>
-                    //     </TouchableOpacity>
-                    //     :
                     answer.containVariable ?
                         <View style={styles.row}>
                             <View style={{ backgroundColor: "transparent", flex: 2 }}>
@@ -477,31 +425,33 @@ class Checkbox extends Component {
                         </View>
                         :
                         answer.isDisplayTextBox ?
-                            <View style={{ paddingBottom: 30 }}> 
-                                <TouchableOpacity style={styles.row} onPress={() => this.props.selectAnswer(answer)}>
-                                    <View style={{ backgroundColor: "transparent", flex: 2 }}>
-                                    {
-                                    answer.selected ?
-                                        <Image source={checked}
+                            <View style={{ paddingBottom: 30 }}>
+                                <TouchableOpacity activeOpacity={1} style={styles.row} onPress={() => this.props.selectAnswer(answer)}>
+                                    <View style={{ backgroundColor: "transparent" }}>
+                                        <View
                                             style={{
-                                                width: 24, height: 24,
-                                            }}
-                                            resizeMethod='resize'
-                                            resizeMode="contain"
-                                        />
-                                        :
-                                        <Image
-                                            source={unchecked}
-                                            style={{
-                                                width: 24,
-                                                height: 24,
-                                            }}
-                                            resizeMethod='resize'
-                                            resizeMode="contain"
-                                        />
-                                }
+                                                width: 20,
+                                                height: 20,
+                                                borderRadius: 10,
+                                                borderColor: "#D43C87",
+                                                justifyContent: "center",
+                                                alignItems: "center",
+                                                borderWidth: 1
+                                            }} >
+                                            {
+                                                answer.selected ? <View style={{
+                                                    width: 12,
+                                                    height: 12,
+                                                    borderRadius: 6,
+                                                    borderColor: "#D43C87",
+                                                    backgroundColor: "#D43C87",
+                                                    borderWidth: 1
+                                                }} /> : undefined
+
+                                            }
+                                        </View>
                                     </View>
-                                    <View style={{ backgroundColor: "transparent", flex: 8 }}>
+                                    <View style={{ backgroundColor: "transparent", marginLeft: 16 }}>
                                         <Text style={[styles.answerTxt]}>{answer.containVariable ? _.replace(answer.answer, new RegExp("{{days}}"), answer.dynamicvalue ? answer.dynamicvalue : 2) : answer.answer} </Text>{}
                                     </View>
                                 </TouchableOpacity>
@@ -511,30 +461,32 @@ class Checkbox extends Component {
                                 />
                             </View>
                             :
-                            <TouchableOpacity style={styles.row} onPress={() => this.props.selectAnswer(answer)}>
-                                <View style={{ backgroundColor: "transparent", flex: 2 }}>
-                                {
-                                    answer.selected ?
-                                        <Image source={checked}
-                                            style={{
-                                                width: 24, height: 24,
-                                            }}
-                                            resizeMethod='resize'
-                                            resizeMode="contain"
-                                        />
-                                        :
-                                        <Image
-                                            source={unchecked}
-                                            style={{
-                                                width: 24,
-                                                height: 24,
-                                            }}
-                                            resizeMethod='resize'
-                                            resizeMode="contain"
-                                        />
-                                }
+                            <TouchableOpacity style={styles.row} activeOpacity={1} onPress={() => this.props.selectAnswer(answer)}>
+                                <View style={{ backgroundColor: "transparent", }}>
+                                    <View
+                                        style={{
+                                            width: 20,
+                                            height: 20,
+                                            borderRadius: 10,
+                                            borderColor: "#D43C87",
+                                            justifyContent: "center",
+                                            alignItems: "center",
+                                            borderWidth: 1
+                                        }} >
+                                        {
+                                            answer.selected ? <View style={{
+                                                width: 12,
+                                                height: 12,
+                                                borderRadius: 6,
+                                                borderColor: "#D43C87",
+                                                backgroundColor: "#D43C87",
+                                                borderWidth: 1
+                                            }} /> : undefined
+
+                                        }
+                                    </View>
                                 </View>
-                                <View style={{ backgroundColor: "transparent", flex: 8 }}>
+                                <View style={{ backgroundColor: "transparent", marginLeft: 16 }}>
                                     <Text style={[styles.answerTxt]}>{answer.containVariable ? _.replace(answer.answer, new RegExp("{{days}}"), answer.dynamicvalue ? answer.dynamicvalue : 2) : answer.answer} </Text>{}
                                 </View>
                             </TouchableOpacity>
@@ -561,23 +513,19 @@ class InputContainer extends Component {
         }
     }
     handleValueChange = (otherOption) => {
-        // this.setState({
-        //     otherOption
-        // }, () => this.props.getOtherValue({ inputValue: otherOption, answer: this.props.answer }))
         this.props.getOtherValue({ inputValue: otherOption, answer: this.props.answer })
     }
     render() {
-        // console.log("InputContainer.answer", this.props.answer.dynamicvalue)
         return (
             <>
                 {
                     this.props.answer.selected ?
-                    <CustomTextInput
-                        value={this.props.answer.dynamicvalue}
-                        placeholder="Type your reason here"
-                        onChangeText={this.handleValueChange.bind(this)}
-                    />
-                    : undefined
+                        <CustomTextInput
+                            value={this.props.answer.dynamicvalue}
+                            placeholder="Type your reason here"
+                            onChangeText={this.handleValueChange.bind(this)}
+                        />
+                        : undefined
                 }
             </>
         )
@@ -591,9 +539,6 @@ class RenderOptions extends Component {
         }
     }
     selectDate(label, indexValue, answer) {
-        // console.log("label",label)
-        // console.log("indexValue",indexValue)
-        // console.log("answer", answer)
         this.setState({
             showDate: !this.state.showDate
         }, () => this.props.selectOptions(label, indexValue, answer))
@@ -622,7 +567,8 @@ class RenderOptions extends Component {
                     IS_ANDROID ?
                         <>
                             <TouchableOpacity
-                                style={{ backgroundColor: "transparent", flex: 8 }}
+                                activeOpacity={1}
+                                style={{ backgroundColor: "transparent", marginLeft: 16 }}
                                 onPress={() => this.setState({ showDate: true })}
                             >
                                 <Text style={[styles.answerTxt]}>
@@ -645,7 +591,8 @@ class RenderOptions extends Component {
                         :
                         <>
                             <TouchableOpacity
-                                style={{ backgroundColor: "transparent", flex: 8 }}
+                                activeOpacity={1}
+                                style={{ backgroundColor: "transparent", marginLeft: 16 }}
                                 onPress={() => this.setState({ showDate: true })}
                             >
                                 <Text style={[styles.answerTxt]}>

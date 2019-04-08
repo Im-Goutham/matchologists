@@ -1,6 +1,17 @@
 import React, { Component } from "react";
 import { connect } from 'react-redux'
-import { View, Text, FlatList, Image, StyleSheet, TextInput, Platform, TouchableOpacity, Dimensions } from "react-native";
+import { 
+    View, 
+    Text, 
+    FlatList, 
+    Image, 
+    StyleSheet, 
+    TextInput, 
+    Platform, 
+    TouchableOpacity, 
+    Dimensions,
+    RefreshControl
+ } from "react-native";
 import I18n from 'react-native-i18n';
 import Modal from "react-native-modal";
 import Loader from "../Loading/Loader";
@@ -33,7 +44,7 @@ class Userlist extends Component {
             page: 1,
             seed: 1,
             error: null,
-            refreshing: false,
+            isRefreshing: false, //for pull to refresh
         };
     }
     componentDidMount() {
@@ -46,8 +57,8 @@ class Userlist extends Component {
         // console.log("nextState_hello", nextState.userList)
         this.setState({
             data: nextState.userList,
-            is_loading: this.props.is_loading
-
+            is_loading: this.props.is_loading,
+            isRefreshing: false
         })
     }
     // makeRemoteRequest = () => {
@@ -174,6 +185,12 @@ class Userlist extends Component {
                     numColumns={2}
                     renderItem={({ item }) => this.renderRow(item)}
                     keyExtractor={(item, index) => index.toString()}
+                    refreshControl={
+                        <RefreshControl
+                        refreshing={this.state.isRefreshing}
+                        onRefresh={this.props.onRefresh}
+                        />
+                    }
                 // ItemSeparatorComponent={this.renderSeparator}
                 // ListHeaderComponent={<Header />}
                 // ListFooterComponent={<Footer />}

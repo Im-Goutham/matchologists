@@ -103,8 +103,8 @@ class SuggestionList extends Component {
                         button={moreoptions}
                         buttonStyle={styles.popupmenu}
                         destructiveIndex={1}
-                        options={["Add To Monogamous", " Remove Favourite",  item.isMono ? "Remove monogamous"  :"Cancel"]}
-                        actions={[this.addFavouriteUserAsMonogamous.bind(this, item), this.removeFavouriteUser.bind(this, item),  item.isMono ? this.removeMonogamousUser.bind(this, item) : this.cancel]}
+                        options={[item.isMono ? "Remove monogamous" : "Add To Monogamous", " Remove Favourite",  "Cancel"]}
+                        actions={[item.isMono ?  this.removeMonogamousUser.bind(this, item) : this.addFavouriteUserAsMonogamous.bind(this, item), this.removeFavouriteUser.bind(this, item),   this.cancel]}
                     />
                         {/* <View
                             style={{

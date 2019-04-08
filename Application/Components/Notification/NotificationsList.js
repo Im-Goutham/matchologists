@@ -60,18 +60,27 @@ export default class NotificationsList extends Component {
             console.log("updateNotificationStatus_reject", reject)
         })
     }
-    
+    refreshingList = () => {
+        this.setState({
+            isRefreshing: true,
+            isloading: true
+        }, () => this.props.onRefresh())
+    }
     render() {
         const { notificationData, isloading } = this.state;
         if (isloading) {
             return <Loading />
         }
         if (!notificationData.length) {
-            return <> 
-            <Text style={{ alignSelf: "center", marginTop: 50 }}> No Notification found </Text>
-            <Text 
-            style={{ alignSelf: "center", marginTop: 50 }} onPress={()=>this.props.onRefresh()} > refresh List </Text>
-        </>
+            return <>
+                <Text style={{ alignSelf: "center", marginTop: 50 }}> No Notification found </Text>
+                <TouchableOpacity onPress={() => this.refreshingList()}
+                    style={{ width: 30, height: 30, alignSelf: "center", marginTop: 50 }}>
+                    <Image source={require('../../images/icons/refresh_grey.png')} style={{ width: '100%', height: '100%' }} resizeMethod="resize" resizeMode="contain" />
+                </TouchableOpacity>
+                {/* <Text
+                    style={{ alignSelf: "center", marginTop: 50 }} onPress={() => this.props.onRefresh()} > refresh List </Text> */}
+            </>
         }
         return (
             <FlatList
@@ -82,8 +91,8 @@ export default class NotificationsList extends Component {
                 keyExtractor={(item, index) => index.toString()}
                 refreshControl={
                     <RefreshControl
-                    refreshing={this.state.isRefreshing}
-                    onRefresh={this.props.onRefresh}
+                        refreshing={this.state.isRefreshing}
+                        onRefresh={this.props.onRefresh}
                     />
                 }
             // ListHeaderComponent={<>}
@@ -173,7 +182,6 @@ export default class NotificationsList extends Component {
                         <Text style={{ alignSelf: "flex-end" }}> {currenttime.getMinutes() - notification_time.getMinutes()} min ago</Text>
                         :
                         <Text style={{ alignSelf: "flex-end" }}> {currenttime.getHours() - notification_time.getHours()} hour ago</Text>
-
                 }
                 <View style={{ flexDirection: "row", justifyContent: "space-between", height: 44 }}>
                     <LinearGradient
@@ -326,44 +334,70 @@ export default class NotificationsList extends Component {
     }
     speeddatingcall(item) {
         return <>
-        <TouchableOpacity onPress={()=>this.props.navigate('speeddatinglivecall',{ 
-            speedDatingEventDayId:  item && item.eventInfo && item.eventInfo.eventDayId ? item.eventInfo.eventDayId : ''})}>
-            <Text>Join speed dating call</Text>
-        </TouchableOpacity>
+            <TouchableOpacity onPress={() => this.props.navigate('speeddatinglivecall', {
+                speedDatingEventDayId: item && item.eventInfo && item.eventInfo.eventDayId ? item.eventInfo.eventDayId : ''
+            })}>
+                <Text>Join speed dating call</Text>
+            </TouchableOpacity>
         </>
     }
     renderRow(item) {
-        return (
-            <View style={{ backgroundColor: item.isSeen ? "#FFF" : "#F5F5F5", flexDirection: "row", paddingHorizontal: 15, paddingVertical: 16 }}>
-                <View style={{ flex: 2, justifyContent: "center", alignItems: "center", backgroundColor: "transparent" }}>
-                    <Image source={item.uri ? { uri: item.uri } : require('../../images/applogo.png')} style={{ width: 60, height: 60, borderRadius: 30 }} />
-                </View>
-                <View style={{
-                    flex: 8, backgroundColor: "transparent", justifyContent: "center",
-                    justifyContent: "center", paddingHorizontal: 15
-                }}>
-                    <Text style={{ color: "#3E3E47", fontSize: 17, fontFamily: "Avenir-Heavy", lineHeight: 22, }}>
-                        {item.notificationText ? item.notificationText : ''}
-                    </Text>
-                    {
-                        item && item.type === "videocallpermission" ? item && item.isSeen ? this.showtime(item) : this.videocallpermission(item)
-                            :
-                            item && item.type === 'friendrequest' ? item && item.isSeen ? this.showtime(item) : this.teamfeedback(item)
-                                :
-                                item && item.type === "videocall" ? item && item.isSeen ? this.showtime(item) : this.videocallEvents(item)
+        return (<>
+            {
+                item && item.type === 'speeddatingcall' ?
+                    <TouchableOpacity disabled={item && item.isSeen ? true : false}
+                    activeOpacity={1} 
+                    style={{ backgroundColor: item.isSeen ? "#FFF" : "#F5F5F5", flexDirection: "row", paddingHorizontal: 15, paddingVertical: 16 }}
+                    onPress={() => this.props.navigate('speeddatinglivecall', {
+                        speedDatingEventDayId: item && item.eventInfo && item.eventInfo.eventDayId ? item.eventInfo.eventDayId : ''
+                    })}>
+                        <View style={{ flex: 2, justifyContent: "center", alignItems: "center", backgroundColor: "transparent" }}>
+                            <Image source={item.uri ? { uri: item.uri } : require('../../images/applogo.png')} style={{ width: 60, height: 60, borderRadius: 30 }} />
+                        </View>
+                        <View style={{
+                            flex: 8, backgroundColor: "transparent", justifyContent: "center",
+                            justifyContent: "center", paddingHorizontal: 15
+                        }}>
+                            <Text style={{ color: "#3E3E47", fontSize: 17, fontFamily: "Avenir-Heavy", lineHeight: 22, }}>
+                                {item.notificationText ? item.notificationText : ''}
+                            </Text>
+                            {
+                            item && item.isSeen ? this.showtime(item) : undefined
+
+                        }
+
+                        </View>
+                    </TouchableOpacity>
+                    :
+                    <View style={{ backgroundColor: item.isSeen ? "#FFF" : "#F5F5F5", flexDirection: "row", paddingHorizontal: 15, paddingVertical: 16 }}>
+                        <View style={{ flex: 2, justifyContent: "center", alignItems: "center", backgroundColor: "transparent" }}>
+                            <Image source={item.uri ? { uri: item.uri } : require('../../images/applogo.png')} style={{ width: 60, height: 60, borderRadius: 30 }} />
+                        </View>
+                        <View style={{
+                            flex: 8, backgroundColor: "transparent", justifyContent: "center",
+                            justifyContent: "center", paddingHorizontal: 15
+                        }}>
+                            <Text style={{ color: "#3E3E47", fontSize: 17, fontFamily: "Avenir-Heavy", lineHeight: 22, }}>
+                                {item.notificationText ? item.notificationText : ''}
+                            </Text>
+                            {
+                                item && item.type === "videocallpermission" ? item && item.isSeen ? this.showtime(item) : this.videocallpermission(item)
                                     :
-                                    item && (item.type === "speeddatingnotification" || item.type === "speeddatingInvitation") ? item && item.isSeen ? this.showtime(item) : this.speedDatingRequest(item)
+                                    item && item.type === 'friendrequest' ? item && item.isSeen ? this.showtime(item) : this.teamfeedback(item)
                                         :
-                                        item && (item.type === "userfeedback" || item.type === "teamfeedback" || item.type === "speeddatingreminder" || item.type === "notification") ? this.showtime(item)
+                                        item && item.type === "videocall" ? item && item.isSeen ? this.showtime(item) : this.videocallEvents(item)
                                             :
-                                            item && item.type === 'speeddatingcall' ? item && item.isSeen ? this.showtime(item) : this.speeddatingcall(item)
+                                            item && (item.type === "speeddatingnotification" || item.type === "speeddatingInvitation") ? item && item.isSeen ? this.showtime(item) : this.speedDatingRequest(item)
                                                 :
-                                                undefined
+                                                item && (item.type === "userfeedback" || item.type === "teamfeedback" || item.type === "speeddatingreminder" || item.type === "notification") ? this.showtime(item)
+                                                    :
+                                                    undefined
+                            }
+                        </View>
+                    </View>
 
-
-                    }
-                </View>
-            </View>
+            }
+        </>
         )
     }
     onDayPress(day) {

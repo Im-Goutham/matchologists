@@ -9,6 +9,7 @@ import {
     Platform,
     PermissionsAndroid
 } from 'react-native';
+import _ from 'lodash'
 import { connect } from 'react-redux'
 import { OTSession, OTPublisher, OTSubscriber, EventData, OT } from 'opentok-react-native';
 import LinearGradient from 'react-native-linear-gradient';
@@ -35,7 +36,10 @@ class SpeeddatingliveCall extends BaseFormComponent {
                 console.log('Publisher stream destroyed!', event);
             },
             streamCreated: event => {
-                // alert("i am publishing")
+                var newspeed = this.props.speedDateruserObj;
+                newspeed.callStatus = "ongoing";
+                var eventData = Object.assign({}, newspeed, event)
+                this.props.streamCreated_update(eventData)
                 console.log('Publisher stream created!', event);
             },
             streamDestroyed: event => {
@@ -51,7 +55,7 @@ class SpeeddatingliveCall extends BaseFormComponent {
                 console.log('sessionConnected created!', event);
             },
             streamCreated: event => {
-                this.startArchive(event)
+                // this.startArchive(event)
                 console.log('Stream created!', event);
             },
             streamDestroyed: event => {
@@ -93,7 +97,7 @@ class SpeeddatingliveCall extends BaseFormComponent {
     getChatSessionId = async () => {
         let userid = this.props.userId;
         Apirequest.getChatSessionId(this.props.token, userid, (resolve) => {
-            // console.log("getChatSessionId_resolve", resolve)
+            console.log("getChatSessionId_resolve", resolve)
             if (resolve && resolve.message) {
                 this.showSimpleMessage("info", { backgroundColor: global.gradientsecondry }, "", resolve.message ? resolve.message : '')
             }
@@ -103,7 +107,7 @@ class SpeeddatingliveCall extends BaseFormComponent {
                     sessionId: resolve.data && resolve.data.session ? resolve.data.session : '',
                     token: resolve.data && resolve.data.token ? resolve.data.token : '',
                     loading: false
-                },()=>this.startArchive())
+                }, () => this.startArchive())
             }
         }, (reject) => {
             console.log("getChatSessionId_reject", reject)
@@ -154,7 +158,7 @@ class SpeeddatingliveCall extends BaseFormComponent {
                 >
                     <View style={{ position: "absolute", zIndex: 2 }}>
                         <OTPublisher
-                            style={{ width: 125, height: 125, top:60 }}
+                            style={{ width: 125, height: 125, top: 60 }}
                             properties={this.publisherProperties}
                             eventHandlers={this.publisherEventHandlers}
                         />
@@ -181,7 +185,7 @@ class SpeeddatingliveCall extends BaseFormComponent {
                         {
                             <Timer
                                 beat={false}
-                                seconds={120}
+                                seconds={20}
                                 radius={50}
                                 borderWidth={3}
                                 color="#C52957"
@@ -207,7 +211,7 @@ class SpeeddatingliveCall extends BaseFormComponent {
                             end={{ x: 1, y: 1 }}
                             style={styles.callendButton}>
                             <TouchableOpacity
-                            onPress={()=>this.props.callnextuserforspeedDating()}
+                                onPress={() => this.props.callnextuserforspeedDating()}
                                 // onPress={() => this.stopArchive()}
                                 style={{ width: 40, height: 40, justifyContent: "center", alignItems: "center" }}>
                                 <Image

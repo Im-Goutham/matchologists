@@ -6,13 +6,8 @@ import React, { Component } from 'react';
 import {
     Platform,
     StyleSheet,
-    SafeAreaView,
-    Text,
     View,
-    Image,
-    TouchableOpacity,
     AsyncStorage,
-    ScrollView,
     Alert,
 } from 'react-native';
 import io from 'socket.io-client'; // 2.0.4
@@ -59,7 +54,6 @@ class SpeedDatingCall extends BaseFormComponent {
         try {
             AsyncStorage.multiSet([['heighlightedUserIndex', JSON.stringify(heighlightedUserIndex)], ['speeddatingevent', JSON.stringify(speeddatingusers)]], () => {
                 AsyncStorage.multiGet(["speeddatingevent", "heighlightedUserIndex"], (error, stores) => {
-
                     speeddatingevent = stores[0][1] ? JSON.parse(stores[0][1]) : []
                     heighlightedUserIndex = stores[1][1] ? JSON.parse(stores[1][1]) : []
                     console.log("speedDatingUserStore_heighlightedUserIndex", heighlightedUserIndex)
@@ -87,15 +81,18 @@ class SpeedDatingCall extends BaseFormComponent {
         try {
             AsyncStorage.multiGet(["speeddatingevent", "heighlightedUserIndex"], (error, stores) => {
                 console.log("multiGet_stores", stores)
-                speeddatingevent = JSON.parse(stores[0][1])
-                heighlightedUserIndex = stores[1][1] ? JSON.parse(stores[1][1]) : 0
+                speeddatingevent = stores && stores[0] && stores[0][1] ? JSON.parse(stores[0][1]) : []
+                heighlightedUserIndex = stores && stores[1] && stores[1][1] ? JSON.parse(stores[1][1]) : 0
+                console.log("speeddatingevent", speeddatingevent)
 
-                if (Array.isArray(speeddatingevent) && heighlightedUserIndex !== '') {
+                if (Array.isArray(stores) && stores && stores[0] && stores[0][1] && stores[1] && stores[1][1] && heighlightedUserIndex !== '') {
                     console.log("speeddatingevent", speeddatingevent)
                     console.log("heighlightedUserIndex", heighlightedUserIndex)
+
                     if (speeddatingevent[heighlightedUserIndex] && speeddatingevent[heighlightedUserIndex].callStatus === "completed" && speeddatingevent[heighlightedUserIndex].feedback) {
                         this.setState({
                             speedDatingUser: speeddatingevent,
+
                         }, () => this.sendNotificationForVideoCall(speeddatingevent, ++heighlightedUserIndex))
                     } else {
                         this.setState({
@@ -111,12 +108,13 @@ class SpeedDatingCall extends BaseFormComponent {
             console.log("speeddatingevent_error", error)
         }
     }
-    speedDatinguserRemove = async () => {
+    speedDatinguserRemove = async (callback) => {
         let keys = ['speeddatingevent', 'heighlightedUserIndex'];
         try {
             AsyncStorage.multiRemove(keys, (error) => {
                 console.log("error", error)
             });
+            callback(success)
             return true;
         }
         catch (exception) {
@@ -139,7 +137,8 @@ class SpeedDatingCall extends BaseFormComponent {
     getUsersPairForSpeedDating(speedDatingEventDayId) {
         let data = {
             "speedDatingEventDayId": speedDatingEventDayId
-        }
+        };
+        var notificationdate = new Date();
         var token = this.props.token;
         var speedDatingUsers = []
         Apirequest.getUsersPairForSpeedDating(token, data, resolve => {
@@ -156,10 +155,7 @@ class SpeedDatingCall extends BaseFormComponent {
                 }
                 if (speedDatingUsers && speedDatingUsers.length) {
                     const CurrentspeedDatingusers = _.map(speedDatingUsers, (obj, key) => {
-                        return key == 0 ?
-                            { ...obj, isHighlight: true, callStatus: "pending", feedback: false }
-                            :
-                            { ...obj, callStatus: "pending", feedback: false }
+                        return key == 0 ? { ...obj, callStatus: "ongoing", feedback: false, notificationDateTime: notificationdate } : { ...obj, callStatus: "pending", feedback: false, notificationDateTime: notificationdate }
                     });
                     console.log("CurrentspeedDatingusers", CurrentspeedDatingusers)
                     var heighlightedUserIndex = 0
@@ -181,10 +177,8 @@ class SpeedDatingCall extends BaseFormComponent {
     sendNotificationForVideoCall(speedDatingUser, userIndex) {
         const { state } = this.props.navigation;
         console.log("sendNotificationForVideoCall_state", state)
-
         var speedDatingEventDayId = state && state.params && state.params.speedDatingEventDayId ? state.params.speedDatingEventDayId : ''
         // var speedDatingEventDayId = "5ca19973992b010533f3cd91";
-
         // const { userIndex } = this.state;
         console.log("speedDatingUser", speedDatingUser)
         console.log("userIndex", userIndex)
@@ -198,7 +192,6 @@ class SpeedDatingCall extends BaseFormComponent {
             "eventDayId": speedDatingEventDayId
         }
         console.log("sendNotificationForVideoCall_speedDatingUser", data)
-
         Apirequest.sendNotificationForVideoCall(token, data, resolve => {
             console.log("sendNotificationForVideoCall_resolve", resolve)
             if (resolve.message) {
@@ -231,69 +224,76 @@ class SpeedDatingCall extends BaseFormComponent {
         })
     }
     callnextuserforspeedDating = () => {
+        const { state, navigate } = this.props.navigation;
         const { speedDatingUser, userIndex } = this.state;
         var heighlightedUserIndex = userIndex;
         speedDatingUser[heighlightedUserIndex]["feedback"] = true;
         speedDatingUser[heighlightedUserIndex]["callStatus"] = "completed";
-        speedDatingUser[heighlightedUserIndex]["isHighlight"] = false;
+        // speedDatingUser[heighlightedUserIndex]["isHighlight"] = false;
         var speedDaterIndex = userIndex;
         console.log("speedDatingUser======", speedDatingUser);
         console.log("speedDaterIndex======", speedDaterIndex);
         this.setState({
             isloading: true,
         })
-        // }, () => this.speedDatingUserStore(speedDatingUser, (speedDaterIndex + 1)))
-        var nextUsername = speedDatingUser && speedDatingUser[speedDaterIndex + 1] ? speedDatingUser[speedDaterIndex + 1].fullName : ''
-        // console.log("nextUsername", nextUsername)
-        Alert.alert(
-            i18n.t('appname'),
-            `Would you like to connect next User ${nextUsername} \n if you press cancel you have to wait for next to user connect with you.`, [
-                // { text: 'Ask me later', onPress: () => console.log('Ask me later pressed') },
-                {
-                    text: 'Cancel',
-                    onPress: () => this.userInterval(),
-                    style: 'cancel',
-                },
-                { text: 'OK', onPress: () => this.getNextUser(speedDatingUser, speedDaterIndex) },
-            ],
-            { cancelable: false },
-        );
+        var nextUsername = speedDatingUser && speedDatingUser[speedDaterIndex + 1] ? speedDatingUser[speedDaterIndex + 1].fullName : '';
+        (!nextUsername) ?
+            navigate('homePage')
+            :
+            Alert.alert(
+                i18n.t('appname'),
+                `Would you like to connect next User ${nextUsername} \n if you press cancel you have to wait for next user to connect with you.`, [
+                    {
+                        text: 'Cancel',
+                        onPress: () => this.userInterval(),
+                        style: 'cancel',
+                    },
+                    { text: 'OK', onPress: () => this.getNextUser(speedDatingUser, speedDaterIndex) },
+                ],
+                { cancelable: false },
+            );
     }
     getNextUser = (speedDatingUser, speedDaterIndex) => {
         this.speedDatingUserStore(speedDatingUser, (speedDaterIndex + 1))
-
-        // const { speedDatingUser, userIndex } = this.state;
-
-        // console.log("speedDatingUser_length", userIndex)
-        // if (speedDatingUser.length > userIndex) {
-        //     this.state.userIndex++;
-        //     this.setState({
-        //         userIndex: this.state.userIndex,
-        //         isloading: false
-        //     })
-        // }
-        // else {
-        //     alert("user is not found")
-        // }
     }
-    updatSpeedDatingEvent= async(event)=>{
-
+    // updatSpeedDatingEvent = async (event) => {
+    // }
+    streamCreated_update(cb) {
+        const { speedDatingUser, userIndex } = this.state;
+        var newspeedDatingUser = _.map(speedDatingUser, (obj) => { return obj && obj.userId === cb.userId ? obj = cb : obj })
+        this.updateSingleStore(newspeedDatingUser)
     }
+    updateSingleStore = async (newspeedDatingUser) => {
+        console.log("updateSingleStore", newspeedDatingUser)
+        try {
+            AsyncStorage.setItem('speeddatingevent', JSON.stringify(newspeedDatingUser), () => {
+                AsyncStorage.getItem('speeddatingevent', (err, result) => {
+                    // console.log("updateSingleStore_speeddatingevent", JSON.parse(result))
+                    this.setState({
+                        speedDatingUser: JSON.parse(result)
 
+                    })
+                })
+
+            })
+        } catch (error) {
+            console.log("error", error)
+        }
+    }
     render() {
         const { isloading, userIndex, startEvent } = this.state;
         console.log("userIndex", userIndex)
         if (isloading) {
             return <Loading />
         }
-        if (!startEvent) {
-            return (<View style={[styles.container, { justifyContent:"center", alignItems: "center" }]}>
-                <TouchableOpacity onPress={() => this.setState({ startEvent: true })}>
-                    <Text>Start SpeedDating Event</Text>
-                </TouchableOpacity>
-            </View>
-            )
-        }
+        // if (!startEvent) {
+        //     return (<View style={[styles.container, { justifyContent: "center", alignItems: "center" }]}>
+        //         <TouchableOpacity onPress={() => this.setState({ startEvent: true })}>
+        //             <Text>Start SpeedDating Event</Text>
+        //         </TouchableOpacity>
+        //     </View>
+        //     )
+        // }
         return (
             <View style={styles.container}>
                 {/* <View style={{ flexWrap: "wrap", flexDirection: 'row' }}>
@@ -309,12 +309,13 @@ class SpeedDatingCall extends BaseFormComponent {
                 */}
                 <SpeeddatingliveCall
                     navigation={this.props.navigation}
-                    speedDateruserObj = {this.state.speedDatingUser[userIndex]}
+                    speedDateruserObj={this.state.speedDatingUser[userIndex]}
                     userId={this.state.speedDatingUser[userIndex].userId}
                     isloading={this.state.isloading}
                     callnextuserforspeedDating={this.callnextuserforspeedDating.bind(this)}
                     speeddatingfeedback={this.speeddatingfeedback.bind(this)}
-                    updatSpeedDatingEvent={this.updatSpeedDatingEvent.bind(this)}
+                    // updatSpeedDatingEvent={this.updatSpeedDatingEvent.bind(this)}
+                    streamCreated_update={this.streamCreated_update.bind(this)}
                 />
             </View>
         );

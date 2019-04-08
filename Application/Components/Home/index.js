@@ -538,7 +538,9 @@ class HomeScreen extends Component {
                     <Userlist
                         userList={this.state.userList}
                         is_loading={this.state.is_loading}
-                        navigation={this.props.navigation} />
+                        navigation={this.props.navigation} 
+                        onRefresh={this.sortAndFilterUsers.bind(this)}
+                        />
                 </View>
                 :
                 <ScrollView contentContainerStyle={{ flex: 1 }}>
