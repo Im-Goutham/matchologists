@@ -21,6 +21,7 @@ import {
     Alert
 } from 'react-native';
 import moment from "moment";
+import _ from 'lodash'
 import { OTSession } from 'opentok-react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import PopupMenu from '../Userprofile/options';
@@ -51,7 +52,7 @@ class Chatroom extends BaseFormComponent {
             token: '',
             text: '',
             messages: [],
-            savetoLocalStore: {},
+            savetoLocalStore: [],
             keyboardHeightAnim: new Animated.Value(0)
         };
         this.sessionEventHandlers = {
@@ -115,43 +116,97 @@ class Chatroom extends BaseFormComponent {
         Animated.spring(this.state.keyboardHeightAnim, { toValue: 0 }).start();
     }
     saveMessages = async (messages) => {
+        const { savetoLocalStore } = this.state;
         const { state } = this.props.navigation;
         let userid = state.params.userId;
         var fullName = state.params.fullName;
         var imageUrl = state.params.image ? state.params.image : '';
+        // console.log("savetoLocalStore", savetoLocalStore)
 
-        var msg_aar = [{
-            userId: userid,
-            username: fullName,
-            image: imageUrl,
-            isUserFirstchat: this.state.data.isFirst,
-            data: messages
-        }]
-        // console.log("saveMessages_msg_aar", msg_aar)
+        var isCurrentUser = _.findIndex(savetoLocalStore, (object, key) => {
+            return _.isEqual(object.currentUserId.toString(), this.props.data._id.toString());
+        });
+        // console.log('isCurrentUser', isCurrentUser);
+        if (isCurrentUser != -1) {
+            var isNewReceiver = _.findIndex(savetoLocalStore[isCurrentUser]['receiver'], (object, key) => {
+                return _.isEqual(object.userId, userid);
+            });
+            // console.log('isNewReceiver', isNewReceiver);
+            if (isNewReceiver == -1) {
+                if (!savetoLocalStore[isCurrentUser]['receiver']) {
+                    savetoLocalStore[isCurrentUser] = { receiver: [] };
+                }
+                savetoLocalStore[isCurrentUser]['receiver'].push({
+                    userId: userid,
+                    username: fullName,
+                    image: imageUrl,
+                    isUserFirstchat: this.state.data.isFirst,
+                    data: messages
+                });
+            } else {
+                savetoLocalStore[isCurrentUser]['receiver'][isNewReceiver] = {
+                    userId: userid,
+                    username: fullName,
+                    image: imageUrl,
+                    isUserFirstchat: this.state.data.isFirst,
+                    data: messages
+                };
+
+            }
+        } else {
+            // Not current user's chat history
+            console.log("Not current user's chat history");
+            savetoLocalStore.push({
+                currentUserId: this.props.data._id,
+                receiver: [{
+                    userId: userid,
+                    username: fullName,
+                    image: imageUrl,
+                    isUserFirstchat: this.state.data.isFirst,
+                    data: messages
+                }]
+            });
+        }
+        console.log('savetoLocalStore chatmessages', savetoLocalStore);
         try {
-            await AsyncStorage.setItem("chatmessages", JSON.stringify(msg_aar))
+            await AsyncStorage.setItem("chatmessages", JSON.stringify(savetoLocalStore))//, ()=>{
+            this.getMessages()
+            // AsyncStorage.getItem('chatmessages', (result)=>{
+            //     console.log("stored", JSON.parse(result))
+            // })
+            // })
         } catch (error) {
             console.log("error", error)
         }
+
+
     }
     getMessages = async () => {
         const { state } = this.props.navigation;
         let userid = state.params.userId;
-
         try {
             const value = await AsyncStorage.getItem('chatmessages');
             if (value !== null) {
                 var chatmessages = JSON.parse(value);
+                this.setState({
+                    savetoLocalStore: chatmessages
+                })
+                console.log("chatmessages", chatmessages)
 
                 for (var i = 0; i < chatmessages.length; i++) {
-                    if (chatmessages[i].userId === userid) {
-                        console.log("chatmessages_value", chatmessages[i])
+                    console.log("chatmessages_value", chatmessages[i])
+                    if (chatmessages[i].currentUserId && chatmessages[i].currentUserId.toString() == this.props.data._id.toString()) {
+                        var receiverIndex = _.findIndex(chatmessages[i]['receiver'], (object, key) => {
+                            return _.isEqual(object.userId, userid);
+                        });
+                        if (receiverIndex != -1) {
+                            this.setState({
+                                messages: chatmessages[i]['receiver'][receiverIndex] && chatmessages[i]['receiver'][receiverIndex].data ? chatmessages[i]['receiver'][receiverIndex].data : []
+                            })
+                        }
 
-                        this.setState({
-                            messages: chatmessages[i] && chatmessages[i].data ? chatmessages[i].data : [],
-                            savetoLocalStore: chatmessages[i]
-                        })
                     }
+
                 }
             }
         } catch (error) {
@@ -168,7 +223,7 @@ class Chatroom extends BaseFormComponent {
     componentDidMount() {
         const { state } = this.props.navigation;
         let userid = state.params.userId;
-        state.params.updateIsFirstStatus ? state.params.updateIsFirstStatus(userid) : undefined
+        // state.params.updateIsFirstStatus ? state.params.updateIsFirstStatus(userid) : undefined
         ApiRequest.getChatSessionId(this.props.token, userid, (resolve) => {
             console.log("componentDidMount_navigation", resolve)
             if (resolve && resolve.message) {
@@ -264,7 +319,7 @@ class Chatroom extends BaseFormComponent {
         const { navigate, state } = this.props.navigation;
         var Data = {
             "callReceiverId": state.params.userId,
-        }
+        };
         ApiRequest.sendNotificationForVideoCall(this.props.token, Data, resolve => {
             console.log("sendNotificationForVideoCall_resolve", resolve)
             if (resolve) {

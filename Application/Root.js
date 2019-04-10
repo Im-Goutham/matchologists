@@ -26,14 +26,12 @@ class Root extends React.Component {
         super(props);
         this.socket = io(URL);
         this.socket.on('connect', () => { });
-
         // this.socket.on("userConnected", data => {
         //     console.log("userConnected_socket", data)
         // })
         // this.socket.on("userDisconnected", data => {
         //     console.log("userDisconnected_socket", data)
         // })
-
         this.socket.on("speedDatingEventStarted", data => {
             console.log("userConnect_speedDatingEventStarted", data)
             if (data && data.speedDatingEventDayId) {
@@ -42,7 +40,7 @@ class Root extends React.Component {
                     routeName: 'speeddatinglivecall',
                     params: { speedDatingEventDayId: data.speedDatingEventDayId }
                 });
-    
+
             }
         }
         );
@@ -108,7 +106,7 @@ class Root extends React.Component {
     }
     navigate(url) {
         console.log("navigateL_event", url)
-        if(!url) return
+        if (!url) return
         const route = url.replace(/.*?:\/\//g, '');
         const id = route.match(/\/([^\/]+)\/?$/)[1];
         const routeName = route.split('/')[0];

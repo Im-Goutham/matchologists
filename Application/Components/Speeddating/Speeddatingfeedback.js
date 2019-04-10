@@ -3,6 +3,7 @@ import {
     KeyboardAvoidingView,
     LayoutAnimation,
     Platform,
+    Alert,
     StyleSheet,
     StatusBar,
     SafeAreaView,
@@ -15,8 +16,10 @@ import {
     ActivityIndicator,
     Picker
 } from "react-native";
+import i18n from 'react-native-i18n'
 import { connect } from 'react-redux'
 import LinearGradient from 'react-native-linear-gradient';
+import TimerCountdown from "react-native-timer-countdown";
 import _ from 'lodash';
 import BaseFormComponent from '../Common/BaseFormComponent'
 import * as global from '../../../global.json';
@@ -30,10 +33,75 @@ let IS_ANDROID = Platform.OS === 'android';
 if (Platform.OS === 'android') UIManager.setLayoutAnimationEnabledExperimental(true)
 
 var data = {};
+
+class Feedback extends Component {
+    setTimePassed() {
+        const { goBack, state } = this.props.navigation;
+        Alert.alert(
+            i18n.t('appname'),
+            i18n.t('feedback_attention_alert_Label'), [
+                { text: 'OK', onPress: () => goBack() }//this.props.notFeedbackGive() },
+            ],
+            { cancelable: false },
+        );
+    }
+    render() {
+        return (
+            <SafeAreaView style={{ flex: 1, backgroundColor: "rgba(255,255,255,100)" }}>
+                <StatusBar
+                    backgroundColor={Platform.OS === 'android' ? "#fff" : undefined}
+                    barStyle="dark-content" />
+                <View style={{ flexDirection: "row", justifyContent: "space-between", height: IS_ANDROID ? 54 : 69, alignItems: "flex-end", backgroundColor: "#FFF" }}>
+                    <TouchableOpacity onPress={() => goBack()} style={styles.backbuttonContainer}>
+                        <Image
+                            source={require('../../images/icons/backbutton_gradient.png')}
+                            style={{ width: 25, height: 17 }}
+                            resizeMethod="resize"
+                            resizeMode="contain" />
+                    </TouchableOpacity>
+                    <View style={{ justifyContent: "center", width: '60%', alignItems: "center" }}>
+                        <TimerCountdown
+                            initialMilliseconds={1000 * 60}
+                            onTick={(milliseconds) => console.log("tick", milliseconds)}
+                            onExpire={() => this.setTimePassed()}
+                            formatMilliseconds={(milliseconds) => {
+                                const remainingSec = Math.round(milliseconds / 1000);
+                                const seconds = parseInt((remainingSec % 60).toString(), 10);
+                                const minutes = parseInt(((remainingSec / 60) % 60).toString(), 10);
+                                const hours = parseInt((remainingSec / 3600).toString(), 10);
+                                const s = seconds < 10 ? '0' + seconds : seconds;
+                                const m = minutes < 10 ? '0' + minutes : minutes;
+                                let h = hours < 10 ? '0' + hours : hours;
+                                h = h === '00' ? '' : h + ':';
+                                return h + m + ':' + s;
+                            }}
+                            allowFontScaling={true}
+                            style={{
+                                color: '#313138',
+                                fontSize: 30,
+                                fontFamily: 'Avenir-Heavy',
+                                paddingVertical: 5
+                            }}
+                        />
+                    </View>
+                    <View style={styles.backbuttonContainer} />
+                </View>
+                <Speeddatingfeedback 
+                {...this.props}/>
+            </SafeAreaView>
+
+        )
+    }
+}
+
+
+
+
 class Speeddatingfeedback extends BaseFormComponent {
     constructor(props) {
         super(props);
         this.state = {
+            countDownTimer: 60,
             questionData: [],
             questionindex: 0,
             isloading: true,
@@ -45,10 +113,12 @@ class Speeddatingfeedback extends BaseFormComponent {
         }
     }
     componentDidMount = () => {
+        // setTimeout(() => {
+        //     this.setTimePassed();
+        // }, 60000);
+
         const { state } = this.props.navigation
         var token = this.props.token;
-        // var data = state.params.data;
-        // state.params.eventNamepoint
         Apirequest.getFeedbackQuestions(token, state.params.eventNamepoint, resolve => {
             console.log("getFeedbackQuestions_resolve", resolve)
             if (resolve.data && resolve.data.questionAnswers) {
@@ -59,7 +129,6 @@ class Speeddatingfeedback extends BaseFormComponent {
             }
         }, reject => {
             console.log("getFeedbackQuestions_reject", reject)
-
             this.setState({
                 questionData: [],
                 isloading: false
@@ -67,7 +136,6 @@ class Speeddatingfeedback extends BaseFormComponent {
             console.log(reject)
         })
     }
-
     updateNotificationStatus = () => {
         const { questionData, questionindex } = this.state;
         const { state, goBack } = this.props.navigation
@@ -112,10 +180,10 @@ class Speeddatingfeedback extends BaseFormComponent {
         const { questionData, questionindex } = this.state;
         const { state } = this.props.navigation
         var usersData = state.params.data;
-console.log("usersData======>", usersData)
+        console.log("usersData======>", usersData)
         let currentQuestion = questionData[questionindex];
         await _.map(currentQuestion.answers, (answer) => { return answer.selected = false });
-        data.feedbackReceiver = usersData && usersData.receiverId ? usersData.receiverId : usersData.userId ;
+        data.feedbackReceiver = usersData && usersData.receiverId ? usersData.receiverId : usersData.userId;
         data.feedbackType = currentQuestion._id.category;
         data.questionId = currentQuestion._id._id;
         data.answerId = answer._id;
@@ -192,7 +260,7 @@ console.log("usersData======>", usersData)
         _.map(currentQuestion.answers, (answer) => { return answer.selected = false, answer.dynamicvalue = ''; });
         answer && answer.selected ? answer.selected = false : answer ? answer.selected = true : undefined;
         answer && answer.selected ? answer.dynamicvalue = datechoosen : answer.dynamicvalue = 2
-        data.feedbackReceiver = usersData && usersData.receiverId ? usersData.receiverId : usersData.userId ;
+        data.feedbackReceiver = usersData && usersData.receiverId ? usersData.receiverId : usersData.userId;
         data.feedbackType = currentQuestion._id.category;
         data.questionId = currentQuestion._id._id;
         data.answerId = answer._id;
@@ -217,17 +285,17 @@ console.log("usersData======>", usersData)
             console.log("currentQuestion_isPositive", currentQuestion._id.isPositive)
             console.log("currentQuestion_isNegative", currentQuestion._id.isNegative)
             if (state.params.eventNamepoint === 'chatfeedback') {
-                data={}
+                data = {}
                 this.changeChatStatus()
                 return
             }
             if (currentQuestion && currentQuestion._id && currentQuestion._id.isPositive) {
                 console.log("going to positive")
-                data={}
+                data = {}
                 this.updateNotificationStatus()
             }
             else if (currentQuestion && currentQuestion._id && currentQuestion._id.isNegative) {
-                data={}
+                data = {}
                 console.log("going to negative")
                 this.updateNotificationStatus()
             }
@@ -244,7 +312,7 @@ console.log("usersData======>", usersData)
             questionData: this.state.questionData
         })
     }
-    
+
     getmyvalue(available) {
         this.setState({
             selectedDate: available
@@ -263,53 +331,77 @@ console.log("usersData======>", usersData)
         var invitationname = state.params.invitationname;
 
         return (
-            <>
-                <SafeAreaView style={{ flex: 1, backgroundColor: "rgba(255,255,255,100)" }}>
-                    <StatusBar
-                        backgroundColor={Platform.OS === 'android' ? "#fff" : undefined}
-                        barStyle="dark-content" />
-                    <View style={{ flexDirection: "row", justifyContent: "space-between", height: IS_ANDROID ? 54 : 69, alignItems: "flex-end", backgroundColor: "#FFF" }}>
-                        <TouchableOpacity onPress={() => goBack()} style={styles.backbuttonContainer}>
-                            <Image
-                                source={require('../../images/icons/backbutton_gradient.png')}
-                                style={{ width: 25, height: 17 }}
-                                resizeMethod="resize"
-                                resizeMode="contain" />
-                        </TouchableOpacity>
-                    </View>
-                    <ScrollView contentContainerStyle={{ paddingHorizontal: 16 }} nestedScrollEnabled={true} >
-                        <View style={{}}>
-                            <View style={styles.questionBox}>
-                                {/* <Text style={styles.question}>{currentQuestion._id.question}</Text> */}
-                                <Text style={styles.question}>{_.replace(currentQuestion._id.question, new RegExp("{{memberName}}"), invitationname)}</Text>
+            // <SafeAreaView style={{ flex: 1, backgroundColor: "rgba(255,255,255,100)" }}>
+            //     <StatusBar
+            //         backgroundColor={Platform.OS === 'android' ? "#fff" : undefined}
+            //         barStyle="dark-content" />
+            //     <View style={{ flexDirection: "row", justifyContent: "space-between", height: IS_ANDROID ? 54 : 69, alignItems: "flex-end", backgroundColor: "#FFF" }}>
+            //         <TouchableOpacity onPress={() => goBack()} style={styles.backbuttonContainer}>
+            //             <Image
+            //                 source={require('../../images/icons/backbutton_gradient.png')}
+            //                 style={{ width: 25, height: 17 }}
+            //                 resizeMethod="resize"
+            //                 resizeMode="contain" />
+            //         </TouchableOpacity>
+            //         <View style={{ justifyContent: "center", width: '60%', alignItems: "center" }}>
+            //             <TimerCountdown
+            //                 initialMilliseconds={1000 * 60}
+            //                 onTick={(milliseconds) => console.log("tick", milliseconds)}
+            //                 onExpire={() => this.setTimePassed()}
+            //                 formatMilliseconds={(milliseconds) => {
+            //                     const remainingSec = Math.round(milliseconds / 1000);
+            //                     const seconds = parseInt((remainingSec % 60).toString(), 10);
+            //                     const minutes = parseInt(((remainingSec / 60) % 60).toString(), 10);
+            //                     const hours = parseInt((remainingSec / 3600).toString(), 10);
+            //                     const s = seconds < 10 ? '0' + seconds : seconds;
+            //                     const m = minutes < 10 ? '0' + minutes : minutes;
+            //                     let h = hours < 10 ? '0' + hours : hours;
+            //                     h = h === '00' ? '' : h + ':';
+            //                     return h + m + ':' + s;
+            //                 }}
+            //                 allowFontScaling={true}
+            //                 style={{
+            //                     color: '#313138',
+            //                     fontSize: 30,
+            //                     fontFamily: 'Avenir-Heavy',
+            //                     paddingVertical: 5
+            //                 }}
+            //             />
+            //         </View>
+            //         <View style={styles.backbuttonContainer} />
+            //     </View>
+                <ScrollView contentContainerStyle={{ paddingHorizontal: 16 }} nestedScrollEnabled={true} >
+                    <View style={{}}>
+                        <View style={styles.questionBox}>
+                            {/* <Text style={styles.question}>{currentQuestion._id.question}</Text> */}
+                            <Text style={styles.question}>{_.replace(currentQuestion._id.question, new RegExp("{{memberName}}"), invitationname)}</Text>
 
-                            </View>
                         </View>
-                        {
-                            currentQuestion._id.questionType === "radio" ?
-                                this.renderRadioOption(availableanswer)
-                                : currentQuestion._id.questionType === "checkbox" ?
-                                    this.renderMultipleOption(availableanswer) : undefined
-                        }
-                        {
-                            this.state.saveanswer ?
-                                <LinearGradient
-                                    colors={[global.gradientprimary, global.gradientsecondry]}
-                                    start={{ x: 0, y: 1 }}
-                                    end={{ x: 1, y: 1 }}
-                                    style={{ borderRadius: 5, marginBottom: 10, marginTop: 16 }}>
-                                    <TouchableOpacity
-                                        style={{ height: 50, justifyContent: "center", alignItems: "center", }}
-                                        disabled={false}
-                                        onPress={this.saveUserFeedback.bind(this, availableanswer)} >
-                                        <Text style={{ color: "#fff", fontSize: 17, fontFamily: 'Avenir-Heavy' }}>{"Save"}</Text>
-                                    </TouchableOpacity>
-                                </LinearGradient>
-                                : undefined
-                        }
-                    </ScrollView>
-                </SafeAreaView>
-            </>
+                    </View>
+                    {
+                        currentQuestion._id.questionType === "radio" ?
+                            this.renderRadioOption(availableanswer)
+                            : currentQuestion._id.questionType === "checkbox" ?
+                                this.renderMultipleOption(availableanswer) : undefined
+                    }
+                    {
+                        this.state.saveanswer ?
+                            <LinearGradient
+                                colors={[global.gradientprimary, global.gradientsecondry]}
+                                start={{ x: 0, y: 1 }}
+                                end={{ x: 1, y: 1 }}
+                                style={{ borderRadius: 5, marginBottom: 10, marginTop: 16 }}>
+                                <TouchableOpacity
+                                    style={{ height: 50, justifyContent: "center", alignItems: "center", }}
+                                    disabled={false}
+                                    onPress={this.saveUserFeedback.bind(this, availableanswer)} >
+                                    <Text style={{ color: "#fff", fontSize: 17, fontFamily: 'Avenir-Heavy' }}>{"Save"}</Text>
+                                </TouchableOpacity>
+                            </LinearGradient>
+                            : undefined
+                    }
+                </ScrollView>
+            // </SafeAreaView>
         )
     }
 }
@@ -638,4 +730,5 @@ mapStateToProps = (state) => {
         token: state.auth.token
     }
 }
-export default connect(mapStateToProps)(Speeddatingfeedback);
+// export default connect(mapStateToProps)(Speeddatingfeedback);
+export default connect(mapStateToProps)(Feedback);

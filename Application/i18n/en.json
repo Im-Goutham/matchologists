@@ -96,6 +96,7 @@
     "allopenLabel": "All open",
     "speedDatingCalllabel" : "Start SpeedDating Event",
     "passwordhintText": "Password should contain least 1 uppercase 1 lowercase minimum 7 maximum 12 digit",
+    "feedback_attention_alert_Label": "Attention! You did not answer your feedback questions for one or more daters at your speed dating event. This is your warning. Failure to answer questions again will automatically suspend your speed dating privileges for 1 week. A second suspension will result in a longer 2-4 week suspension. All users are required to give their feedback, your feedback is important and can will help us support other users development and self growth. Thank you so much for your support",
     "validation": {
         "emaillabel":"Email is required", 
         "emailtitle": "Please provide an email address",

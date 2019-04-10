@@ -189,6 +189,7 @@ class UserProfile extends BaseFormComponent {
         ApiRequest.sendFriendRequest(this.props.token, state.params.userId, (resolve) => {
             console.log("resolve", resolve)
             this.state.datastores.isFriend = false;
+            this.state.datastores.isFriendRequestPending = true
             this.setState({
                 datastores: this.state.datastores
             })
@@ -285,7 +286,7 @@ class UserProfile extends BaseFormComponent {
                         </View>
                         <View style={styles.footer}>
                             {
-                                datastores.isFriend ?
+                               datastores &&  datastores.isFriend ?
                                     <>
                                         <TouchableOpacity style={styles.footerButtons} onPress={() => this.addToFavourite()}>
                                             <Image
@@ -309,14 +310,17 @@ class UserProfile extends BaseFormComponent {
                                     </>
                                     :
                                     <>
-                                        <TouchableOpacity style={styles.footerButtons} onPress={() => this.pokeUser()}>
+                                        <TouchableOpacity style={styles.footerButtons} onPress={() => this.sendFriendRequest()}>
                                             <Image
                                                 source={require('../../images/icons/smily.png')}
                                                 resizeMethod="resize"
                                                 resizeMode="contain"
                                                 style={styles.bottomimageButton} />
                                         </TouchableOpacity>
-                                        <TouchableOpacity disabled={datastores.isFriendRequestPending ? false : false} style={[{ opacity: datastores.isFriendRequestPending ? 0.5 : 1 }, styles.footerButtons]} onPress={() => this.sendFriendRequest()}>
+                                        <TouchableOpacity 
+                                        disabled={datastores.isFriendRequestPending ? true : false} 
+                                        style={[{ opacity: datastores.isFriendRequestPending ? 0.5 : 1 }, styles.footerButtons]} 
+                                        onPress={() => this.sendFriendRequest()}>
                                             <Image
                                                 source={require('../../images/icons/new-user.png')}
                                                 resizeMethod="resize"
@@ -326,6 +330,9 @@ class UserProfile extends BaseFormComponent {
                                     </>
                             }
                         </View>
+                        {
+                            datastores && datastores.isFriendRequestPending ? <Text style={[{ alignSelf:"center"}, styles.answercontains]}> Invitation pending</Text> : undefined
+                        }
                     </ScrollView>
                 </View>
                 <Modal

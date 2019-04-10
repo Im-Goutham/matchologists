@@ -62,18 +62,18 @@ let IS_ANDROID = Platform.OS === 'android',
             "label": "setting_label",
             "action_Page": "setting"
         },
-        {
-            "label": "webinar_label",
-            "action_Page": ""
-        },
+        // {
+        //     "label": "webinar_label",
+        //     "action_Page": ""
+        // },
         {
             "label": "editprofilelabel",
             "action_Page": "updateinformation"
         },
-        {
-            "label": "speedDatingCalllabel",
-            "action_Page": "speeddating"
-        },
+        // {
+        //     "label": "speedDatingCalllabel",
+        //     "action_Page": "speeddating"
+        // },
         {
             "label": "aboutuslabel",
             "action_Page": "aboutus"

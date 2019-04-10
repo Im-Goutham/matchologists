@@ -98,7 +98,6 @@ export default class AllEventsList extends BaseFormComponent {
                         onRefresh={this.props.onRefresh}
                         />
                     }
-    
                 />
                 {
                     this.state.invitefriendView ?
@@ -177,20 +176,26 @@ export default class AllEventsList extends BaseFormComponent {
             console.log("getMatchPercentage_reject", reject)
         })
     }
+    // getTimeFormat(date) {
+    //     var date1 = new Date(date);
+    //     var date2 = new Date();
+    //     var timeDiff = Math.abs(date2.getTime() - date1.getTime());
+    //     var diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
+    //     // alert(diffDays);
+    //     if (diffDays >= 1) {
+    //         console.log("date=========>", date1 );
+    //         console.log("moment=========>", moment(date1).format('hh:mm A') );
+    //         return diffDays + " " + "day ago";
+    //     } else {
+    //         return Math.ceil(timeDiff / (1000 * 3600)) + " " + "Hours Ago"
+    //     }
+    // }
     getTimeFormat(date) {
         var date1 = new Date(date);
         var date2 = new Date();
-        var timeDiff = Math.abs(date2.getTime() - date1.getTime());
-        var diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
-        // alert(diffDays);
-        if (diffDays >= 1) {
-            console.log("date=========>", date1 );
-            console.log("moment=========>", moment(date1).format('hh:mm A') );
-            return diffDays + " " + "day ago";
-        } else {
-            return Math.ceil(timeDiff / (1000 * 3600)) + " " + "Hours Ago"
-        }
+            return moment(date1).from(moment(date2));
     }
+
     speedDatingRequest =(item)=> {
         console.log("speedDatingRequest_item", item)
         return <>
@@ -216,7 +221,7 @@ export default class AllEventsList extends BaseFormComponent {
                         <TouchableOpacity
                             // disabled={item.isRsvped ? true : false}
                             style={[{ flex: 1, backgroundColor: 'white', borderRadius: 15, justifyContent: "center", alignItems: "center" }]}
-                            onPress={() =>  this.confirmJoinFroRsvp(item)}>
+                            onPress={() =>console.log(item)}>
                             <Text style={[styles.answerTxt, { color: '#313138', fontFamily: 'Avenir-Heavy' }]}> Not Now</Text>
                         </TouchableOpacity>
                     </LinearGradient>

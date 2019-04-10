@@ -142,6 +142,18 @@ class SpeeddatingliveCall extends BaseFormComponent {
             console.log("reject", reject)
         })
     }
+    exitFromSpeedDatingEvent(){
+        var Data = {
+            "speedDatingEventDayId": this.props.speedDatingEventDayId
+        }
+        Apirequest.exitFromSpeedDatingEvent(this.props.token, Data, resolve => {
+            if (resolve) {
+                this.videocallisend()
+            }
+        }, reject => {
+            console.log("exitFromSpeedDatingEvent_reject", reject)
+        })
+    }
     render() {
         const { goBack, state } = this.props.navigation;
         const { sessionId, token, loading } = this.state;
@@ -180,7 +192,18 @@ class SpeeddatingliveCall extends BaseFormComponent {
                     />
                 </TouchableOpacity>
                 <View style={styles.callutility}>
-                    <View style={styles.commonButton} />
+                    <View style={styles.commonButton}>
+                    <TouchableOpacity
+                                onPress={() =>this.exitFromSpeedDatingEvent()}
+                                style={{ width: 40, height: 40, justifyContent: "center", alignItems: "center" }}>
+                                <Image
+                                    source={require('../../images/icons/exitIcon.png')}
+                                    style={{ width: 40, height: 40 }}
+                                    resizeMode="contain"
+                                    resizeMethod="resize"
+                                />
+                            </TouchableOpacity>
+                    </View>
                     <View style={styles.commonButton}>
                         {
                             <Timer

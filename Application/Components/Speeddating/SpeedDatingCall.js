@@ -13,10 +13,11 @@ import {
 import io from 'socket.io-client'; // 2.0.4
 import TimerMixin from 'react-timer-mixin';
 import _ from 'lodash';
-import { connect } from 'react-redux'
+import { connect } from 'react-redux';
 import BaseFormComponent from '../Common/BaseFormComponent';
 import i18n from 'react-native-i18n';
-import Loading from '../Loading'
+import moment from 'moment'
+import Loading from '../Loading';
 import SpeeddatingliveCall from "../Chatroom/SpeeddatingliveCall";
 import Apirequest from '../Common/Apirequest';
 import * as global from '../../../global.json';
@@ -73,8 +74,8 @@ class SpeedDatingCall extends BaseFormComponent {
     speedDatingUserget = async () => {
         const { state } = this.props.navigation;
         console.log("speedDatingUserget_state", state)
-        var speedDatingEventDayId = state && state.params && state.params.speedDatingEventDayId ? state.params.speedDatingEventDayId : ''
-        // var speedDatingEventDayId = "5ca19973992b010533f3cd91";
+        // var speedDatingEventDayId = state && state.params && state.params.speedDatingEventDayId ? state.params.speedDatingEventDayId : ''
+        var speedDatingEventDayId = "5ca19973992b010533f3cd91";
         console.log("speedDatingUserget_speedDatingEventDayId", speedDatingEventDayId)
         var speeddatingevent,
             heighlightedUserIndex;
@@ -111,10 +112,12 @@ class SpeedDatingCall extends BaseFormComponent {
     speedDatinguserRemove = async (callback) => {
         let keys = ['speeddatingevent', 'heighlightedUserIndex'];
         try {
-            AsyncStorage.multiRemove(keys, (error) => {
+           var removed =  AsyncStorage.multiRemove(keys, (error) => {
                 console.log("error", error)
             });
-            callback(success)
+            if(removed){
+                callback("success")
+            }
             return true;
         }
         catch (exception) {
@@ -177,8 +180,8 @@ class SpeedDatingCall extends BaseFormComponent {
     sendNotificationForVideoCall(speedDatingUser, userIndex) {
         const { state } = this.props.navigation;
         console.log("sendNotificationForVideoCall_state", state)
-        var speedDatingEventDayId = state && state.params && state.params.speedDatingEventDayId ? state.params.speedDatingEventDayId : ''
-        // var speedDatingEventDayId = "5ca19973992b010533f3cd91";
+        // var speedDatingEventDayId = state && state.params && state.params.speedDatingEventDayId ? state.params.speedDatingEventDayId : ''
+        var speedDatingEventDayId = "5ca19973992b010533f3cd91";
         // const { userIndex } = this.state;
         console.log("speedDatingUser", speedDatingUser)
         console.log("userIndex", userIndex)
@@ -220,8 +223,13 @@ class SpeedDatingCall extends BaseFormComponent {
             data: dataItems,
             token: this.props.token,
             invitationname: dataItems.fullName,
-            eventNamepoint: 'speeddatingfeedback'
+            eventNamepoint: 'speeddatingfeedback',
+            notFeedbackGive: this.notFeedbackGive.bind(this)
+
         })
+    }
+    notFeedbackGive(){
+
     }
     callnextuserforspeedDating = () => {
         const { state, navigate } = this.props.navigation;
@@ -238,7 +246,10 @@ class SpeedDatingCall extends BaseFormComponent {
         })
         var nextUsername = speedDatingUser && speedDatingUser[speedDaterIndex + 1] ? speedDatingUser[speedDaterIndex + 1].fullName : '';
         (!nextUsername) ?
-            navigate('homePage')
+            this.speedDatinguserRemove(cb => {
+                console.log("cb", cb)
+                navigate('homePage')
+            })
             :
             Alert.alert(
                 i18n.t('appname'),
@@ -282,6 +293,9 @@ class SpeedDatingCall extends BaseFormComponent {
     }
     render() {
         const { isloading, userIndex, startEvent } = this.state;
+                // var speedDatingEventDayId = state && state.params && state.params.speedDatingEventDayId ? state.params.speedDatingEventDayId : ''
+                var speedDatingEventDayId = "5ca19973992b010533f3cd91";
+
         console.log("userIndex", userIndex)
         if (isloading) {
             return <Loading />
@@ -316,6 +330,7 @@ class SpeedDatingCall extends BaseFormComponent {
                     speeddatingfeedback={this.speeddatingfeedback.bind(this)}
                     // updatSpeedDatingEvent={this.updatSpeedDatingEvent.bind(this)}
                     streamCreated_update={this.streamCreated_update.bind(this)}
+                    speedDatingEventDayId = {speedDatingEventDayId}
                 />
             </View>
         );

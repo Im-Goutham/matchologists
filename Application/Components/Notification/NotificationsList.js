@@ -10,6 +10,7 @@ import {
     RefreshControl,
     TouchableOpacity
 } from 'react-native';
+import moment from 'moment'
 import Apirequest from '../Common/Apirequest';
 import Loading from '../Loading/index';
 import LinearGradient from 'react-native-linear-gradient';
@@ -71,17 +72,17 @@ export default class NotificationsList extends Component {
         if (isloading) {
             return <Loading />
         }
-        if (!notificationData.length) {
-            return <>
-                <Text style={{ alignSelf: "center", marginTop: 50 }}> No Notification found </Text>
-                <TouchableOpacity onPress={() => this.refreshingList()}
-                    style={{ width: 30, height: 30, alignSelf: "center", marginTop: 50 }}>
-                    <Image source={require('../../images/icons/refresh_grey.png')} style={{ width: '100%', height: '100%' }} resizeMethod="resize" resizeMode="contain" />
-                </TouchableOpacity>
-                {/* <Text
-                    style={{ alignSelf: "center", marginTop: 50 }} onPress={() => this.props.onRefresh()} > refresh List </Text> */}
-            </>
-        }
+        // if (!notificationData.length) {
+        //     return <>
+        //         <Text style={{ alignSelf: "center", marginTop: 50 }}> No Notification found </Text>
+        //         <TouchableOpacity onPress={() => this.refreshingList()}
+        //             style={{ width: 30, height: 30, alignSelf: "center", marginTop: 50 }}>
+        //             <Image source={require('../../images/icons/refresh_grey.png')} style={{ width: '100%', height: '100%' }} resizeMethod="resize" resizeMode="contain" />
+        //         </TouchableOpacity>
+        //         {/* <Text
+        //             style={{ alignSelf: "center", marginTop: 50 }} onPress={() => this.props.onRefresh()} > refresh List </Text> */}
+        //     </>
+        // }
         return (
             <FlatList
                 contentContainerStyle={styles.container}
@@ -103,14 +104,17 @@ export default class NotificationsList extends Component {
     getTimeFormat(date) {
         var date1 = new Date(date);
         var date2 = new Date();
-        var timeDiff = Math.abs(date2.getTime() - date1.getTime());
-        var diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
+        // var timeDiff = Math.abs(date2.getTime() - date1.getTime());
+        // var diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
         // alert(diffDays);
-        if (diffDays >= 1) {
-            return diffDays + " " + "day ago";
-        } else {
-            return Math.ceil(timeDiff / (1000 * 3600)) + " " + "Hours Ago"
-        }
+        // console.log("date1",date1 )
+        // console.log("date2", date2 )
+        // console.log("getTimeFormat", moment(date1).from(moment(date2)) )
+        // if (diffDays >= 1) {
+            return moment(date1).from(moment(date2));
+        // } else {
+        //     return Math.ceil(timeDiff / (1000 * 3600)) + " " + "Hours Ago"
+        // }
     }
     speedDatingRequest(item) {
         console.log("speedDatingRequest_item", item)
@@ -297,20 +301,20 @@ export default class NotificationsList extends Component {
         )
     }
     showtime(item) {
-        currenttime = new Date();
-        notification_time = new Date(item.createdAt)
-        var timeDiff = Math.abs(currenttime.getTime() - notification_time.getTime());
-        var diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
+        // currenttime = new Date();
+        // notification_time = new Date(item.createdAt)
+        // var timeDiff = Math.abs(currenttime.getTime() - notification_time.getTime());
+        // var diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
         return (
             <>
                 {
-                    diffDays > 1 ?
-                        <Text style={{ alignSelf: "flex-end" }}> {diffDays} days ago</Text>
-                        :
-                        (currenttime.getHours() - notification_time.getHours()) <= 0 ?
-                            <Text style={{ alignSelf: "flex-end" }}> {currenttime.getMinutes() - notification_time.getMinutes()} min ago</Text>
-                            :
-                            <Text style={{ alignSelf: "flex-end" }}> {currenttime.getHours() - notification_time.getHours()} hour ago</Text>
+                    // diffDays > 1 ?
+                    //     <Text style={{ alignSelf: "flex-end" }}> {diffDays} days ago</Text>
+                    //     :
+                    //     (currenttime.getHours() - notification_time.getHours()) <= 0 ?
+                    //         <Text style={{ alignSelf: "flex-end" }}> {currenttime.getMinutes() - notification_time.getMinutes()} min ago</Text>
+                            // :
+                            <Text style={{ alignSelf: "flex-end" }}> {this.getTimeFormat(item.createdAt)}</Text>
                 }
             </>
         )
@@ -351,6 +355,7 @@ export default class NotificationsList extends Component {
                     onPress={() => this.props.navigate('speeddatinglivecall', {
                         speedDatingEventDayId: item && item.eventInfo && item.eventInfo.eventDayId ? item.eventInfo.eventDayId : ''
                     })}>
+
                         <View style={{ flex: 2, justifyContent: "center", alignItems: "center", backgroundColor: "transparent" }}>
                             <Image source={item.uri ? { uri: item.uri } : require('../../images/applogo.png')} style={{ width: 60, height: 60, borderRadius: 30 }} />
                         </View>

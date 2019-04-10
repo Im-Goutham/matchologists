@@ -125,7 +125,7 @@ class HomeScreen extends Component {
             console.log('filterlocalstorage', filterlocalstorage);
             this.setState({
                 zipcode: filterlocalstorage.zipcode ? filterlocalstorage.zipcode : '',
-                profilematch: filterlocalstorage.matchPercentage ? [parseInt(filterlocalstorage.matchPercentage)] : [0],
+                profilematch: filterlocalstorage.compatibilityPercentage ? [parseInt(filterlocalstorage.compatibilityPercentage)] : [0],
                 agerange: filterlocalstorage.age ? [filterlocalstorage.age.min, filterlocalstorage.age.max] : [18, 100],
                 selectedquestions: filterlocalstorage.filterQuestions ? filterlocalstorage.filterQuestions : [],
                 today: filterlocalstorage.lastLogin ? filterlocalstorage.lastLogin.today : false,
@@ -808,7 +808,7 @@ class HomeScreen extends Component {
     //     })
     // }
     changeProfilematch(values) {
-        data.matchPercentage = parseInt(values.toString())
+        data.compatibilityPercentage = parseInt(values.toString())
         console.log("i am changing", values)
         this.setState({
             profilematch: values

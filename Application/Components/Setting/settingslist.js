@@ -16,6 +16,7 @@ import {
 } from "react-native";
 import CustomSlider from 'react-native-custom-slider';
 import LinearGradient from 'react-native-linear-gradient';
+import moment from 'moment'
 import _ from 'lodash';
 import i18n from 'react-native-i18n'
 import CustomButton from '../CustomButton';
@@ -56,7 +57,7 @@ export default class SettingsList extends Component {
             daysArray: daysArray,
             speeddatingsettingsmodal: false,
             fromTime_showPicker: false,
-            allopen: false,
+            allOpen: false,
             fromTime: '',
             toTime: ''
         };
@@ -64,12 +65,9 @@ export default class SettingsList extends Component {
     saveUserSettings = async (success) => {
         var token = this.props.token;
         await AsyncStorage.setItem("localsetting", JSON.stringify(data))
-
         await AsyncStorage.setItem("localfilter", JSON.stringify(localfilter))
-
         var postData = Object.assign({}, data, localfilter)
-        console.log("saveUserSettings_data", postData )
-
+        console.log("saveUserSettings_data", postData)
         Apirequest.saveUserSettings(token, postData, resolve => {
             if (success) {
                 return success({ data: "user Setting Saved" })
@@ -111,30 +109,42 @@ export default class SettingsList extends Component {
                 data = Data
                 console.log("data.......", Data)
                 console.log("filterData.......", filterData)
-                const newArr = Data && Data.speeddatingSettings && Data.speeddatingSettings.timeSlot && Array.isArray(Data.speeddatingSettings.timeSlot) ? Data.speeddatingSettings.timeSlot.map(el => ({ ...el, ...{ isSelected: true } })) : [];
-                let result = _.map(newArr, object => { return _.omit(object, ['fromTime', 'toTime']) })
-                var mergedresult = _.unionBy(result, daysArray, "day");
+                console.log("speeddatingSettings", Data && Data.speeddatingSettings)
+                if (Data && Data.speeddatingSettings && Data.speeddatingSettings) {
 
+                    if (!Data.speeddatingSettings.allOpen) {
+                        daysArray.map((day) => {
+                            let isExist = _.filter(Data.speeddatingSettings, (timeslot) => {
+                                return _.isEqual(timeslot.day, day.day.toLowerCase());
+                            });
+                            if (isExist && Array.isArray(isExist) && isExist.length) {
+                                day['isSelected'] = true;
+                            }
+                        });
+                    }
+                    console.log("daysArray", daysArray)
+                }
                 this.setState({
                     compatibilityPercentage: filterData && filterData.compatibilityPercentage ? [parseInt(filterData.compatibilityPercentage)] : [0],
                     newmatch: Data && Data.newMatchNotification ? Data.newMatchNotification : false,
                     newmsg: Data && Data.newMessageNotification ? Data.newMessageNotification : false,
                     newwink: Data && Data.newWinkNotification ? Data.newWinkNotification : false,
                     privateAccount: Data && Data.isAccountPrivate ? Data.isAccountPrivate : false,
-                    daysArray: Data && Data.speeddatingSettings ? mergedresult : daysArray,
-                    dateselect: Data && Data.speeddatingSettings.length ? true : false,
-                    allopen: Data && Data.allOpen ? Data.allOpen : false,
-                    fromTime: Data && Data.speeddatingSettings.length ? this.generateTimeString(Data.speeddatingSettings[0].fromTime)
+                    daysArray: daysArray,
+                    dateselect: Data && Data.speeddatingSettings && Data.speeddatingSettings.length ? true : false,
+
+                    allOpen: Data && Data.speeddatingSettings && Data.speeddatingSettings.allOpen ? Data.speeddatingSettings.allOpen : false,
+
+                    fromTime: Data && Data.speeddatingSettings && Data.speeddatingSettings.length ? this.generateTimeString(Data.speeddatingSettings[0].fromTime)
                         // Data.speeddatingSettings[0].fromTime 
                         : '',
-                    toTime: Data && Data.speeddatingSettings.length ? this.generateTimeString(Data.speeddatingSettings[0].toTime)
+                    toTime: Data && Data.speeddatingSettings && Data.speeddatingSettings.length ? this.generateTimeString(Data.speeddatingSettings[0].toTime)
                         // Data.speeddatingSettings[0].toTime 
                         : ''
                 })
-                console.log("getlocalsetting===========>", mergedresult)
             }
         } catch (error) {
-            console.log("error", error)
+            console.log("getlocalsetting_error", error)
         }
     }
     newMatch(state) {
@@ -153,10 +163,8 @@ export default class SettingsList extends Component {
         data.isAccountPrivate = state;
         this.setState({ privateAccount: state }, () => this.saveUserSettings())
     }
-    allopenSetting(state) {
-        data.speeddatingSettings = { allOpen :state};
-        console.log("allopenSetting", data)
-        this.setState({ allOpen: !this.state.allOpen }, () => this.saveUserSettings())
+    allopenSetting() {
+        this.setState({ allOpen: !this.state.allOpen })
     }
     compatibilityPercentage(value) {
         localfilter.compatibilityPercentage = value.toString()
@@ -173,7 +181,7 @@ export default class SettingsList extends Component {
         })
     }
     availableDays = () => {
-        return this.state.daysArray.map((value, index) => {
+        return this.state.daysArray ? this.state.daysArray.map((value, index) => {
             return <TouchableOpacity onPress={() => this.selectedDays(value)}
                 style={{
                     height: 44,
@@ -193,11 +201,13 @@ export default class SettingsList extends Component {
                 />
             </TouchableOpacity>
         })
+            : undefined
     }
     gettime(date) {
         var hour = date.getHours();
         var minutes = date.getMinutes();
-        return hour + ":" + minutes
+        return moment(date).format("hh:mm")
+        // return hour + ":" + minutes
 
     }
     validation() {
@@ -220,7 +230,7 @@ export default class SettingsList extends Component {
             }
 
         } else {
-            data.speeddatingSettings = [];
+            // data.speeddatingSettings = [];
             this.saveUserSettings(success => {
                 this.setState({
                     fromTime: '',
@@ -238,19 +248,24 @@ export default class SettingsList extends Component {
             return
         }
         var days = _.filter(this.state.daysArray, obj => { return obj.isSelected === true });
-
-        let result = _.map(days, object => { return _.omit(object, ['isSelected']) })
-        const newArr = result.map(el => ({ ...el, ...{ fromTime: this.gettime(this.state.fromTime), toTime: this.gettime(this.state.toTime) } }));
-        data.speeddatingSettings = newArr;
+        if (days && Array.isArray(days) && days.length) {
+            let result = _.map(days, object => { return _.omit(object, ['isSelected']) })
+            const newArr = result.map(el => ({ ...el, ...{ fromTime: this.gettime(this.state.fromTime), toTime: this.gettime(this.state.toTime) } }));
+            data.speeddatingSettings = newArr;
+            // console.log("saveSpeeddatingsettings_days", days)
+            // console.log("saveSpeeddatingsettings_result", result)
+            // console.log("saveSpeeddatingsettings", newArr)
+        }else{
+            data.speeddatingSettings = { allOpen: this.state.allOpen };
+            // console.log("allopenSetting", data)
+        }
         this.saveUserSettings(success => {
             if (success) {
                 this.setState({
                     speeddatingsettingsmodal: false
                 })
             }
-
         })
-        console.log("saveSpeeddatingsettings", newArr)
     }
     formatAMPM(date) {
         var hours = date.getHours();
@@ -505,15 +520,25 @@ export default class SettingsList extends Component {
                                         <View style={{ justifyContent: "flex-end", paddingHorizontal: 10, paddingTop: 10, paddingBottom: 4 }}>
                                             <Text style={{ fontFamily: "Avenir-Medium", fontSize: 15, color: "#909096" }}>{i18n.t('allopenLabel')}</Text>
                                         </View>
-                                        <View style={{ height: 54,borderRadius: 5 ,backgroundColor: "rgba(255,255,255,100)", paddingHorizontal: 10, borderBottomColor: "rgba(245,245,245,100)", borderBottomWidth: 1, flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+                                        <TouchableOpacity onPress={()=>this.allopenSetting()}
+                                            style={{ height: 54, borderRadius: 5, backgroundColor: "rgba(255,255,255,100)", paddingHorizontal: 10, borderBottomColor: "rgba(245,245,245,100)", borderBottomWidth: 1, flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
                                             <Text style={{ fontFamily: "Avenir-Medium", fontSize: 17, color: "#3E3E47" }}>
                                                 All Open</Text>
-                                                
-                                            <Toggle
+
+                                            <View style={{ backgroundColor: "transparent" }}>
+                                                <Image source={ this.state && this.state.allOpen ? checked : unchecked}
+                                                    style={{
+                                                        width: 24, height: 24,
+                                                    }}
+                                                    resizeMethod='resize'
+                                                    resizeMode="contain"
+                                                />
+                                            </View>
+                                            {/* <Toggle
                                                 isOn={this.state.allopen}
                                                 onToggle={state => this.allopenSetting(state)}
-                                            />
-                                        </View>
+                                            /> */}
+                                        </TouchableOpacity>
 
                                     </>
                             }
@@ -598,7 +623,7 @@ class Toggle extends React.Component {
         }
     }
     componentDidUpdate(prevProps, prevState) {
-        if (prevProps.isOn !== this.props.isOn) {
+        if (prevProps && prevProps.isOn !== this.props.isOn) {
             this.setState(
                 { isOn: this.props.isOn },
                 () => {

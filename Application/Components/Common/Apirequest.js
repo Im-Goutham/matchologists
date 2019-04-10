@@ -555,6 +555,25 @@ const ApiRequest = {
             console.log("error_getSpeedDatingEvents", error)
             return reject(error);
         })
+    },
+    exitFromSpeedDatingEvent(token, Data, resolve, reject) {
+        let header = {
+            'Authorization': token,
+            'Content-Type': "application/json"
+        }
+        ApiManager.callwebservice('POST', 'api/exitFromSpeedDatingEvent', header, Data, (success) => {
+            let response = JSON.parse(success._bodyInit);
+            console.log("response", response)
+            if (response.status === 0) {
+                return reject(response);
+
+            } else if (response.status === 1) {
+                return resolve(response);
+            }
+        }, (error) => {
+            console.log("error_exitFromSpeedDatingEvent", error)
+            return reject(error);
+        })
     }
 }
 module.exports = ApiRequest

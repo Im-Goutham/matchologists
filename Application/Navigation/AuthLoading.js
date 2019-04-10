@@ -33,7 +33,7 @@ class AuthLoadingScreen extends React.Component {
         :
         !is_visitedquestionAnswer ? this.props.navigation.navigate('questionnaire') 
         : 
-        this.props.navigation.navigate('homePage')
+        this.props.navigation.navigate('speeddating')
     }
     render() {
         const { loading } = this.props

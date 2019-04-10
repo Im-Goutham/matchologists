@@ -96,7 +96,7 @@ class Notification extends BaseFormComponent {
         var token = this.props.token;
         Apirequest.getNotifications(token, resolve => {
             if (resolve.data) {
-                console.log("getNotificationsresolveers", resolve.data.data)
+                // console.log("getNotificationsresolveers", resolve.data.data)
                 var datasource = resolve.data.data;
                 for (var i = 0; i < datasource.length; i++) {
                     let dataobject = {};
@@ -121,7 +121,9 @@ class Notification extends BaseFormComponent {
             }
         }, reject => {
             this.setState({
-                notificationData: [],
+                notificationData: [{
+                    notificationText: "No Notification found "
+                }],
                 isloading: true
             })
             console.log("reject", reject)

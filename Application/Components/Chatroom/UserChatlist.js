@@ -37,36 +37,72 @@ class UserChatlist extends Component {
     constructor(props) {
         super(props);
         this.socket = io(URL);
-        // this.socket.on("userConnected", data => {
-        //     console.log("userConnected_socket", data)
-        // })
-        // this.socket.on("userDisconnected", data => {
-        //     console.log("userDisconnected_socket", data)
-        // })
+        this.socket.on("userConnected", data => {
+            console.log("userConnected_socket", data)
+            this.updateUserList(data, true)
+            // alert(JSON.stringify(data, "connect"))
+
+        })
+        this.socket.on("userDisconnected", data => {
+            // console.log("userDisconnected_socket", data)
+            this.updateUserList(data, false)
+
+            // alert(JSON.stringify(data))
+        })
         this.state = {
             allUserData: [],
             recentUserList: [],
             isLoading: true,
         }
     }
+    updateUserList = (data, status) => {
+        console.log("data", data)
+        // console.log("userConnected_socket_updateUserList_abhishek", _.map(this.state.allUserData, (object) => {return  object._id === data.userId ? {...object, isOnline: status } : {object }  }))
+        this.setState({
+            allUserData: _.map(this.state.allUserData, (object) => { return object._id === data.userId ? { ...object, isOnline: status } : { ...object } })
+        })
+    }
     getallsavedUser = async () => {
         const { navigate } = this.props.navigation;
-
         try {
             const value = await AsyncStorage.getItem('chatmessages');
             var userlist = []
             if (value !== null) {
                 var chatmessages = JSON.parse(value);
-                // console.log("AsyncStorage_value========>", chatmessages)
-                for (var user = 0; user < chatmessages.length; user++) {
-                    result = _.filter(chatmessages[user].data, function (item) { return item.data.currentUser === false });
-                    // if (chatmessages[user].isUserFirstchat) {
-                    userlist.push({ _id: chatmessages[user].userId, fullName: chatmessages[user].username, uri: chatmessages[user].image })
+                console.log("AsyncStorage_value========>", chatmessages)
+                let filteredUser = await _.filter(chatmessages, (storedUser) => {
+                    return storedUser.currentUserId && _.isEqual(storedUser.currentUserId.toString(), this.props.data._id.toString())
+                });
+                console.log('filteredUser', filteredUser);
+                if (filteredUser && Array.isArray(filteredUser) && filteredUser.length && _.head(filteredUser) && _.head(filteredUser).receiver) {
+                    let receiverArr = _.head(filteredUser).receiver;
+                    await receiverArr.forEach((receiver) => {
+                        result = _.filter(receiver.data, function (item) { return item.data.currentUser === false });
 
-                    if (chatmessages[user].isUserFirstchat && result.length > 1) {
-                        navigate("chatfeedback", { checkemitRequest: this.checkemitRequest.bind(this), data: { receiverId: chatmessages[user].userId }, token: this.props.token, invitationname: chatmessages[user].username, eventNamepoint: 'chatfeedback' })
-                    }
+                        userlist.push({ _id: receiver.userId, fullName: receiver.username, uri: receiver.image })
+
+                        if (receiver.isUserFirstchat && result.length > 1) {
+                            navigate("chatfeedback", { checkemitRequest: this.checkemitRequest.bind(this), data: { receiverId: receiver.userId }, token: this.props.token, invitationname: receiver.username, eventNamepoint: 'chatfeedback' })
+                        }
+                    });
+
                 }
+                console.log('userlist', userlist);
+                // for (var user = 0; user < chatmessages.length; user++) {
+
+                //     if (chatmessages[user].currentUserId && chatmessages[user].currentUserId.toString() == this.props.data._id.toString()) {
+                //         console.log('in ifff');
+
+                //     }
+
+                //     // result = _.filter(chatmessages[user].data, function (item) { return item.data.currentUser === false });
+                //     // // if (chatmessages[user].isUserFirstchat) {
+                //     // userlist.push({ _id: chatmessages[user].userId, fullName: chatmessages[user].username, uri: chatmessages[user].image })
+
+                //     // if (chatmessages[user].isUserFirstchat && result.length > 1) {
+                //     //     navigate("chatfeedback", { checkemitRequest: this.checkemitRequest.bind(this), data: { receiverId: chatmessages[user].userId }, token: this.props.token, invitationname: chatmessages[user].username, eventNamepoint: 'chatfeedback' })
+                //     // }
+                // }
                 this.setState({
                     recentUserList: userlist
                 })
@@ -74,6 +110,9 @@ class UserChatlist extends Component {
         } catch (error) {
             console.log("error", error)
         }
+    }
+    updateUserChatHistory(cb) {
+        console.log("cb")
     }
     // checkemitRequest = async () => {
     checkemitRequest = async (receiversId) => {
@@ -234,7 +273,8 @@ class UserChatlist extends Component {
                     </SafeAreaView>
                 </LinearGradient>
                 {/* <SearchBar /> */}
-                <ScrollView contentContainerStyle={{ paddingVertical: 16, }} showsVerticalScrollIndicator={false}>
+                <View>
+                    {/* <ScrollView contentContainerStyle={{ paddingVertical: 16, }} showsVerticalScrollIndicator={false}> */}
                     <View style={{ justifyContent: "center", borderBottomWidth: 10, borderBottomColor: "#F5F5F5" }}>
                         <View style={styles.elevationView}>
                             <Text style={{ fontFamily: "Avenir-Medium", fontSize: 15, color: "#C1C0C9", lineHeight: 40, paddingLeft: 16 }}>ALL MATCHES</Text>
@@ -244,18 +284,21 @@ class UserChatlist extends Component {
                                         <OnlineUsers
                                             navigation={this.props.navigation}
                                             userdataList={this.state.allUserData}
-                                            isUserFriend={this.isUserFriend.bind(this)} />
+                                            isUserFriend={this.isUserFriend.bind(this)}
+                                        />
                                 }
                             </View>
                         </View>
                     </View>
                     <View style={styles.elevationView}>
-                        <Userlist 
-                        navigation={this.props.navigation} 
-                        userdataList={this.state.recentUserList} 
+                        <Userlist
+                            navigation={this.props.navigation}
+                            userdataList={this.state.recentUserList}
+                            onRefresh={this.getallsavedUser.bind(this)}
                         />
                     </View>
-                </ScrollView>
+                </View>
+                {/* </ScrollView> */}
             </View>
         );
     }

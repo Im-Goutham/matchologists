@@ -1,11 +1,24 @@
 import React, { Component } from "react";
-import { View, Text, FlatList, Image, StyleSheet, TouchableOpacity, ScrollView } from "react-native";
+import { View, Text, FlatList, Image, StyleSheet, TouchableOpacity, ScrollView, RefreshControl } from "react-native";
 
 class OnlineUsers extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            userList: []
         };
+    }
+    componentDidMount = () => {
+        this.setState({
+            userList: this.props.userdataList
+        })
+
+    }
+    componentWillReceiveProps(nextProps, nextState) {
+        console.log("nextProps", nextProps)
+        this.setState({
+            userList: nextProps && nextProps.userdataList
+        })
     }
     renderSeparator = () => {
         return (
@@ -19,72 +32,78 @@ class OnlineUsers extends Component {
             />
         );
     };
-    userValidate(userDetail){
+    userValidate(userDetail) {
         const { navigate } = this.props.navigation;
         this.props.isUserFriend(userDetail)
-        // navigate('chatscreen', { 
-        //         userId: userDetail._id, 
-        //         opentokToken: this.props.opentokToken, 
-        //         fullName: userDetail.fullName ,
-        //         image : userDetail.uri
-        //     })
     }
-    renderRow = this.props.userdataList.map((item, index) => {
-        const { navigate } = this.props.navigation;
-        return (
-            <TouchableOpacity 
-            onPress={()=>this.userValidate(item)}
-                // onPress={() => navigate('chatscreen', { 
-                //     userId: item._id, 
-                //     opentokToken: this.props.opentokToken, 
-                //     fullName: item.fullName ,
-                //     image : item.uri
-                // })}
-                key={index}
-                style={{ flex: 1, alignItems: "center", justifyContent: "space-around", paddingHorizontal: 8 }}>
-                <View style={{ alignItems: "center",  shadowOffset: { width: 0, height: 2 },
-                    shadowOpacity: 0.2,
-                    shadowRadius: 2,
-                    elevation: 3, }}>
-                    <View style={{ width: 60, height: 60, borderRadius: 30, overflow: "hidden",  shadowOffset: { width: 0, height: 2 },
-                    shadowOpacity: 0.2,
-                    shadowRadius: 2,
-                    elevation: 3, }}>
-                        <Image
-                            style={{ height: '100%', width: '100%', flex: 1 }}
-                            source={item.uri ? { uri: item.uri } : require('../../images/applogo.png')}
-                        // resizeMethod="resize"
-                        // resizeMode="contain"
-                        />
-                    </View>
+    renderRow() {
+        return this.state.userList.map((item, index) => {
+            const { navigate } = this.props.navigation;
+            console.log("item", item)
+            return (
+                <TouchableOpacity
+                    onPress={() => this.userValidate(item)}
+                    key={index}
+                    style={{ flex: 1, alignItems: "center", justifyContent: "space-around", paddingHorizontal: 8 }}>
                     <View style={{
-                        width: 12,
-                        height: 12,
-                        backgroundColor: "#38CA73",
-                        position: "absolute",
-                        bottom: 0,
-                        right: 0,
-                        borderRadius: 6,
-                        borderWidth: 2,
-                        borderColor: "#FFF"
-                    }} />
-                </View>
-                <View style={{ justifyContent: "space-around" }}>
-                    <Text style={{ fontFamily: "Avenir-Medium", fontSize: 15, color: "#3E3E47" }}>{item.fullName}</Text>
-                </View>
-            </TouchableOpacity>
-        )
-    })
+                        alignItems: "center", shadowOffset: { width: 0, height: 2 },
+                        shadowOpacity: 0.2,
+                        shadowRadius: 2,
+                        elevation: 3,
+                    }}>
+                        <View style={{
+                            width: 60, height: 60, borderRadius: 30, overflow: "hidden", shadowOffset: { width: 0, height: 2 },
+                            shadowOpacity: 0.2,
+                            shadowRadius: 2,
+                            elevation: 3
+                        }}>
+                            <Image
+                                style={{ height: '100%', width: '100%', flex: 1 }}
+                                source={item && item.uri ? { uri: item.uri } : require('../../images/applogo.png')}
+                            />
+                        </View>
+
+                        <View style={{
+                            width: 12,
+                            height: 12,
+                            backgroundColor: item && item.isOnline ? "#009933" : "#FFFF",
+                            position: "absolute",
+                            bottom: 0,
+                            right: 0,
+                            borderRadius: 6,
+                            borderWidth: 2,
+                            borderColor: "#FFF"
+                        }
+                            // : {
+                            //     width: 12,
+                            //     height: 12,
+                            //     backgroundColor:  "#696969",
+                            //     position: "absolute",
+                            //     bottom: 0,
+                            //     right: 0,
+                            //     borderRadius: 6,
+                            //     borderWidth: 2,
+                            //     borderColor: "#FFF"
+                            // }
+                        } />
+                    </View>
+                    <View style={{ justifyContent: "space-around" }}>
+                        <Text style={{ fontFamily: "Avenir-Medium", fontSize: 15, color: "#3E3E47" }}>{item && item.fullName ? item.fullName : ''}</Text>
+                    </View>
+                </TouchableOpacity>
+            )
+        })
+    }
     handleClick = () => { }
     render() {
-        if(!this.props.userdataList.length){
-            return(
+        if (!this.state.userList.length) {
+            return (
                 <Text> No user Found </Text>
             )
         }
         return (
             <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} style={{ height: 100, flexDirection: "row", paddingLeft: 8 }}>
-                {this.renderRow}
+                {this.renderRow()}
             </ScrollView>
         );
     }
@@ -93,7 +112,22 @@ class Userlist extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            isRefreshing: false
         };
+    }
+    componentDidMount() {
+        this.setState({
+            userdataList: this.props.userdataList,
+            isRefreshing: false
+        })
+
+    }
+    componentWillReceiveProps = (nextProps, nextState) => {
+        console.log("componentWillReceiveProps", nextProps)
+        this.setState({
+            userdataList: nextProps.userdataList,
+            isRefreshing: false
+        })
     }
     renderSeparator = () => {
         return (
@@ -107,7 +141,7 @@ class Userlist extends Component {
             />
         );
     };
-    updateIsFirstStatus=(cb)=>{
+    updateIsFirstStatus = (cb) => {
         alert(JSON.stringify(cb))
     }
 
@@ -116,11 +150,11 @@ class Userlist extends Component {
         console.log("chatscreen", item)
         return (
             <TouchableOpacity
-                onPress={() => navigate('chatscreen', { 
-                    userId: item._id, 
-                    opentokToken: this.props.opentokToken, 
+                onPress={() => navigate('chatscreen', {
+                    userId: item._id,
+                    opentokToken: this.props.opentokToken,
                     fullName: item.fullName,
-                    image : item.uri,
+                    image: item.uri,
                     updateIsFirstStatus: this.updateIsFirstStatus.bind(this)
                 })}
                 key={index}
@@ -156,6 +190,12 @@ class Userlist extends Component {
                 renderItem={({ item }) => this.renderRow(item)}
                 keyExtractor={(item, index) => index.toString()}
                 ItemSeparatorComponent={this.renderSeparator}
+                refreshControl={
+                    <RefreshControl
+                        refreshing={this.state.isRefreshing}
+                        onRefresh={this.props.onRefresh}
+                    />
+                }
             />
         );
     }
