@@ -7,9 +7,12 @@ import {
     Dimensions,
     TouchableOpacity,
     Platform,
+    Alert,
     PermissionsAndroid
 } from 'react-native';
-import _ from 'lodash'
+import _ from 'lodash';
+import i18n from 'react-native-i18n'
+import moment from 'moment'
 import { connect } from 'react-redux'
 import { OTSession, OTPublisher, OTSubscriber, EventData, OT } from 'opentok-react-native';
 import LinearGradient from 'react-native-linear-gradient';
@@ -19,7 +22,11 @@ import * as global from '../../../global.json';
 const IS_ANDROID = Platform.OS === 'android';
 let { width, height } = Dimensions.get('window');
 import Timer from './TimeKeeper/index';
-
+var intervaltime = 10000;
+var speeddatingtime = 420;
+var isBothUserConneted = false;
+var totalsecounds = speeddatingtime
+var intervalid;
 class SpeeddatingliveCall extends BaseFormComponent {
     constructor(props) {
         super(props);
@@ -30,17 +37,30 @@ class SpeeddatingliveCall extends BaseFormComponent {
         };
         this.publisherEventHandlers = {
             audioLevel: event => {
-                console.log('Publisher stream audioLevel!', event);
+                // console.log('Publisher stream audioLevel!', event);
             },
             error: event => {
                 console.log('Publisher stream destroyed!', event);
             },
             streamCreated: event => {
-                var newspeed = this.props.speedDateruserObj;
-                newspeed.callStatus = "ongoing";
-                var eventData = Object.assign({}, newspeed, event)
-                this.props.streamCreated_update(eventData)
                 console.log('Publisher stream created!', event);
+                if (!isBothUserConneted) {
+                    intervalid = setInterval(() => {
+                        if (!isBothUserConneted) {
+                            var time = this.gettimeDifference();
+                            if (time >= speeddatingtime) {
+                                this.showSimpleMessage("info", { backgroundColor: global.gradientsecondry }, i18n.t('appname'), _.replace(i18n.t('daternotConnected'), new RegExp("{{var}}"), this.props.speedDateruserObj.fullName))
+                                clearInterval(intervalid);
+                                this.props.callnextuserforspeedDating()
+                                this.videocallisend();
+                            } else {
+                                this.showSimpleMessage("info", { backgroundColor: global.gradientsecondry }, i18n.t('appname'), i18n.t('userwaitingfordatermsg'))
+                            }
+                        } else {
+                            clearInterval(intervalid);
+                        }
+                    }, intervaltime);
+                }
             },
             streamDestroyed: event => {
                 console.log('Publisher stream destroyed!', event);
@@ -55,7 +75,17 @@ class SpeeddatingliveCall extends BaseFormComponent {
                 console.log('sessionConnected created!', event);
             },
             streamCreated: event => {
-                // this.startArchive(event)
+                var newspeed = this.props.speedDateruserObj;
+                newspeed.callStatus = "ongoing";
+                var eventData = Object.assign({}, newspeed, event)
+                this.props.streamCreated_update(eventData)
+                var getTime = this.gettimeDifference()
+                totalsecounds = speeddatingtime - getTime;
+                isBothUserConneted = true;
+                clearInterval(intervalid);
+                this.setState({
+                    videocallconnect: true
+                }, () => this.startArchive(event))
                 console.log('Stream created!', event);
             },
             streamDestroyed: event => {
@@ -72,16 +102,37 @@ class SpeeddatingliveCall extends BaseFormComponent {
             streamProperties: {}
         }
     }
-    componentDidMount() {
-        this.getChatSessionId();
+    componentWillUnmount(){}
+
+    gettimeDifference = () => {
+        var newspeed = this.props.speedDateruserObj;
+        var end = moment.utc();
+        var duration =  moment.utc(newspeed.notificationDateTime);
+        duration = end.diff(duration, 'seconds');
+        return duration;
     }
+
+    componentDidMount() {
+        var getTime = this.gettimeDifference();
+        if (getTime >= speeddatingtime) {
+            this.showSimpleMessage("info", { backgroundColor: global.gradientsecondry }, i18n.t('appname'),  _.replace(i18n.t('calltimeingexpired'), new RegExp("{{var}}"), this.props.speedDateruserObj.fullName))
+            // TO DO call warning API
+            this.videocallisend();
+        } else {
+            this.getChatSessionId();
+        }
+        
+    }
+
     videocallisend() {
-        const { goBack, state } = this.props.navigation;
-        goBack()
+        const { goBack, state , navigate } = this.props.navigation;
+        console.log("this.props.navigation", this.props.navigation)
+        console.log("goBack", goBack)
+        navigate('notification')
     }
     startArchive(event) {
         console.log('startArchive created!');
-        const { goBack, state } = this.props.navigation;
+        // const { goBack, state } = this.props.navigation;
         var Data = {
             "profileUserId": this.props.userId,
         }
@@ -96,6 +147,7 @@ class SpeeddatingliveCall extends BaseFormComponent {
     }
     getChatSessionId = async () => {
         let userid = this.props.userId;
+
         Apirequest.getChatSessionId(this.props.token, userid, (resolve) => {
             console.log("getChatSessionId_resolve", resolve)
             if (resolve && resolve.message) {
@@ -107,7 +159,7 @@ class SpeeddatingliveCall extends BaseFormComponent {
                     sessionId: resolve.data && resolve.data.session ? resolve.data.session : '',
                     token: resolve.data && resolve.data.token ? resolve.data.token : '',
                     loading: false
-                }, () => this.startArchive())
+                })
             }
         }, (reject) => {
             console.log("getChatSessionId_reject", reject)
@@ -142,7 +194,7 @@ class SpeeddatingliveCall extends BaseFormComponent {
             console.log("reject", reject)
         })
     }
-    exitFromSpeedDatingEvent(){
+    exitFromSpeedDatingEvent() {
         var Data = {
             "speedDatingEventDayId": this.props.speedDatingEventDayId
         }
@@ -151,6 +203,7 @@ class SpeeddatingliveCall extends BaseFormComponent {
                 this.videocallisend()
             }
         }, reject => {
+            this.videocallisend()
             console.log("exitFromSpeedDatingEvent_reject", reject)
         })
     }
@@ -193,38 +246,41 @@ class SpeeddatingliveCall extends BaseFormComponent {
                 </TouchableOpacity>
                 <View style={styles.callutility}>
                     <View style={styles.commonButton}>
-                    <TouchableOpacity
-                                onPress={() =>this.exitFromSpeedDatingEvent()}
-                                style={{ width: 40, height: 40, justifyContent: "center", alignItems: "center" }}>
-                                <Image
-                                    source={require('../../images/icons/exitIcon.png')}
-                                    style={{ width: 40, height: 40 }}
-                                    resizeMode="contain"
-                                    resizeMethod="resize"
-                                />
-                            </TouchableOpacity>
+                        <TouchableOpacity
+                            onPress={() => this.exitFromSpeedDatingEvent()}
+                            style={{ width: 40, height: 40, justifyContent: "center", alignItems: "center" }}>
+                            <Image
+                                source={require('../../images/icons/exitIcon.png')}
+                                style={{ width: 40, height: 40 }}
+                                resizeMode="contain"
+                                resizeMethod="resize"
+                            />
+                        </TouchableOpacity>
                     </View>
                     <View style={styles.commonButton}>
                         {
-                            <Timer
-                                beat={false}
-                                seconds={20}
-                                radius={50}
-                                borderWidth={3}
-                                color="#C52957"
-                                bgColor="#000"
-                                bgColorSecondary="#E495AC"
-                                bgColorThirt="#EFD6DE"
-                                shadowColor="#FFF"
-                                textStyle={{ fontSize: 26, color: '#FFF', }}
-                                subTextStyle={{ fontSize: 10, color: '#FFF', }}
-                                onTimeElapsed={() => this.props.speeddatingfeedback()}
-                                isPausable={false}
-                                onPause={() => console.log('Pause')}
-                                onResume={() => console.log('Resume')}
-                                minScale={0.9}
-                                maxScale={1.2}
-                            />
+                            this.state.videocallconnect ?
+                                <Timer
+                                    beat={false}
+                                    seconds={totalsecounds}
+                                    radius={50}
+                                    borderWidth={3}
+                                    color="#C52957"
+                                    bgColor="#000"
+                                    bgColorSecondary="#E495AC"
+                                    bgColorThirt="#EFD6DE"
+                                    shadowColor="#FFF"
+                                    textStyle={{ fontSize: 26, color: '#FFF', }}
+                                    subTextStyle={{ fontSize: 10, color: '#FFF', }}
+                                    onTimeElapsed={() => this.props.speeddatingfeedback()}
+                                    isPausable={false}
+                                    onPause={() => console.log('Pause')}
+                                    onResume={() => console.log('Resume')}
+                                    minScale={0.9}
+                                    maxScale={1.2}
+                                />
+                                :
+                                undefined
                         }
                     </View>
                     <View style={styles.commonButton}>

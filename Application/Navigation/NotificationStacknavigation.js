@@ -8,13 +8,12 @@ import FriendrequestFeedback from '../Components/Notification/FriendrequestFeedb
 import RejectionFeedback from '../Components/Speeddating/RejectionFeedback'
 
 const NotificationStacknavigation = createStackNavigator({
-    notification: { screen: Notification },
+    notificationscreen : { screen: Notification },
     friendrequestfeedback : { screen: FriendrequestFeedback},
     rejectionfeedback : {screen: RejectionFeedback}
-
 }, {
         index: 0,
-        initialRouteName: 'notification',
+        initialRouteName: 'notificationscreen',
         headerMode: 'none',
         navigationOptions: {
             gesturesEnabled: false

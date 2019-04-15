@@ -78,13 +78,15 @@ class Notification extends BaseFormComponent {
                 this.setState({
                     notificationData: this.state.notificationData,
                     is_loading: false,
-                }, () => this.updateNotificationStatus(speedDatingEventObj._id))
+                }, () => this.updateNotificationStatus(speedDatingEventObj))
             }
         }, reject => {
             console.log("rsvpForSpeedDating_reject", reject)
             if (reject.message) {
+                speedDatingEventObj.isSeen = true;
                 this.showSimpleMessage("", { backgroundColor: global.gradientsecondry }, '', reject.message)
                 this.setState({
+                    notificationData: this.state.notificationData,
                     is_loading: false,
                 })
             }
@@ -95,8 +97,9 @@ class Notification extends BaseFormComponent {
         let data = [];
         var token = this.props.token;
         Apirequest.getNotifications(token, resolve => {
-            if (resolve.data) {
-                // console.log("getNotificationsresolveers", resolve.data.data)
+            console.log("getNotificationsresolveers", resolve)
+
+            if (resolve && resolve.data && resolve.data.data && Array.isArray(resolve.data.data) && resolve.data.data.length) {
                 var datasource = resolve.data.data;
                 for (var i = 0; i < datasource.length; i++) {
                     let dataobject = {};
@@ -118,6 +121,15 @@ class Notification extends BaseFormComponent {
                     notificationData: data,
                     isloading: false
                 })
+            }else{
+                console.log("getNotifications", resolve)
+                this.setState({
+                    notificationData: [{
+                        notificationText: "Welcome to Matchologists"
+                    }],
+                    isloading: false
+                })
+
             }
         }, reject => {
             this.setState({
@@ -153,6 +165,10 @@ class Notification extends BaseFormComponent {
         }
         Apirequest.updateNotificationStatus(token, data, resolve => {
             console.log("updateNotificationStatus", resolve)
+            callback.isSeen = true
+            this.setState({
+                notificationData : this.state.notificationData
+            })
         }, reject => {
             console.log(reject)
         })
@@ -234,6 +250,7 @@ class Notification extends BaseFormComponent {
                     token={this.props.token}
                     navigate={navigate}
                     respondToVideoCallPermission={this.respondToVideoCallPermission.bind(this)}
+                    updateNotificationStatus={this.updateNotificationStatus.bind(this)}
                     rsvpForSpeedDating={this.rsvpForSpeedDating.bind(this)}
                     onRefresh={this.onRefresh.bind(this)}
                 />

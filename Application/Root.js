@@ -1,5 +1,8 @@
 import React from "react";
-import { View, Platform, Clipboard, AsyncStorage, YellowBox, AppState, Linking } from "react-native";
+import { View, Platform, Clipboard, AsyncStorage, YellowBox, AppState, Linking, Alert } from "react-native";
+import _ from 'lodash';
+import i18n from 'react-native-i18n'
+import moment from 'moment'
 import { StackNavigator, NavigationActions } from 'react-navigation'; // 1.0.3
 import './i18n/I18n'
 import { Provider } from "react-redux";
@@ -8,6 +11,9 @@ import App from "./Navigation";
 import Messagebar from './Components/MessageBar'
 import SplashScreen from 'react-native-splash-screen';
 import FCM, { NotificationActionType } from "react-native-fcm";
+import Apirequest from '../Application/Components/Common/Apirequest';
+import BaseFormComponent from '../Application/Components/Common/BaseFormComponent'
+
 import { registerKilledListener, registerAppListener } from "./Listeners/index";
 // import firebaseClient from "./FirebaseClient";
 import io from 'socket.io-client'; // 2.0.4
@@ -21,7 +27,7 @@ YellowBox.ignoreWarnings([
     'Unrecognized WebSocket connection option(s) `agent`, `perMessageDeflate`, `pfx`, `key`, `passphrase`, `cert`, `ca`, `ciphers`, `rejectUnauthorized`. Did you mean to put these under `headers`?'
 ]);
 
-class Root extends React.Component {
+class Root extends BaseFormComponent {
     constructor(props) {
         super(props);
         this.socket = io(URL);
@@ -35,16 +41,9 @@ class Root extends React.Component {
         this.socket.on("speedDatingEventStarted", data => {
             console.log("userConnect_speedDatingEventStarted", data)
             if (data && data.speedDatingEventDayId) {
-                this.navigator.dispatch({
-                    type: NavigationActions.NAVIGATE,
-                    routeName: 'speeddatinglivecall',
-                    params: { speedDatingEventDayId: data.speedDatingEventDayId }
-                });
-
+               this.getUsersPairForSpeedDating(data.speedDatingEventDayId)
             }
-        }
-        );
-
+        });
         this.state = {
             token: "",
             tokenCopyFeedback: "",
@@ -52,10 +51,154 @@ class Root extends React.Component {
         SplashScreen.hide();
         this.handleOpenURL = this.handleOpenURL.bind(this);
     }
+    // speedDatingUserget = async (speedDatingEventDayId) => {
+    //     // const { state } = this.props.navigation;
+    //     console.log("speedDatingUserget_state", state)
+    //     // var speedDatingEventDayId = state && state.params && state.params.speedDatingEventDayId ? state.params.speedDatingEventDayId : ''
+    //     // var speedDatingEventDayId = "5ca19973992b010533f3cd91";
+    //     console.log("speedDatingUserget_speedDatingEventDayId", speedDatingEventDayId)
+    //     var speeddatingevent,
+    //         heighlightedUserIndex;
+    //     try {
+    //         AsyncStorage.multiGet(["speeddatingevent", "heighlightedUserIndex"], (error, stores) => {
+    //             console.log("multiGet_stores", stores)
+    //             speeddatingevent = stores && stores[0] && stores[0][1] ? JSON.parse(stores[0][1]) : []
+    //             heighlightedUserIndex = stores && stores[1] && stores[1][1] ? JSON.parse(stores[1][1]) : 0
+    //             console.log("speeddatingevent", speeddatingevent)
+
+    //             if (Array.isArray(stores) && stores && stores[0] && stores[0][1] && stores[1] && stores[1][1] && heighlightedUserIndex !== '') {
+    //                 console.log("speeddatingevent", speeddatingevent)
+    //                 console.log("heighlightedUserIndex", heighlightedUserIndex)
+
+    //                 if (speeddatingevent[heighlightedUserIndex] && speeddatingevent[heighlightedUserIndex].callStatus === "completed" && speeddatingevent[heighlightedUserIndex].feedback) {
+    //                     this.setState({
+    //                         speedDatingUser: speeddatingevent,
+
+    //                     }, () => this.sendNotificationForVideoCall(speeddatingevent, ++heighlightedUserIndex))
+    //                 } else {
+    //                     this.setState({
+    //                         speedDatingUser: speeddatingevent,
+    //                     }, () => this.sendNotificationForVideoCall(speeddatingevent, heighlightedUserIndex))
+    //                 }
+    //             } else {
+    //                 this.getUsersPairForSpeedDating(speedDatingEventDayId)
+    //             }
+    //         })
+
+    //     } catch (error) {
+    //         console.log("speeddatingevent_error", error)
+    //     }
+    // }
+    getUsersPairForSpeedDating = async(speedDatingEventDayId)=> {
+        let data = {
+            "speedDatingEventDayId": speedDatingEventDayId
+        };
+       var token = await  AsyncStorage.getItem('token')
+       if(token){
+        token = JSON.parse(token)
+       }
+        // console.log("AsyncStorage_userId=========>" , token)
+        var notificationdate = new Date();
+        // var token = this.props.token;
+        var speedDatingUsers = [];
+        console.log("getUsersPairForSpeedDating_data", data)
+
+        await Apirequest.getUsersPairForSpeedDating(token, data, resolve => {
+            console.log("getUsersPairForSpeedDating_resolve", resolve)
+            if (resolve.data) {
+                var datasource = resolve.data;
+                for (var i = 0; i < datasource.length; i++) {
+                    let dataobject = {};
+                    dataobject.userId = datasource[i] && datasource[i].userId ? datasource[i].userId : '';
+                    dataobject.fullName = datasource[i] && datasource[i].fullName ? datasource[i].fullName : '';
+                    dataobject.age = datasource[i] && datasource[i].age ? datasource[i].age : '';
+                    dataobject.profilePic = datasource[i] && datasource[i].profilePic ? datasource[i].profilePic : '';
+                    speedDatingUsers.push(dataobject);
+                }
+                if (speedDatingUsers && speedDatingUsers.length) {
+                    const CurrentspeedDatingusers = _.map(speedDatingUsers, (obj, key) => {
+                        return key == 0 ? { ...obj, callStatus: "pending", feedback: false, notificationDateTime: notificationdate } : { ...obj, callStatus: "pending", feedback: false, notificationDateTime: notificationdate }
+                    });
+                    console.log("CurrentspeedDatingusers", CurrentspeedDatingusers)
+                    var heighlightedUserIndex = 0
+                    this.speedDatingUserStore(CurrentspeedDatingusers, heighlightedUserIndex, speedDatingEventDayId, token)
+                } else {
+                        speedDatingUser = [];
+                }
+            }
+        }, reject => {
+            console.log("getSpeedDatingEvents_reject", reject)
+        })
+    }
+    speedDatingUserStore = async (speeddatingusers, heighlightedUserIndex, speedDatingEventDayId, token) => {
+        var speeddatingevent,
+            heighlightedUserIndex;
+        console.log("speeddatingusers", speeddatingusers)
+        console.log("heighlightedUserIndex", heighlightedUserIndex)
+        try {
+            AsyncStorage.multiSet([['heighlightedUserIndex', JSON.stringify(heighlightedUserIndex)], ['speeddatingevent', JSON.stringify(speeddatingusers)]], () => {
+                AsyncStorage.multiGet(["speeddatingevent", "heighlightedUserIndex"], (error, stores) => {
+                    speeddatingevent = stores[0][1] ? JSON.parse(stores[0][1]) : []
+                    heighlightedUserIndex = stores[1][1] ? JSON.parse(stores[1][1]) : []
+                    console.log("speedDatingUserStore_heighlightedUserIndex", heighlightedUserIndex)
+                    if (Array.isArray(speeddatingevent) && heighlightedUserIndex !== '') {
+                        this.sendNotificationForVideoCall(speeddatingevent, heighlightedUserIndex, speedDatingEventDayId, token)
+                    }
+                })
+            });
+
+        } catch (error) {
+            console.log("error", error)
+        }
+    }
+    sendNotificationForVideoCall(speedDatingUser, userIndex, speedDatingEventDayId, token) {
+        console.log("speedDatingUser", speedDatingUser)
+        console.log("userIndex", userIndex)
+        // var callReceiverId = _.filter(speedDatingUser, (obj) => { return obj.isHighlight })
+        callReceiverId = Array.isArray(speedDatingUser) && speedDatingUser[userIndex] && speedDatingUser[userIndex].userId ? speedDatingUser[userIndex].userId : ''
+        console.log("callReceiverId", callReceiverId)
+        // var token = this.props.token;
+        var data = {
+            "callReceiverId": callReceiverId,
+            "type": 'speeddatingcall',
+            "eventDayId": speedDatingEventDayId
+        }
+        console.log("sendNotificationForVideoCall_speedDatingUser", data)
+        Apirequest.sendNotificationForSpeedDatingCall(token, data, resolve => {
+            console.log("sendNotificationForVideoCall_resolve", resolve)
+            if (resolve.message) {
+                this.showSimpleMessage("", { backgroundColor: global.gradientsecondry }, "", resolve.message)
+                Alert.alert(
+                    i18n.t('appname'),
+                    `Speed dating event is started, would you like to navigate to notification screen ?`,[
+                        {
+                            text: 'Cancel',
+                            onPress: () => console.log("cancel press"),
+                            style: 'cancel',
+                        },
+                        { text: 'OK', onPress: () => this.navigator.dispatch({
+                            type: NavigationActions.NAVIGATE,
+                            routeName: 'notification',
+                            params: { speedDatingEventDayId: data.speedDatingEventDayId }
+                        })
+                    }],
+                    { cancelable: false },
+                );
+            }
+        }, reject => {
+            console.log("sendNotificationForVideoCall_reject", reject)
+            if (reject && reject.message) {
+                this.showSimpleMessage("", { backgroundColor: global.gradientsecondry }, "", reject.message)
+            }
+        })
+    }
+
     getUserData = async (userId) => {
         try {
             const value = await AsyncStorage.getItem('userId');
-            return userId(value)
+            if(value){
+                return userId(value)
+            }
             console.log("useridIS", value)
         } catch (error) {
             console.log("error", error)
@@ -91,7 +234,7 @@ class Root extends React.Component {
     callNavigate(callInitiatorId) {
         this.navigator.dispatch({
             type: NavigationActions.NAVIGATE,
-            routeName: 'livecall',
+            routeName: 'notification',
             params: { profileUserId: callInitiatorId }
         });
     }
@@ -118,9 +261,29 @@ class Root extends React.Component {
             });
         };
     }
+    // gettimeDifference = () => {
+    //     var end = moment.utc();
+    //     // var newspeed = this.props.speedDateruserObj;
+    //     var duration =  moment.utc("2019-04-12T12:46:45.438Z");
+    //     console.log("duration", duration)
+
+    //     duration = end.diff(duration, 'seconds');
+    //     console.log("duration/60", duration)
+
+    //     // speeddatingtime = Math.round(duration/60);
+    //     // return Math.round(duration/60)
+    //     // console.log("speeddatingtime", speeddatingtime)
+
+    // }
 
     async componentDidMount() {
-        console.log("Linking")
+        // this.gettimeDifference()
+    //     console.log("Linking")
+    //     var data = {
+    //      speedDatingEventDayId : "5ca593b25d631005359bb33d"
+    // }
+    //     this.getUsersPairForSpeedDating(data.speedDatingEventDayId)
+
         AppState.addEventListener('change', this._handleAppStateChange);
         if (Platform.OS === 'android') {
             Linking.getInitialURL().then(url => { this.navigate(url) });
@@ -135,9 +298,20 @@ class Root extends React.Component {
             priority: 'high'
         })
         registerAppListener(this.props.navigation, getresult => {
-            console.log("getresult", getresult)
-            if (getresult.callInitiatorId) {
-                this.callNavigate(getresult.callInitiatorId)
+            // console.log("getresult", getresult.aps.alert.title==="videocall" ? undefined : undefined )
+            if (getresult && getresult.aps &&getresult.aps.alert && getresult.aps.alert && getresult.aps.alert.title==="videocall" ) {
+                Alert.alert(
+                    i18n.t('appname'),
+                    `${getresult.aps.alert.body} would you like to navigate to notification screen ?`,[
+                        {
+                            text: 'Cancel',
+                            onPress: () => console.log("cancel press"),
+                            style: 'cancel',
+                        },
+                        { text: 'OK', onPress:()=>this.callNavigate(getresult)}
+                    ],
+                    { cancelable: false },
+                );
             }
         });
         FCM.getInitialNotification().then(notif => {

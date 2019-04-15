@@ -27,20 +27,15 @@ const IS_ANDROID = Platform.OS === 'android';
 const IMAGE_WIDTH = metrics.DEVICE_WIDTH * 0.05;
 const header_height = metrics.DEVICE_HEIGHT * 0.1;
 
+var userIndex = 0;
+
 class SpeedDatingCall extends BaseFormComponent {
     constructor(props) {
         super(props);
-        // this.socket = io(URL);
-        // this.socket.on("speedDatingEventStarted", data => {
-        //     console.log("userConnect_speedDatingEventStarted", data)
-        //     if (data && data.speedDatingEventDayId) {
-        //         this.getUsersPairForSpeedDating(data.speedDatingEventDayId)
-        //     }
-        // }
-        // );
+        this.socket = io(URL);
         this.state = {
-            userIndex: 0,
             visibleModal: false,
+            speedDateruserObj: {},
             speedDatingUser: [],
             scrollOffset: '',
             isloading: true,
@@ -56,12 +51,13 @@ class SpeedDatingCall extends BaseFormComponent {
             AsyncStorage.multiSet([['heighlightedUserIndex', JSON.stringify(heighlightedUserIndex)], ['speeddatingevent', JSON.stringify(speeddatingusers)]], () => {
                 AsyncStorage.multiGet(["speeddatingevent", "heighlightedUserIndex"], (error, stores) => {
                     speeddatingevent = stores[0][1] ? JSON.parse(stores[0][1]) : []
-                    heighlightedUserIndex = stores[1][1] ? JSON.parse(stores[1][1]) : []
+                    // heighlightedUserIndex = stores[1][1] ? JSON.parse(stores[1][1]) : []
                     console.log("speedDatingUserStore_heighlightedUserIndex", heighlightedUserIndex)
+                    userIndex = heighlightedUserIndex
+
                     if (Array.isArray(speeddatingevent) && heighlightedUserIndex !== '') {
                         this.setState({
                             speedDatingUser: speeddatingevent,
-                            userIndex: heighlightedUserIndex
                         }, () => this.sendNotificationForVideoCall(speeddatingevent, heighlightedUserIndex))
                     }
                 })
@@ -72,11 +68,11 @@ class SpeedDatingCall extends BaseFormComponent {
         }
     }
     speedDatingUserget = async () => {
-        const { state } = this.props.navigation;
-        console.log("speedDatingUserget_state", state)
+        const { state , goBack, navigate} = this.props.navigation;
+        console.log("speedDatingUserget_state_usereventData", state.params.usereventData._id)
         // var speedDatingEventDayId = state && state.params && state.params.speedDatingEventDayId ? state.params.speedDatingEventDayId : ''
-        var speedDatingEventDayId = "5ca19973992b010533f3cd91";
-        console.log("speedDatingUserget_speedDatingEventDayId", speedDatingEventDayId)
+        // var speedDatingEventDayId = "5ca19973992b010533f3cd91";
+        // console.log("speedDatingUserget_speedDatingEventDayId", speedDatingEventDayId)
         var speeddatingevent,
             heighlightedUserIndex;
         try {
@@ -88,20 +84,35 @@ class SpeedDatingCall extends BaseFormComponent {
 
                 if (Array.isArray(stores) && stores && stores[0] && stores[0][1] && stores[1] && stores[1][1] && heighlightedUserIndex !== '') {
                     console.log("speeddatingevent", speeddatingevent)
-                    console.log("heighlightedUserIndex", heighlightedUserIndex)
-
-                    if (speeddatingevent[heighlightedUserIndex] && speeddatingevent[heighlightedUserIndex].callStatus === "completed" && speeddatingevent[heighlightedUserIndex].feedback) {
+                    console.log("usereventData", state.params.usereventData.senderId)
+                    var speeddatinguserindex = _.findIndex(speeddatingevent, (object, key) => { return _.isEqual(object.userId, state.params.usereventData.senderId) });
+                    console.log("heighlightedUserIndex_before", speeddatingevent[speeddatinguserindex])
+                    userIndex = speeddatinguserindex
+                    if(speeddatinguserindex == -1 ){
+                        this.showSimpleMessage("", { backgroundColor: global.gradientsecondry }, i18n.t('appname'), i18n.t('sorrymsg'))
+                        navigate('notification')
+                    }else if(speeddatingevent[speeddatinguserindex] && (speeddatingevent[speeddatinguserindex].callStatus === "pending")){
+                        console.log("heighlightedUserIndexafter", speeddatingevent[speeddatinguserindex])
                         this.setState({
+                            speedDateruserObj: speeddatingevent[speeddatinguserindex],
                             speedDatingUser: speeddatingevent,
-
-                        }, () => this.sendNotificationForVideoCall(speeddatingevent, ++heighlightedUserIndex))
-                    } else {
-                        this.setState({
-                            speedDatingUser: speeddatingevent,
-                        }, () => this.sendNotificationForVideoCall(speeddatingevent, heighlightedUserIndex))
+                            isloading: false
+                        });
                     }
-                } else {
-                    this.getUsersPairForSpeedDating(speedDatingEventDayId)
+                    // if (speeddatingevent[speeddatinguserindex] && speeddatingevent[speeddatinguserindex].callStatus === "pending" && !speeddatingevent[speeddatinguserindex].feedback) {
+                    //     console.log("heighlightedUserIndexafter", speeddatingevent[speeddatinguserindex])
+                    //     this.setState({
+                    //         speedDateruserObj: speeddatingevent[speeddatinguserindex],
+                    //         speedDatingUser: speeddatingevent,
+                    //         isloading: false
+                    //     });
+                    // } else {
+                        
+                    //     // this.setState({
+                    //     //     speedDatingUser: speeddatingevent,
+                    //     //     isloading: false
+                    //     // })
+                    // }
                 }
             })
 
@@ -112,10 +123,10 @@ class SpeedDatingCall extends BaseFormComponent {
     speedDatinguserRemove = async (callback) => {
         let keys = ['speeddatingevent', 'heighlightedUserIndex'];
         try {
-           var removed =  AsyncStorage.multiRemove(keys, (error) => {
+            var removed = AsyncStorage.multiRemove(keys, (error) => {
                 console.log("error", error)
             });
-            if(removed){
+            if (removed) {
                 callback("success")
             }
             return true;
@@ -124,7 +135,6 @@ class SpeedDatingCall extends BaseFormComponent {
             return false;
         }
     }
-
     userInterval() {
         TimerMixin.setTimeout(() => {
             this.callnextuserforspeedDating()
@@ -132,6 +142,19 @@ class SpeedDatingCall extends BaseFormComponent {
     }
 
     componentDidMount = () => {
+        const { speedDatingUser } = this.state;
+        this.socket.on("userExitedFromSpeedDatingEvent", data => {
+            if (data) {
+                console.log("userExitedFromSpeedDatingEvent_data", data)
+                var exitEventuserIndex = _.findIndex(speedDatingUser, (object, key) => { return _.isEqual(object.userId.toString(), data.userId.toString()) });
+                if (exitEventuserIndex !== -1) {
+                    speedDatingUser[exitEventuserIndex]["isExitedFromEvent"] = true
+                    this.showSimpleMessage("", { backgroundColor: global.gradientsecondry }, speedDatingUser[exitEventuserIndex].fullName, i18n.t('userleftSpeeddatingEventmsg'))
+                    console.log("userExitedFromSpeedDatingEvent_speedDatingUser", speedDatingUser)
+                    this.updateSingleStore(speedDatingUser)
+                }
+            }
+        });
         // this.speedDatinguserRemove()
         // var data = "5ca19973992b010533f3cd91";
         // this.getUsersPairForSpeedDating(data);
@@ -177,12 +200,12 @@ class SpeedDatingCall extends BaseFormComponent {
             console.log("getSpeedDatingEvents_reject", reject)
         })
     }
-    sendNotificationForVideoCall(speedDatingUser, userIndex) {
-        const { state } = this.props.navigation;
+    sendNotificationForVideoCall = async (speedDatingUser, userIndex) => {
+        const { state, goBack, navigate } = this.props.navigation;
+        console.log("navigation", goBack)
+
         console.log("sendNotificationForVideoCall_state", state)
-        // var speedDatingEventDayId = state && state.params && state.params.speedDatingEventDayId ? state.params.speedDatingEventDayId : ''
-        var speedDatingEventDayId = "5ca19973992b010533f3cd91";
-        // const { userIndex } = this.state;
+        var speedDatingEventDayId = state && state.params && state.params.speedDatingEventDayId ? state.params.speedDatingEventDayId : ''
         console.log("speedDatingUser", speedDatingUser)
         console.log("userIndex", userIndex)
         // var callReceiverId = _.filter(speedDatingUser, (obj) => { return obj.isHighlight })
@@ -195,13 +218,12 @@ class SpeedDatingCall extends BaseFormComponent {
             "eventDayId": speedDatingEventDayId
         }
         console.log("sendNotificationForVideoCall_speedDatingUser", data)
-        Apirequest.sendNotificationForVideoCall(token, data, resolve => {
+        Apirequest.sendNotificationForSpeedDatingCall(token, data, resolve => {
             console.log("sendNotificationForVideoCall_resolve", resolve)
             if (resolve.message) {
                 this.showSimpleMessage("", { backgroundColor: global.gradientsecondry }, "", resolve.message)
-                this.setState({
-                    isloading: false
-                })
+                console.log("sendNotificationForVideoCall_resolve================??????????????")
+                navigate("notification")
             }
         }, reject => {
             console.log("sendNotificationForVideoCall_reject", reject)
@@ -215,7 +237,7 @@ class SpeedDatingCall extends BaseFormComponent {
             isloading: true
         })
         const { navigate } = this.props.navigation;
-        const { speedDatingUser, userIndex } = this.state;
+        const { speedDatingUser } = this.state;
         var dataItems = speedDatingUser[userIndex];
         console.log("dataItems", dataItems)
         navigate('speeddatingfeedback', {
@@ -228,23 +250,24 @@ class SpeedDatingCall extends BaseFormComponent {
 
         })
     }
-    notFeedbackGive(){
-
+    notFeedbackGive() {
     }
     callnextuserforspeedDating = () => {
         const { state, navigate } = this.props.navigation;
-        const { speedDatingUser, userIndex } = this.state;
-        var heighlightedUserIndex = userIndex;
-        speedDatingUser[heighlightedUserIndex]["feedback"] = true;
-        speedDatingUser[heighlightedUserIndex]["callStatus"] = "completed";
-        // speedDatingUser[heighlightedUserIndex]["isHighlight"] = false;
+        const { speedDatingUser } = this.state;
+        console.log("callnextuserforspeedDating_userIndex", userIndex)
+        speedDatingUser[userIndex]["feedback"] = true;
+        speedDatingUser[userIndex]["callStatus"] = "completed";
         var speedDaterIndex = userIndex;
+
         console.log("speedDatingUser======", speedDatingUser);
         console.log("speedDaterIndex======", speedDaterIndex);
         this.setState({
             isloading: true,
         })
-        var nextUsername = speedDatingUser && speedDatingUser[speedDaterIndex + 1] ? speedDatingUser[speedDaterIndex + 1].fullName : '';
+
+        var nextUsername = speedDatingUser && speedDatingUser[speedDaterIndex + 1] && !speedDatingUser[speedDaterIndex + 1].isExitedFromEvent ? speedDatingUser[speedDaterIndex + 1].fullName : '';
+
         (!nextUsername) ?
             this.speedDatinguserRemove(cb => {
                 console.log("cb", cb)
@@ -279,7 +302,7 @@ class SpeedDatingCall extends BaseFormComponent {
         try {
             AsyncStorage.setItem('speeddatingevent', JSON.stringify(newspeedDatingUser), () => {
                 AsyncStorage.getItem('speeddatingevent', (err, result) => {
-                    // console.log("updateSingleStore_speeddatingevent", JSON.parse(result))
+                    console.log("updateSingleStore_speeddatingevent", JSON.parse(result))
                     this.setState({
                         speedDatingUser: JSON.parse(result)
 
@@ -292,11 +315,12 @@ class SpeedDatingCall extends BaseFormComponent {
         }
     }
     render() {
+        const { goBack, state } = this.props.navigation;
         const { isloading, userIndex, startEvent } = this.state;
-                // var speedDatingEventDayId = state && state.params && state.params.speedDatingEventDayId ? state.params.speedDatingEventDayId : ''
-                var speedDatingEventDayId = "5ca19973992b010533f3cd91";
+        var speedDatingEventDayId = state && state.params && state.params.speedDatingEventDayId ? state.params.speedDatingEventDayId : ''
+        // var speedDatingEventDayId = "5ca19973992b010533f3cd91";
 
-        console.log("userIndex", userIndex)
+        console.log("speedDateruserObj", this.state.speedDateruserObj)
         if (isloading) {
             return <Loading />
         }
@@ -322,15 +346,15 @@ class SpeedDatingCall extends BaseFormComponent {
                 </View> 
                 */}
                 <SpeeddatingliveCall
+                {...this.props}
                     navigation={this.props.navigation}
-                    speedDateruserObj={this.state.speedDatingUser[userIndex]}
-                    userId={this.state.speedDatingUser[userIndex].userId}
+                    speedDateruserObj={this.state.speedDateruserObj}
+                    userId={this.state.speedDateruserObj.userId}
                     isloading={this.state.isloading}
                     callnextuserforspeedDating={this.callnextuserforspeedDating.bind(this)}
                     speeddatingfeedback={this.speeddatingfeedback.bind(this)}
-                    // updatSpeedDatingEvent={this.updatSpeedDatingEvent.bind(this)}
                     streamCreated_update={this.streamCreated_update.bind(this)}
-                    speedDatingEventDayId = {speedDatingEventDayId}
+                    speedDatingEventDayId={speedDatingEventDayId}
                 />
             </View>
         );

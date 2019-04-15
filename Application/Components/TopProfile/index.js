@@ -44,7 +44,7 @@ class TopProfile extends Component {
         Apirequest.getFavouriteUsers(token, '', resolve => {
             console.log("TopProfile_resolve", resolve)
 
-            if (resolve.data) {
+            if (resolve.data && Array.isArray(resolve.data) && resolve.data.length) {
                 var dataSource = [];
                 var monogamousData = [];
                 // console.log("TopProfile_resolve", resolve.data.data)
@@ -70,6 +70,11 @@ class TopProfile extends Component {
                 this.setState({
                     monogamoususerDataList: monogamousData,
                     dataSource: dataSource,
+                    isloading: false
+                })
+            }else{
+                this.setState({
+                    dataSource: [{fullName:"Welcome to matchologists" }],
                     isloading: false
                 })
             }
@@ -179,20 +184,22 @@ class TopProfile extends Component {
                             }
                             right={
                                 <TouchableOpacity
-                                    onPress={() => this.speedDatinguserRemove()}
-                                    style={{
-                                        width: "15%",
-                                        backgroundColor: "transparent",
-                                        justifyContent: "center",
-                                        alignItems: "center"
-                                    }}>
-                                    <Text style={{ fontFamily: "Avenir-Heavy", fontSize: 13, color: "rgba(255,255,255,100)" }}>Done</Text>
-                                </TouchableOpacity>
+                                    // onPress={() => this.speedDatinguserRemove()}
+                                    // style={{
+                                    //     width: "15%",
+                                    //     backgroundColor: "transparent",
+                                    //     justifyContent: "center",
+                                    //     alignItems: "center"
+                                    // }}
+                                    />
+
+                                //     <Text style={{ fontFamily: "Avenir-Heavy", fontSize: 13, color: "rgba(255,255,255,100)" }}>Done</Text>
+                                // </TouchableOpacity>
                             }
                         />
                     </SafeAreaView>
                 </LinearGradient>
-                <ScrollView showsVerticalScrollIndicator={false}>
+                {/* <ScrollView showsVerticalScrollIndicator={false}> */}
                     <View style={{ marginTop: 15, padding: 16, backgroundColor: "rgba(255, 255,255,100)" }}>
                         <Text style={{ fontFamily: "Avenir-Medium", fontSize: 15, color: "#C1C0C9", marginBottom: 16 }}>{i18n.t('monogamouslabel')}</Text>
                         <MonogamousList monogamoususerDataList={this.state.monogamoususerDataList} removeMonogamousUser={this.removeMonogamousUser.bind(this)} />
@@ -207,9 +214,10 @@ class TopProfile extends Component {
                             addFavouriteUserAsMonogamous={this.addFavouriteUserAsMonogamous.bind(this)}
                             removeFavouriteUser={this.removeFavouriteUser.bind(this)}
                             removeMonogamousUser={this.removeMonogamousUser.bind(this)}
+                            onRefresh= {()=>this.getFavouriteUsers()}
                         />
                     </View>
-                </ScrollView>
+                {/* </ScrollView> */}
             </View>
         );
     }

@@ -24,8 +24,8 @@ import _ from 'lodash';
 import backbutton from '../../images/icons/backbutton_gradient.png'
 import backbuttonwhite from '../../images/icons/backbutton.png'
 import metrics from '../../config/metrics';
-import checked from '../../../assets/icons/checked.png';
-import unchecked from '../../../assets/icons/unchecked.png';
+import close from '../../images/icons/Close.png';
+import invite from '../../images/icons/invite_icon.png';
 
 export default class AllEventsList extends BaseFormComponent {
     constructor(props) {
@@ -94,8 +94,8 @@ export default class AllEventsList extends BaseFormComponent {
                     keyExtractor={(item, index) => index.toString()}
                     refreshControl={
                         <RefreshControl
-                        refreshing={this.state.isRefreshing}
-                        onRefresh={this.props.onRefresh}
+                            refreshing={this.state.isRefreshing}
+                            onRefresh={this.props.onRefresh}
                         />
                     }
                 />
@@ -193,46 +193,46 @@ export default class AllEventsList extends BaseFormComponent {
     getTimeFormat(date) {
         var date1 = new Date(date);
         var date2 = new Date();
-            return moment(date1).from(moment(date2));
+        return moment(date1).from(moment(date2));
     }
 
-    speedDatingRequest =(item)=> {
+    speedDatingRequest = (item) => {
         console.log("speedDatingRequest_item", item)
         return <>
-                <Text style={{ alignSelf: "flex-end" }} > {this.getTimeFormat(item.date)}</Text>
-                <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginVertical: 5 }}>
-                    <LinearGradient
-                        colors={['#DB3D88', '#273174']}
-                        start={{ x: 0, y: 1 }}
-                        end={{ x: 1, y: 1 }}
-                        style={[styles.answerBtn, { flex: 1, backgroundColor: 'white' }]}>
-                        <TouchableOpacity
-                            // disabled={item.isRsvped ? true : false} 
-                            style={{ paddingVertical: 5, paddingHorizontal: 10, borderRadius: 15, justifyContent: "center", alignItems: "center" }}
-                            onPress={() => this.confirmJoinFroRsvp(item)}>
-                            <Text style={{ color: "#FFF" }}> RSVP </Text>
-                        </TouchableOpacity>
-                    </LinearGradient>
-                    <LinearGradient
-                        colors={['#DB3D88', '#273174']}
-                        start={{ x: 0, y: 1 }}
-                        end={{ x: 1, y: 1 }}
-                        style={[styles.answerBtn, { flex: 1, padding: 1 }]}>
-                        <TouchableOpacity
-                            // disabled={item.isRsvped ? true : false}
-                            style={[{ flex: 1, backgroundColor: 'white', borderRadius: 15, justifyContent: "center", alignItems: "center" }]}
-                            onPress={() =>console.log(item)}>
-                            <Text style={[styles.answerTxt, { color: '#313138', fontFamily: 'Avenir-Heavy' }]}> Not Now</Text>
-                        </TouchableOpacity>
-                    </LinearGradient>
-                </View>
-            </>
-        
+            <Text style={{ alignSelf: "flex-end" }} > {this.getTimeFormat(item.date)}</Text>
+            <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginVertical: 5 }}>
+                <LinearGradient
+                    colors={['#DB3D88', '#273174']}
+                    start={{ x: 0, y: 1 }}
+                    end={{ x: 1, y: 1 }}
+                    style={[styles.answerBtn, { flex: 1, backgroundColor: 'white' }]}>
+                    <TouchableOpacity
+                        // disabled={item.isRsvped ? true : false} 
+                        style={{ paddingVertical: 5, paddingHorizontal: 10, borderRadius: 15, justifyContent: "center", alignItems: "center" }}
+                        onPress={() => this.confirmJoinFroRsvp(item)}>
+                        <Text style={{ color: "#FFF" }}> RSVP </Text>
+                    </TouchableOpacity>
+                </LinearGradient>
+                <LinearGradient
+                    colors={['#DB3D88', '#273174']}
+                    start={{ x: 0, y: 1 }}
+                    end={{ x: 1, y: 1 }}
+                    style={[styles.answerBtn, { flex: 1, padding: 1 }]}>
+                    <TouchableOpacity
+                        // disabled={item.isRsvped ? true : false}
+                        style={[{ flex: 1, backgroundColor: 'white', borderRadius: 15, justifyContent: "center", alignItems: "center" }]}
+                        onPress={() => console.log(item)}>
+                        <Text style={[styles.answerTxt, { color: '#313138', fontFamily: 'Avenir-Heavy' }]}> Not Now</Text>
+                    </TouchableOpacity>
+                </LinearGradient>
+            </View>
+        </>
+
     }
 
     renderRow(item) {
         var dateObj = new Date(item.date);
-        var month = dateObj.getUTCMonth()+1;
+        var month = dateObj.getUTCMonth() + 1;
         var day = dateObj.getUTCDate();
         var year = dateObj.getUTCFullYear();
 
@@ -247,7 +247,7 @@ export default class AllEventsList extends BaseFormComponent {
         console.log('day=', day);
         console.log('year=', year);
         console.log('mydate=', mydate);
-        
+
         console.log('m=', m);
         console.log('d=', d);
         console.log('y=', y);
@@ -255,26 +255,41 @@ export default class AllEventsList extends BaseFormComponent {
         // console.log("row_id", item.row_id)
         var btnsTypes = [
             {
-                text: "Invite Friends", onPress: () => this.setState({
-                    speedDatingEventDayId: item.eventId,
-                    invitefriendView: true
-                }),
-                color: "#fff",
-                backgroundColor: global.gradientprimary
-
+                component:
+                    <LinearGradient
+                        colors={['#DB3D88', '#273174']}
+                        start={{ x: 0, y: 1 }}
+                        end={{ x: 1, y: 1 }}
+                        style={{ flex: 1, borderRadius: 10, overflow: "hidden" }}>
+                        <TouchableOpacity onPress={() => this.setState({
+                            speedDatingEventDayId: item.eventId,
+                            invitefriendView: true
+                        })} style={{ flex: 1, justifyContent: "center", alignItems: "center" }} >
+                            <Image style={{ height: 22, width: 22 }} source={invite} />
+                        </TouchableOpacity>
+                    </LinearGradient>,
+                backgroundColor: "transparent"
             },
             {
-                text: "Cancel RSVP", onPress: () => this.cancelspeedDating(item),
-                color: "#fff",
-                backgroundColor: global.gradientsecondry
-            }
+                component:
+                    <LinearGradient
+                        colors={['#DB3D88', '#273174']}
+                        start={{ x: 0, y: 1 }}
+                        end={{ x: 1, y: 1 }}
+                        style={{ flex: 1, borderRadius: 10, overflow: "hidden"}}>
+                        <TouchableOpacity onPress={() => this.cancelspeedDating(item)} style={{ flex: 1, justifyContent: "center", alignItems: "center" }} >
+                            <Image style={{ height: 22, width: 22 }} source={close} resizeMethod="resize" resizeMode="contain" />
+                        </TouchableOpacity>
+                    </LinearGradient>,
+                backgroundColor: "transparent"
+            },
         ];
-        console.log('cond',  item && item.isRsvped );
-                    console.log('cond',  date < mydate);
+        console.log('cond', item && item.isRsvped);
+        console.log('cond', date < mydate);
         return (
             <>
                 {
-                    
+
                     item && item.isRsvped && date < mydate ?
                         <Swipeout
                             autoClose={true}
@@ -313,9 +328,9 @@ export default class AllEventsList extends BaseFormComponent {
                             </View>
                         </Swipeout>
                         :
-                        item && !item.isRsvped && item.status ==='upcoming' ?
+                        item && !item.isRsvped && item.status === 'upcoming' ?
                             <>
-                                <View  style={{ backgroundColor: item.isOpen ? "#FFF" : "#F5F5F5", flexDirection: "row", paddingHorizontal: 15, paddingVertical: 16 }}>
+                                <View style={{ backgroundColor: item.isOpen ? "#FFF" : "#F5F5F5", flexDirection: "row", paddingHorizontal: 15, paddingVertical: 16 }}>
                                     <View style={{ flex: 2, justifyContent: "center", alignItems: "center", backgroundColor: "transparent" }}>
                                         <Image source={item.uri ? { uri: item.uri } : require('../../images/applogo.png')} style={{ width: 60, height: 60, borderRadius: 30 }} />
                                     </View>
@@ -325,9 +340,9 @@ export default class AllEventsList extends BaseFormComponent {
                                             <Text style={{ color: "#3E3E47", fontSize: 17, fontFamily: "Avenir-Heavy", lineHeight: 22, }}>{day + "/" + month + "/" + year + " " + item.time} </Text>
                                             <Text style={{ color: "#D43C87", fontSize: 12, fontFamily: "Avenir-Medium", lineHeight: 22 }}>{
                                                 // date < mydate ? 
-                                                item.status 
+                                                item.status
                                                 // : "past Event"
-                                                }</Text>
+                                            }</Text>
                                         </View>
                                         {
                                             this.speedDatingRequest(item)
@@ -351,34 +366,34 @@ export default class AllEventsList extends BaseFormComponent {
                                             {/* <Text style={{ color: "#3E3E47", fontSize: 17, fontFamily: "Avenir-Heavy", lineHeight: 22, }}>{day + "/" + month + "/" + year + " " + item.time} </Text> */}
                                             <Text style={{ color: "#D43C87", fontSize: 12, fontFamily: "Avenir-Medium", lineHeight: 22 }}>{
                                                 // date < mydate ? 
-                                                item.status 
+                                                item.status
                                                 // : "past Event"
-                                                }</Text>
+                                            }</Text>
                                         </View>
                                         <Text style={{ alignSelf: "flex-end" }} > {this.getTimeFormat(item.date)}</Text>
                                     </View>
                                 </View>
-                                : 
+                                :
                                 <View style={{ backgroundColor: item.isOpen ? "#FFF" : "#F5F5F5", flexDirection: "row", paddingHorizontal: 15, paddingVertical: 16 }}>
-                                <View style={{ flex: 2, justifyContent: "center", alignItems: "center", backgroundColor: "transparent" }}>
-                                    <Image source={item.uri ? { uri: item.uri } : require('../../images/applogo.png')} style={{ width: 60, height: 60, borderRadius: 30 }} />
-                                </View>
-                                <View style={{
-                                    flex: 8, backgroundColor: "transparent", justifyContent: "center",
-                                    justifyContent: "center", paddingHorizontal: 15
-                                }}>
-                                    <Text style={{ color: "#3E3E47", fontSize: 17, fontFamily: "Avenir-Heavy", lineHeight: 22, }}>{item.eventName ? item.eventName : 'Matchologist'}</Text>
-                                    <View style={{ justifyContent: 'space-between' }}>
-                                        {/* <Text style={{ color: "#3E3E47", fontSize: 17, fontFamily: "Avenir-Heavy", lineHeight: 22, }}>{day + "/" + month + "/" + year + " " + item.time} </Text> */}
-                                        <Text style={{ color: "#D43C87", fontSize: 12, fontFamily: "Avenir-Medium", lineHeight: 22 }}>{
-                                            // date < mydate ? 
-                                            item.status 
-                                            // : "past Event"
-                                            }</Text>
+                                    <View style={{ flex: 2, justifyContent: "center", alignItems: "center", backgroundColor: "transparent" }}>
+                                        <Image source={item.uri ? { uri: item.uri } : require('../../images/applogo.png')} style={{ width: 60, height: 60, borderRadius: 30 }} />
                                     </View>
-                                    <Text style={{ alignSelf: "flex-end" }} > {this.getTimeFormat(item.date)}</Text>
+                                    <View style={{
+                                        flex: 8, backgroundColor: "transparent", justifyContent: "center",
+                                        justifyContent: "center", paddingHorizontal: 15
+                                    }}>
+                                        <Text style={{ color: "#3E3E47", fontSize: 17, fontFamily: "Avenir-Heavy", lineHeight: 22, }}>{item.eventName ? item.eventName : 'Matchologist'}</Text>
+                                        <View style={{ justifyContent: 'space-between' }}>
+                                            {/* <Text style={{ color: "#3E3E47", fontSize: 17, fontFamily: "Avenir-Heavy", lineHeight: 22, }}>{day + "/" + month + "/" + year + " " + item.time} </Text> */}
+                                            <Text style={{ color: "#D43C87", fontSize: 12, fontFamily: "Avenir-Medium", lineHeight: 22 }}>{
+                                                // date < mydate ? 
+                                                item.status
+                                                // : "past Event"
+                                            }</Text>
+                                        </View>
+                                        <Text style={{ alignSelf: "flex-end" }} > {this.getTimeFormat(item.date)}</Text>
+                                    </View>
                                 </View>
-                            </View>
                 }
             </>
         )

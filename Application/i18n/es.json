@@ -1,6 +1,10 @@
 {
     "id": "Espanol",
+    "appname": "Matchologists",
+    "invitationmsg":"Greetings from Matchologists. You're receiving this email/text because a friend of yours {{fullname}} has subscribed to Matchologists and wanted to invite you to try Matchologists for a complimentary 10 free trial. Matchologists is a new but most unique dating app out on the market, our new features are highly rated. Our app caters and benefits all our users whether you're newly single or have been single for some time. On behalf of your friend John Doe and our executive leadership team we welcome you to Matchologists. Please click on this link {{ reflink }} to download the app and start your complimentary 10 day free trial",
+    "invitationmsgemail":"Greetings from Matchologists. You're receiving this email/text because a friend of yours {{fullname}}  has subscribed to Matchologists and requested your assistance. John Doe needs a close friend or family member to complete a quick question to help complete her profile. John Doe asks to answer the question the best to your ability... . Choose 10 options that you would generally describes your friend:",
     "welcometitle": "Welcome to Matchologists.\n Find the most personalized \n matches just for you!",
+    "notmatchlist":"User is not in your friend list",
     "welcomebacktitle": "Welcome back!",
     "welcome": "Welcome!",
     "emaillabel": "EMAIL",
@@ -18,7 +22,7 @@
     "namelabel": "FIRST NAME  MIDDLE NAME LAST NAME",
     "fullnameLabel":"FIRST NAME  MIDDLE NAME LAST NAME",
     "phonenumberlabel": "PHONE NUMBER",
-    "pincodelabel":"ZIP CODE",
+    "zipcodelabel":"ZIP CODE",
     "termslabel": "By signing up you're accepting our",
     "termsandservicelabel": "Terms and Service",
     "andlabel": "and",
@@ -82,6 +86,23 @@
     "invitefriendtitle":"Invite Friend",
     "forgotpasswordHeader":"Forgot Password",
     "aboutparnerLabel":"ABOUT YOUR PARTNER",
+    "compatibilitypercentagelable": "Compatibility Percentage",
+    "changepasswordHeader": "Change Password",
+    "oldpasswordlabel": "Old Password",
+    "newpasswordlabel": "New Password",
+    "myeventLabel" : "Events",
+    "speeddatingsettingslabel":"Speed Dating",
+    "speeddatingsettingtitle": "Speed Dating",
+    "allopenLabel": "All open",
+    "speedDatingCalllabel" : "Start SpeedDating Event",
+    "passwordhintText": "Password should contain least 1 uppercase 1 lowercase minimum 7 maximum 12 digit",
+    "feedback_attention_alert_Label": "Attention! You did not answer your feedback questions for one or more daters at your speed dating event. This is your warning. Failure to answer questions again will automatically suspend your speed dating privileges for 1 week. A second suspension will result in a longer 2-4 week suspension. All users are required to give their feedback, your feedback is important and can will help us support other users development and self growth. Thank you so much for your support",
+    "userleftSpeeddatingEventmsg":"Attention! Your speed dating date had an emergency and had to exit event, please stand by for your next chatter",
+   "userwaitingfordatermsg" :"Attention! Please be patient, your date is on their way. While they connect feel free to view your next speed daters profiles.",
+   "daternotConnected":"Attention! We apologize for this inconvenience. The user {{var}} broke a speed dating rule and their speed dating privileges will be suspended for a week. We value your time and everyone else's time so we'll continue to enforce our rules. We hope this doesn't happen to you again. Thank you for attending our speed dating event and we look forward to having you attend the next one",
+    
+    "sorrymsg" : "Sorry for inconvenience, dater not found",
+    "calltimeingexpired" : "Call timing with dater {{var}} is expired.",
     "validation": {
         "emaillabel":"Email is required", 
         "emailtitle": "Please provide an email address",
@@ -110,6 +131,10 @@
         "pinlabel":"Your postal code is empty",
         "pintitle":"Please provide postal code",
         "validpinlabel":"Zip code is not valid",
-        "validpintitle":"Please provide 5 digit Zip code"
+        "validpintitle":"Please provide 5 digit Zip code",
+        "oldpasswordlabel": "Old password input is not provide",
+        "oldpasswordtitle":"Please provide old password",
+        "newpasswordlabel":"New password input is not provide",
+        "newpasswordtitle":"Please provide new password"
     }
 }

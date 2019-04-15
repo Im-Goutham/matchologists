@@ -72,12 +72,9 @@ const ApiRequest = {
             console.log("error_pokeUser", error)
         })
     },
-    sendFriendRequest(token, userId, resolve, reject) {
+    sendFriendRequest(token, data, resolve, reject) {
         let header = {
             'Authorization': token,
-        }
-        let data = {
-            "profileUserId": userId
         }
         ApiManager.callwebservice('POST', 'api/sendFriendRequest', header, data, (success) => {
             let response = JSON.parse(success._bodyInit);
@@ -442,6 +439,25 @@ const ApiRequest = {
             return reject(error);
         })
     },
+    sendNotificationForSpeedDatingCall(token, Data, resolve, reject) {
+        let header = {
+            'Authorization': token,
+            'Content-Type': "application/json"
+        }
+        ApiManager.callwebservice('POST', 'api/sendNotificationForSpeedDatingCall', header, Data, (success) => {
+            let response = JSON.parse(success._bodyInit);
+            console.log("response", response)
+            if (response.status === 0) {
+                return reject(response);
+
+            } else if (response.status === 1) {
+                return resolve(response);
+            }
+        }, (error) => {
+            console.log("error_getSpeedDatingEvents", error)
+            return reject(error);
+        })
+    },
     inviteUserForSpeedDatingEvent(token, Data, resolve, reject) {
         let header = {
             'Authorization': token,
@@ -574,6 +590,44 @@ const ApiRequest = {
             console.log("error_exitFromSpeedDatingEvent", error)
             return reject(error);
         })
-    }
+    },
+    warningForSpeedDatingEvent(token, Data, resolve, reject) {
+        let header = {
+            'Authorization': token,
+            'Content-Type': "application/json"
+        }
+        ApiManager.callwebservice('POST', 'api/warningForSpeedDatingEvent', header, Data, (success) => {
+            let response = JSON.parse(success._bodyInit);
+            console.log("response", response)
+            if (response.status === 0) {
+                return reject(response);
+
+            } else if (response.status === 1) {
+                return resolve(response);
+            }
+        }, (error) => {
+            console.log("warningForSpeedDatingEvent", error)
+            return reject(error);
+        })
+    },
+    getCMSFromPageId(token, Data, resolve, reject) {
+        let header = {
+            'Authorization': token,
+            'Content-Type': "application/json"
+        }
+        ApiManager.callwebservice('GET', 'api/getCMSFromPageId/event_rules', {}, '', (success) => {
+            let response = JSON.parse(success._bodyInit);
+            console.log("response", response)
+            if (response.status === 0) {
+                return reject(response);
+
+            } else if (response.status === 1) {
+                return resolve(response);
+            }
+        }, (error) => {
+            console.log("warningForSpeedDatingEvent", error)
+            return reject(error);
+        })
+    },
 }
 module.exports = ApiRequest

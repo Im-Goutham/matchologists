@@ -3,6 +3,7 @@ import {
     View,
     Text,
     StyleSheet,
+    SafeAreaView,
     ScrollView,
     TouchableOpacity,
     Animated,
@@ -59,7 +60,8 @@ export default class SettingsList extends Component {
             fromTime_showPicker: false,
             allOpen: false,
             fromTime: '',
-            toTime: ''
+            toTime: '',
+            is_changeLanguage: false
         };
     }
     saveUserSettings = async (success) => {
@@ -68,6 +70,7 @@ export default class SettingsList extends Component {
         await AsyncStorage.setItem("localfilter", JSON.stringify(localfilter))
         var postData = Object.assign({}, data, localfilter)
         console.log("saveUserSettings_data", postData)
+
         Apirequest.saveUserSettings(token, postData, resolve => {
             if (success) {
                 return success({ data: "user Setting Saved" })
@@ -110,13 +113,15 @@ export default class SettingsList extends Component {
                 console.log("data.......", Data)
                 console.log("filterData.......", filterData)
                 console.log("speeddatingSettings", Data && Data.speeddatingSettings)
-                if (Data && Data.speeddatingSettings && Data.speeddatingSettings) {
+                if (Data && Data.speeddatingSettings && Data.speeddatingSettings && Array.isArray(Data.speeddatingSettings.timeSlot)) {
+                    console.log("daysArray", daysArray)
 
-                    if (!Data.speeddatingSettings.allOpen) {
+                    if (Data.speeddatingSettings.timeSlot) {
                         daysArray.map((day) => {
-                            let isExist = _.filter(Data.speeddatingSettings, (timeslot) => {
-                                return _.isEqual(timeslot.day, day.day.toLowerCase());
+                            let isExist = _.filter(Data.speeddatingSettings.timeSlot, (timeslot) => {
+                                return _.isEqual(timeslot.day.toLowerCase(), day.day.toLowerCase());
                             });
+                            console.log("isExist", isExist)
                             if (isExist && Array.isArray(isExist) && isExist.length) {
                                 day['isSelected'] = true;
                             }
@@ -131,14 +136,14 @@ export default class SettingsList extends Component {
                     newwink: Data && Data.newWinkNotification ? Data.newWinkNotification : false,
                     privateAccount: Data && Data.isAccountPrivate ? Data.isAccountPrivate : false,
                     daysArray: daysArray,
-                    dateselect: Data && Data.speeddatingSettings && Data.speeddatingSettings.length ? true : false,
+                    dateselect: Data && Data.speeddatingSettings && Data.speeddatingSettings.timeSlot && Data.speeddatingSettings.timeSlot.length ? true : false,
 
                     allOpen: Data && Data.speeddatingSettings && Data.speeddatingSettings.allOpen ? Data.speeddatingSettings.allOpen : false,
 
-                    fromTime: Data && Data.speeddatingSettings && Data.speeddatingSettings.length ? this.generateTimeString(Data.speeddatingSettings[0].fromTime)
+                    fromTime: Data && Data.speeddatingSettings && Data.speeddatingSettings.timeSlot && Data.speeddatingSettings.timeSlot.length && Data.speeddatingSettings.timeSlot[0].fromTime ? this.generateTimeString(Data.speeddatingSettings.timeSlot[0].fromTime)
                         // Data.speeddatingSettings[0].fromTime 
                         : '',
-                    toTime: Data && Data.speeddatingSettings && Data.speeddatingSettings.length ? this.generateTimeString(Data.speeddatingSettings[0].toTime)
+                    toTime: Data && Data.speeddatingSettings && Data.speeddatingSettings.timeSlot && Data.speeddatingSettings.timeSlot.length && Data.speeddatingSettings.timeSlot[0].toTime ? this.generateTimeString(Data.speeddatingSettings.timeSlot[0].toTime)
                         // Data.speeddatingSettings[0].toTime 
                         : ''
                 })
@@ -163,8 +168,13 @@ export default class SettingsList extends Component {
         data.isAccountPrivate = state;
         this.setState({ privateAccount: state }, () => this.saveUserSettings())
     }
-    allopenSetting() {
-        this.setState({ allOpen: !this.state.allOpen })
+    allopenSetting(state) {
+        daysArray = _.map(daysArray, obj=> { return {...obj, isSelected:false }})
+        console.log("allopenSetting_daysArray", daysArray)
+        this.setState({ 
+            allOpen: state,
+            daysArray: daysArray
+        })
     }
     compatibilityPercentage(value) {
         localfilter.compatibilityPercentage = value.toString()
@@ -177,7 +187,8 @@ export default class SettingsList extends Component {
     selectedDays(value) {
         value.isSelected ? value.isSelected = false : value.isSelected = true;
         this.setState({
-            daysArray: this.state.daysArray
+            daysArray: this.state.daysArray,
+            allOpen: false
         })
     }
     availableDays = () => {
@@ -204,30 +215,25 @@ export default class SettingsList extends Component {
             : undefined
     }
     gettime(date) {
+        console.log("gettime", date)
         var hour = date.getHours();
         var minutes = date.getMinutes();
-        return moment(date).format("hh:mm")
+        return moment(date).format("HH:mm")
         // return hour + ":" + minutes
 
     }
     validation() {
         var { daysArray, fromTime, toTime } = this.state;
         var daysArray_length = _.size(_.filter(this.state.daysArray, obj => { return obj.isSelected === true }))
-
-        //    console.log("daysArray", daysArray)
-        //    console.log("daysArray_length", daysArray_length)
-        //    console.log("fromTime", fromTime)
-        //    console.log("toTime", toTime)
-
         if (daysArray && daysArray_length) {
-            if (!fromTime) {
-                console.log("i am not valid")
-                return false
-            } else if (!toTime) {
-                return false
-            } else {
-                return true
-            }
+            // if (!fromTime) {
+            //     console.log("i am not valid")
+            //     return false
+            // } else if (!toTime) {
+            //     return false
+            // } else {
+            //     return true
+            // }
 
         } else {
             // data.speeddatingSettings = [];
@@ -247,18 +253,28 @@ export default class SettingsList extends Component {
         if (!this.validation()) {
             return
         }
+        var newArr 
         var days = _.filter(this.state.daysArray, obj => { return obj.isSelected === true });
-        if (days && Array.isArray(days) && days.length) {
+        console.log("saveSpeeddatingsettings_days", days)
+        if(this.state.allOpen){
+            data.speeddatingSettings = { allOpen: true };
+
+        }else if (days && Array.isArray(days) && days.length) {
             let result = _.map(days, object => { return _.omit(object, ['isSelected']) })
-            const newArr = result.map(el => ({ ...el, ...{ fromTime: this.gettime(this.state.fromTime), toTime: this.gettime(this.state.toTime) } }));
-            data.speeddatingSettings = newArr;
-            // console.log("saveSpeeddatingsettings_days", days)
-            // console.log("saveSpeeddatingsettings_result", result)
-            // console.log("saveSpeeddatingsettings", newArr)
-        }else{
+            this.state.fromTime && this.state.toTime ?
+            newArr  = result.map(el => ({ day : el.day.toLowerCase(), ...{ fromTime:  this.gettime(this.state.fromTime), toTime: this.gettime(this.state.toTime) } }))
+            :    
+            newArr = result.map(el => ({ day : el.day.toLowerCase() }));                
+            
+            data.speeddatingSettings = { allOpen: false, timeSlot: newArr };;
+            console.log("saveSpeeddatingsettings_result", result)
+            console.log("saveSpeeddatingsettings", newArr)
+        } else {
             data.speeddatingSettings = { allOpen: this.state.allOpen };
             // console.log("allopenSetting", data)
         }
+        console.log("allopenSetting", data)
+
         this.saveUserSettings(success => {
             if (success) {
                 this.setState({
@@ -268,14 +284,18 @@ export default class SettingsList extends Component {
         })
     }
     formatAMPM(date) {
-        var hours = date.getHours();
-        var minutes = date.getMinutes();
-        var ampm = hours >= 12 ? 'pm' : 'am';
-        hours = hours % 12;
-        hours = hours ? hours : 12; // the hour '0' should be '12'
-        minutes = minutes < 10 ? '0' + minutes : minutes;
-        var strTime = hours + ':' + minutes + ' ' + ampm;
-        return strTime;
+        // console.log("formatAMPM", date)
+        // console.log( moment(date, 'ddd DD-MMM-YYYY, hh:mm A').format('hh:mm A') );
+
+        // var hours = date.getHours();
+        // var minutes = date.getMinutes();
+        // var ampm = hours >= 12 ? 'PM' : 'AM';
+        // hours = hours % 12;
+        // hours = hours ? hours : 12; // the hour '0' should be '12'
+        // minutes = minutes < 10 ? '0' + minutes : minutes;
+        // var strTime = hours + ':' + minutes + ' ' + ampm;
+        // console.log("strTime", strTime)
+        return moment(date, 'ddd DD-MMM-YYYY, hh:mm A').format('hh:mm A');
     }
 
     render() {
@@ -283,6 +303,15 @@ export default class SettingsList extends Component {
             <View style={{ flex: 1 }}>
                 {!this.state.speeddatingsettingsmodal ?
                     <ScrollView>
+                        <View style={{ justifyContent: "flex-end", paddingHorizontal: 16, paddingTop: 16, paddingBottom: 4 }}>
+                            <Text style={{ fontFamily: "Avenir-Medium", fontSize: 15, color: "#909096" }}>{i18n.t('languagesettingslabel')}</Text>
+                        </View>
+                        <TouchableOpacity onPress={() => this.setState({ is_changeLanguage: true })} style={{ height: 58, backgroundColor: "rgba(255,255,255,100)", paddingHorizontal: 16, borderBottomColor: "rgba(245,245,245,100)", borderBottomWidth: 1, flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+                            <Text style={{ fontFamily: "Avenir-Medium", fontSize: 17, color: "#3E3E47" }}>
+                                Language</Text>
+                            <Text>{i18n.translations[this.props.language].id}</Text>
+                        </TouchableOpacity>
+
                         <View style={{ justifyContent: "flex-end", paddingHorizontal: 16, paddingTop: 16, paddingBottom: 4 }}>
                             <Text style={{ fontFamily: "Avenir-Medium", fontSize: 15, color: "#909096" }}>{i18n.t('notificationsettingsLabel')}</Text>
                         </View>
@@ -466,7 +495,7 @@ export default class SettingsList extends Component {
                                 justifyContent: "center",
                                 alignItems: "center"
                             }}>
-                                <Text style={{ fontFamily: "Avenir-Medium", fontSize: 15, color: "#D43C87" }}>done</Text>
+                                <Text style={{ fontFamily: "Avenir-Medium", fontSize: 15, color: "#D43C87" }}>{i18n.t('donelabel')}</Text>
                             </TouchableOpacity>
                         </View>
                         <ScrollView style={{ paddingHorizontal: 16 }}>
@@ -520,12 +549,12 @@ export default class SettingsList extends Component {
                                         <View style={{ justifyContent: "flex-end", paddingHorizontal: 10, paddingTop: 10, paddingBottom: 4 }}>
                                             <Text style={{ fontFamily: "Avenir-Medium", fontSize: 15, color: "#909096" }}>{i18n.t('allopenLabel')}</Text>
                                         </View>
-                                        <TouchableOpacity onPress={()=>this.allopenSetting()}
+                                        <View onPress={() => this.allopenSetting()}
                                             style={{ height: 54, borderRadius: 5, backgroundColor: "rgba(255,255,255,100)", paddingHorizontal: 10, borderBottomColor: "rgba(245,245,245,100)", borderBottomWidth: 1, flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
                                             <Text style={{ fontFamily: "Avenir-Medium", fontSize: 17, color: "#3E3E47" }}>
                                                 All Open</Text>
 
-                                            <View style={{ backgroundColor: "transparent" }}>
+                                            {/* <View style={{ backgroundColor: "transparent" }}>
                                                 <Image source={ this.state && this.state.allOpen ? checked : unchecked}
                                                     style={{
                                                         width: 24, height: 24,
@@ -533,12 +562,12 @@ export default class SettingsList extends Component {
                                                     resizeMethod='resize'
                                                     resizeMode="contain"
                                                 />
-                                            </View>
-                                            {/* <Toggle
-                                                isOn={this.state.allopen}
+                                            </View> */}
+                                            <Toggle
+                                                isOn={this.state.allOpen}
                                                 onToggle={state => this.allopenSetting(state)}
-                                            /> */}
-                                        </TouchableOpacity>
+                                            />
+                                        </View>
 
                                     </>
                             }
@@ -555,34 +584,46 @@ export default class SettingsList extends Component {
                     onConfirm={this._handleDatePicked.bind(this)}
                     onCancel={this._hideDateTimePicker.bind(this)}
                 />
-                {/* <Modal backdropOpacity={0.5}
-                                isVisible={this.state.fromTime_showPicker}
-                                onBackdropPress={() => this.setState({ fromTime_showPicker: false })}
-                                onBackButtonPress={() => this.setState({ fromTime_showPicker: false })}
-                                style={{ padding: 0, margin: 0 }}>
-                                <View style={{ marginTop: "80%", backgroundColor: "#FFF", }}>
-                                    <View style={{ backgroundColor: "#FFF", height: 200 }}>
-                                        <Picker
-                                            selectedValue={this.props.dynamicvalue}
-                                            style={{ height: 50, width: IS_Android ? 80 : undefined }}
-                                            onValueChange={(itemValue, itemIndex) => this.selecttime(itemValue, itemIndex, this.props.answer)}
-                                            itemStyle={styles.answerTxt}
-                                        >
-                                            {
-                                                this.renderPickeroption()
-                                            }
-                                        </Picker>
-                                    </View>
-                                    <View style={{ flexDirection: "row", height: 50, backgroundColor: "#FFF", borderTopWidth: 1 }}>
-                                        <TouchableOpacity style={{ flex: 1, height: 50, justifyContent: "center", alignItems: "center" }} onPress={() => this.setState({ fromTime_showPicker: false })}>
-                                            <Text>Cancel</Text>
-                                        </TouchableOpacity>
-                                    </View>
-                                </View>
-                            </Modal> */}
+                <Modal
+                    backdropOpacity={0.3}
+                    isVisible={this.state.is_changeLanguage}
+                    onSwipe={() => this.setState({ is_changeLanguage: false })}
+                    swipeDirection="down"
+                    // scrollTo={this.handleScrollTo}
+                    style={{ margin: 0, }}>
+                    <View style={{ flex: 1 }} />
+                    <View style={{ flex: 0, backgroundColor: "#FFF" }}>
+                        <Text style={{ color: global.gradientprimary, fontFamily: "Avenir-Medium", fontSize: 14, marginVertical: 10, textAlign: "center" }}>{i18n.t('selectlanguage')}  </Text>
+                        <View style={{ backgroundColor: "#909096", height: 1 }} />
+                        {this.renderLanguage()}
+                        <View style={{ backgroundColor: "#909096", height: 1 }} />
+                        <TouchableOpacity style={{ width: '100%', alignItems: "center", justifyContent: "center" }} onPress={() => this.setState({ is_changeLanguage: false})}>
+                            <Text style={{ color: global.gradientsecondry, fontFamily: "Avenir-Heavy", fontSize: 20, marginVertical: 10 }} > {i18n.t('cancel')} </Text>
+                        </TouchableOpacity>
+                    </View>
+                    <View style={{ height:30}} />
+                </Modal>
             </View>
         );
     }
+    changeMyLocalLanguage(item) {
+        this.setState({
+            is_changeLanguage: !this.state.is_changeLanguage
+        }, this.props.savelocallanguage(item))
+    }
+    renderLanguage() {
+        const { language } = this.props;
+        console.log("language12346546579879", language)
+        return Object.keys(i18n.translations).map((item, index) => {
+            console.log("language12346546579879_afetr", item);
+            return (
+                <TouchableOpacity onPress={() => this.changeMyLocalLanguage(item)} style={[styles.language_button, { backgroundColor: item === language ? 'rgba(39, 49, 116, 50)' : "#FFF" }]} key={index}>
+                    <Text style={{ color: item === language ? "#FFF" : global.gradientsecondry, fontFamily: "Avenir-Heavy", fontSize: 17 }}>{i18n.translations[item].id}</Text>
+                </TouchableOpacity>
+            )
+        })
+    }
+
     _hideDateTimePicker(e) {
         console.log("_hideDateTimePicker", e)
         this.setState({
@@ -706,7 +747,13 @@ const styles = {
         flex: 1,
         borderRadius: 5,
         paddingHorizontal: 6
-    }
+    },
+    language_button: {
+        height: 45,
+        alignItems: "center",
+        justifyContent: "center",
+    },
+
 }
 
 {/* <Modal

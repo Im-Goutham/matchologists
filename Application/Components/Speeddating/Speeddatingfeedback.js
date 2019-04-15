@@ -35,15 +35,34 @@ if (Platform.OS === 'android') UIManager.setLayoutAnimationEnabledExperimental(t
 var data = {};
 
 class Feedback extends Component {
-    setTimePassed() {
+    nextUser() {
+        // to call 
         const { goBack, state } = this.props.navigation;
+        state.params.checkemitRequest()
+        goBack()
+    }
+    setTimePassed() {
         Alert.alert(
             i18n.t('appname'),
             i18n.t('feedback_attention_alert_Label'), [
-                { text: 'OK', onPress: () => goBack() }//this.props.notFeedbackGive() },
+                { text: 'OK', onPress: () => this.nextUser() }
             ],
             { cancelable: false },
         );
+    }
+    warningForSpeedDatingEvent() {
+        const { goBack, state } = this.props.navigation;
+
+        var data = {
+            "speedDatingEventDayId": state.params.userId,
+            "pairId": "5c3441f89f9745033fd181a8",
+            "notConnected": true
+        };
+        Apirequest.warningForSpeedDatingEvent(token, data, resolve => {
+
+        }, reject => {
+
+        })
     }
     render() {
         return (
@@ -62,7 +81,7 @@ class Feedback extends Component {
                     <View style={{ justifyContent: "center", width: '60%', alignItems: "center" }}>
                         <TimerCountdown
                             initialMilliseconds={1000 * 60}
-                            onTick={(milliseconds) => console.log("tick", milliseconds)}
+                            onTick={(milliseconds) => console.log('')}
                             onExpire={() => this.setTimePassed()}
                             formatMilliseconds={(milliseconds) => {
                                 const remainingSec = Math.round(milliseconds / 1000);
@@ -86,16 +105,12 @@ class Feedback extends Component {
                     </View>
                     <View style={styles.backbuttonContainer} />
                 </View>
-                <Speeddatingfeedback 
-                {...this.props}/>
+                <Speeddatingfeedback
+                    {...this.props} />
             </SafeAreaView>
-
         )
     }
 }
-
-
-
 
 class Speeddatingfeedback extends BaseFormComponent {
     constructor(props) {
@@ -292,12 +307,16 @@ class Speeddatingfeedback extends BaseFormComponent {
             if (currentQuestion && currentQuestion._id && currentQuestion._id.isPositive) {
                 console.log("going to positive")
                 data = {}
-                this.updateNotificationStatus()
+                state.params.checkemitRequest()
+
+                // this.updateNotificationStatus()
             }
             else if (currentQuestion && currentQuestion._id && currentQuestion._id.isNegative) {
                 data = {}
                 console.log("going to negative")
-                this.updateNotificationStatus()
+                state.params.checkemitRequest()
+
+                // this.updateNotificationStatus()
             }
         }, reject => {
             console.log("saveUserFeedback_reject", reject)
@@ -370,37 +389,37 @@ class Speeddatingfeedback extends BaseFormComponent {
             //         </View>
             //         <View style={styles.backbuttonContainer} />
             //     </View>
-                <ScrollView contentContainerStyle={{ paddingHorizontal: 16 }} nestedScrollEnabled={true} >
-                    <View style={{}}>
-                        <View style={styles.questionBox}>
-                            {/* <Text style={styles.question}>{currentQuestion._id.question}</Text> */}
-                            <Text style={styles.question}>{_.replace(currentQuestion._id.question, new RegExp("{{memberName}}"), invitationname)}</Text>
+            <ScrollView contentContainerStyle={{ paddingHorizontal: 16 }} nestedScrollEnabled={true} >
+                <View style={{}}>
+                    <View style={styles.questionBox}>
+                        {/* <Text style={styles.question}>{currentQuestion._id.question}</Text> */}
+                        <Text style={styles.question}>{_.replace(currentQuestion._id.question, new RegExp("{{memberName}}"), invitationname)}</Text>
 
-                        </View>
                     </View>
-                    {
-                        currentQuestion._id.questionType === "radio" ?
-                            this.renderRadioOption(availableanswer)
-                            : currentQuestion._id.questionType === "checkbox" ?
-                                this.renderMultipleOption(availableanswer) : undefined
-                    }
-                    {
-                        this.state.saveanswer ?
-                            <LinearGradient
-                                colors={[global.gradientprimary, global.gradientsecondry]}
-                                start={{ x: 0, y: 1 }}
-                                end={{ x: 1, y: 1 }}
-                                style={{ borderRadius: 5, marginBottom: 10, marginTop: 16 }}>
-                                <TouchableOpacity
-                                    style={{ height: 50, justifyContent: "center", alignItems: "center", }}
-                                    disabled={false}
-                                    onPress={this.saveUserFeedback.bind(this, availableanswer)} >
-                                    <Text style={{ color: "#fff", fontSize: 17, fontFamily: 'Avenir-Heavy' }}>{"Save"}</Text>
-                                </TouchableOpacity>
-                            </LinearGradient>
-                            : undefined
-                    }
-                </ScrollView>
+                </View>
+                {
+                    currentQuestion._id.questionType === "radio" ?
+                        this.renderRadioOption(availableanswer)
+                        : currentQuestion._id.questionType === "checkbox" ?
+                            this.renderMultipleOption(availableanswer) : undefined
+                }
+                {
+                    this.state.saveanswer ?
+                        <LinearGradient
+                            colors={[global.gradientprimary, global.gradientsecondry]}
+                            start={{ x: 0, y: 1 }}
+                            end={{ x: 1, y: 1 }}
+                            style={{ borderRadius: 5, marginBottom: 10, marginTop: 16 }}>
+                            <TouchableOpacity
+                                style={{ height: 50, justifyContent: "center", alignItems: "center", }}
+                                disabled={false}
+                                onPress={this.saveUserFeedback.bind(this, availableanswer)} >
+                                <Text style={{ color: "#fff", fontSize: 17, fontFamily: 'Avenir-Heavy' }}>{"Save"}</Text>
+                            </TouchableOpacity>
+                        </LinearGradient>
+                        : undefined
+                }
+            </ScrollView>
             // </SafeAreaView>
         )
     }

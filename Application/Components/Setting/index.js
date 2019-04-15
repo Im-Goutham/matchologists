@@ -13,6 +13,7 @@ import {
     Image,
     TouchableOpacity,
 } from 'react-native';
+import { bindActionCreators } from "redux";
 import LinearGradient from 'react-native-linear-gradient';
 import { connect } from 'react-redux'
 import i18n from 'react-native-i18n'
@@ -20,6 +21,7 @@ import Header from '../Common/Header'
 import SettingsList from './settingslist'
 const IS_ANDROID = Platform.OS === 'android'
 import metrics from '../../config/metrics';
+import * as actions from '../../i18n/language.action'
 const IMAGE_WIDTH = metrics.DEVICE_WIDTH * 0.05
 const header_height = metrics.DEVICE_HEIGHT * 0.1
 
@@ -97,7 +99,10 @@ class SettingScreen extends Component {
                 </LinearGradient>
                 <SettingsList 
                 token={token}
+                language={this.props.language}
                 navigate={navigate}
+                // savelocallanguage={this.props.savelocallanguage}
+                {...this.props}
                 /> 
                 <SafeAreaView/>
             </View>
@@ -123,4 +128,8 @@ mapStateToProps = (state) => {
         token: state.auth.token
     }
 }
-export default connect(mapStateToProps)(SettingScreen);
+mapDispatchToProps = (dispatch) => {
+    return bindActionCreators({ savelocallanguage: actions.savelocallanguage }, dispatch);
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(SettingScreen);

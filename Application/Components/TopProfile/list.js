@@ -1,11 +1,7 @@
 import React, { Component } from "react";
-import { View, Text, FlatList, Image, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text, FlatList, Image, StyleSheet, TouchableOpacity, RefreshControl } from "react-native";
+import i18n from 'react-native-i18n'
 import PopupMenu from "../Userprofile/options";
-import search_result from '../../images/search_result.png'
-import search_result_2 from '../../images/search_result_2.png'
-import search_result_3 from '../../images/search_result_3.png'
-import search_result_4 from '../../images/search_result.png'
-import search_result_5 from '../../images/search_result_4.png'
 import moreoptions from '../../images/icons/moreoptions.png';
 
 class SuggestionList extends Component {
@@ -29,7 +25,9 @@ class SuggestionList extends Component {
     componentWillReceiveProps = (nextProps, nextState) => {
         this.setState({
             data: nextProps.dataSource,
-            isloading: nextProps.isloading
+            isloading: nextProps.isloading,
+            refreshing: false,
+
         })
     }
     renderSeparator = () => {
@@ -103,7 +101,7 @@ class SuggestionList extends Component {
                         button={moreoptions}
                         buttonStyle={styles.popupmenu}
                         destructiveIndex={1}
-                        options={[item.isMono ? "Remove monogamous" : "Add To Monogamous", " Remove Favourite",  "Cancel"]}
+                        options={[item.isMono ? i18n.t('remove_from_monogamous_label'):i18n.t('add_to_monogamous_label'),i18n.t('remove_from_favourite_label'), i18n.t('cancel')]}
                         actions={[item.isMono ?  this.removeMonogamousUser.bind(this, item) : this.addFavouriteUserAsMonogamous.bind(this, item), this.removeFavouriteUser.bind(this, item),   this.cancel]}
                     />
                         {/* <View
@@ -138,20 +136,24 @@ class SuggestionList extends Component {
         this.setState({
             data: this.state.data
         })
-
     }
     render() {
         return (
             <FlatList
                 contentContainerStyle={{
-                    // paddingHorizontal: 16,
-                    // paddingBottom: 150,
                     backgroundColor: 'rgba(255,255,255, 100)',
                 }}
                 data={this.state.data}
                 renderItem={({ item }) => this.renderRow(item)}
                 keyExtractor={(item, index) => index.toString()}
                 ItemSeparatorComponent={this.renderSeparator}
+                refreshControl={
+                    <RefreshControl
+                        refreshing={this.state.isRefreshing}
+                        onRefresh={this.props.onRefresh}
+                    />
+                }
+
             />
         );
     }

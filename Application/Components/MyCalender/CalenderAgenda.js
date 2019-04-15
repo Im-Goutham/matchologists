@@ -6,7 +6,7 @@ import {
     FlatList
 } from 'react-native';
 import { connect } from 'react-redux'
-
+import moment from 'moment'
 import metrics from '../../config/metrics'
 import { Calendar, LocaleConfig, Agenda } from 'react-native-calendars';
 import Apirequest from '../../Components/Common/Apirequest'
@@ -30,7 +30,9 @@ class CalenderAgenda extends Component {
             markedDates: {},
             eventlistData: [],
             items: {},
-            filterddata: []
+            filterddata: [],
+            // currentdate: moment.utc().add(-1 , 'days').format(),
+            currentdate: moment.utc().format()
         };
         // this.onDayPress = this.onDayPress.bind(this);
     }
@@ -49,9 +51,9 @@ class CalenderAgenda extends Component {
     loadItems(day) {
         var data = [];
         var token = this.props.token;
-        console.log("getSpeedDatingEvents_day", day)
+        // console.log("getSpeedDatingEvents_day", day)
         Apirequest.getSpeedDatingEvents(token, resolve => {
-            console.log("getSpeedDatingEvents", resolve)
+            // console.log("getSpeedDatingEvents", resolve)
             if (resolve.data) {
                 let markedDates = {};
                 var datasource = resolve.data.data;
@@ -67,6 +69,13 @@ class CalenderAgenda extends Component {
                     dataobject.time = datasource[i] && datasource[i].time ? datasource[i].time : '';
                     dataobject.isSpeedDating = true;
 
+                    markedDates['' + this.timeToString(this.state.currentdate) + ''] = (this.datemodifier(date)===this.datemodifier(this.state.currentdate)) ? [{
+                        marked: true,
+                        eventName: datasource[i] && datasource[i].eventName ? datasource[i].eventName : '',
+                        eventTime: datasource[i] && datasource[i].time ? datasource[i].time : '',
+                        dotColor: '#909096',
+                        disableTouchEvent: false
+                    }] :[{ eventName: "No Event Found For Today" }]
                     markedDates['' + this.datemodifier(date) + ''] = [{
                         marked: true,
                         eventName: datasource[i] && datasource[i].eventName ? datasource[i].eventName : '',
@@ -76,7 +85,7 @@ class CalenderAgenda extends Component {
                     }];
                     data.push(dataobject);
                 }
-                // console.log("getSpeedDatingEvents_data", markedDates)
+                console.log("markedDates_data", markedDates)
                 if (data && data.length) {
                     this.setState({
                         markedDates: markedDates,
@@ -136,12 +145,30 @@ class CalenderAgenda extends Component {
     //     }, 1000);
     //     // console.log(`Load Items for ${day.year}-${day.month}`);
     // }
+    getTimeFormat(date) {
+        var date1 = new Date(date);
+        var date2 = new Date();
+        // var timeDiff = Math.abs(date2.getTime() - date1.getTime());
+        // var diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
+        // alert(diffDays);
+        // console.log("date1",date1 )
+        // console.log("date2", date2 )
+        // console.log("getTimeFormat", moment(date1).from(moment(date2)) )
+        // if (diffDays >= 1) {
+            return moment(date1).from(moment(date2));
+        // } else {
+        //     return Math.ceil(timeDiff / (1000 * 3600)) + " " + "Hours Ago"
+        // }
+    }
+
     renderItem(item) {
         return (
             <View style={{ backgroundColor: "#FFF", height: 101, borderLeftWidth: 5, borderLeftColor: "#D43C87", flexDirection: "row", marginTop:2 }}>
                 <View style={{ backgroundColor: "transparent", flex: 1, justifyContent: "space-around", paddingHorizontal: 15 }}>
                     <Text style={{ color: "#3E3E47", fontSize: 17, fontFamily: "Avenir-Heavy", lineHeight: 22 }}>{item.eventName}</Text>
-                    <Text style={{ color: "#909096", fontSize: 15, fontFamily: "Avenir-Medium", lineHeight: 30 }}>{item.eventTime}</Text>
+                    {item && item.eventTime ?
+                    <Text style={{ color: "#909096", fontSize: 15, fontFamily: "Avenir-Medium", lineHeight: 30 }}>{ this.getTimeFormat(item.eventTime)}</Text>
+                    : undefined }
                 </View>
             </View>
         );
@@ -161,24 +188,42 @@ class CalenderAgenda extends Component {
         return date.toISOString().split('T')[0];
     }
     render() {
-        console.log("markedDates", this.state.markedDates)
+        console.log("markedDates++++++++++++",this.state.currentdate)
         return (
             <View style={styles.container}>
                 <Agenda
                     items={this.state.markedDates}
                     loadItemsForMonth={this.loadItems.bind(this)}
-                    selected={'2019-04-02'}
+                    selected={this.timeToString(this.state.currentdate)}
                     renderItem={this.renderItem.bind(this)}
                     renderEmptyDate={this.renderEmptyDate.bind(this)}
                     rowHasChanged={this.rowHasChanged.bind(this)}
-                    monthFormat={'yyyy'}
-                    minDate={'2019-02-1'}
+                    monthFormat={'MM yyyy'}
+                    minDate={moment().add(-1, 'M').format('YYYY-MM-DD')}
                     theme={{
                         calendarBackground: '#ffff',
                         agendaKnobColor: '#3E3E47',
                         agendaDayNumColor: '#3E3E47',
-                        agendaTodayColor: 'red',
-                        agendaKnobColor: '#3E3E47'
+                        agendaTodayColor: '#DB3D88',
+                        backgroundColor: '#ffffff',
+                        textSectionTitleColor: '#3E3E47',
+                        selectedDayBackgroundColor: '#273174',
+                        selectedDayTextColor: '#ffffff',
+                        // todayTextColor: '#DB3D88',
+                        dayTextColor: '#3E3E47',
+                        // textDisabledColor: '#fff',
+                        textDisabledColor: '#d9e1e8',
+                        // dotColor: '#00adf5',
+                        selectedDotColor: '#ffffff',
+                        // arrowColor: '#909096',
+                        monthTextColor: '#3E3E47',
+                        textDayFontFamily: 'Avenir-Heavy',
+                        textMonthFontFamily: 'Avenir-Medium',
+                        textDayHeaderFontFamily: 'Avenir-Light',
+                        textMonthFontWeight: 'bold',
+                        // textDayFontSize: 16,
+                        textMonthFontSize: 16,
+                        // textDayHeaderFontSize: 16
 
                     }}
                     onCalendarToggled={(calendarOpened) => { console.log("calendarOpened", calendarOpened) }}

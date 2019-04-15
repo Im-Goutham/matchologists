@@ -23,7 +23,8 @@ import {
     AsyncStorage
 } from 'react-native';
 // import io from 'socket.io-client'; // 2.0.4
-
+import { bindActionCreators } from "redux";
+import i18n from 'react-native-i18n'
 import ApiManager from "../Common/ApiManager";
 import { connect } from 'react-redux'
 import LinearGradient from 'react-native-linear-gradient';
@@ -35,7 +36,9 @@ import PopupMenu from '../Userprofile/options'
 import _ from 'lodash';
 import Userlist from './userlist';
 import Filter from './filter';
-import * as global from '../../../global.json'
+import * as global from '../../../global.json';
+import * as actions from "../AuthScreen/auth.actions";
+
 import sort_ascending from '../../images/icons/white-sort.png';
 import ascending from '../../images/icons/ascending.png';
 import desending from '../../images/icons/desending.png';
@@ -95,6 +98,10 @@ class HomeScreen extends Component {
         this.readfilterdata()
             .then(() => this.sortAndFilterUsers())
             .then(() => this.getAboutYourPartnerQuestions());
+    }
+    logout(){
+        this.props.navigation.navigate('login')
+        this.props.logout()
     }
     readfilterdata = async () => {
 
@@ -160,6 +167,7 @@ class HomeScreen extends Component {
 
             if (response.status === 0) {
                 if(response.message){
+                    this.logout()
                     // navigate('userblocked', { message : response.message ? response.message :""})
                    }
                 return
@@ -478,7 +486,7 @@ class HomeScreen extends Component {
                             }
                             middle={
                                 <View style={{ width: "55%", backgroundColor: "transparent", alignItems: "center", justifyContent: "center" }}>
-                                    <Text style={{ fontFamily: "Avenir-Heavy", fontSize: 24, color: "#fff" }}>Discover</Text>
+                                    <Text style={{ fontFamily: "Avenir-Heavy", fontSize: 24, color: "#fff" }}>{i18n.t('discover_label')}</Text>
                                 </View>
                             }
                             right={
@@ -593,7 +601,7 @@ class HomeScreen extends Component {
                                     resizeMode="contain" />
                             </TouchableOpacity>
                             <View style={{ width: '60%', height: 54, justifyContent: 'center', alignItems: "center", paddingHorizontal: 16 }}>
-                                <Text style={{ fontFamily: "Avenir-Heavy", fontSize: 17, color: "#3E3E47" }}>Sort search</Text>
+                                <Text style={{ fontFamily: "Avenir-Heavy", fontSize: 17, color: "#3E3E47" }}>{i18n.t('sortsearch_label')}</Text>
                             </View>
                             <View style={{ width: '20%', height: 54, justifyContent: 'center', paddingHorizontal: 16 }} />
                         </View>
@@ -653,7 +661,7 @@ class HomeScreen extends Component {
                             style={[{ borderRadius: 5 }]}
                         >
                             <TouchableOpacity onPress={() => this.sortResultRemoteCall()} style={{ width: '100%', height: 54, justifyContent: 'center', alignItems: "center" }}>
-                                <Text style={{ color: "#FFF", fontSize: 17, fontFamily: 'Avenir-Medium' }}>View Result</Text>
+                                <Text style={{ color: "#FFF", fontSize: 17, fontFamily: 'Avenir-Medium' }}>{i18n.t('vieresult_title')} </Text>
                             </TouchableOpacity>
                         </LinearGradient>
                     </View>
@@ -664,6 +672,7 @@ class HomeScreen extends Component {
                     onBackdropPress={() => this.setState({ questionanswerModal: false })}
                     onBackButtonPress={() => this.setState({ questionanswerModal: false })}
                     style={{ padding: 0, margin: 0 }}>
+                    <SafeAreaView style={{ flex:1}}>
                     <View style={{ flex: 1, backgroundColor: "#fff" }}>
                         <Header
                             isSearcrchbar={false}
@@ -685,7 +694,7 @@ class HomeScreen extends Component {
                             }
                             middle={
                                 <View style={{ width: "70%", backgroundColor: "transparent", alignItems: "center", justifyContent: "center" }}>
-                                    <Text style={{ fontFamily: "Avenir-Heavy", fontSize: 24, color: "#fff" }}>About Your Partner</Text>
+                                    <Text style={{ fontFamily: "Avenir-Heavy", fontSize: 24, color: "#fff" }}>{i18n.t('aboutyourparnertitle')}</Text>
                                 </View>
                             }
                             right={
@@ -710,7 +719,7 @@ class HomeScreen extends Component {
                             </ScrollView >
                         </View>
                     </View>
-                    <View style={{ height: "10%", paddingHorizontal: 32, justifyContent: "center", backgroundColor: "#FFF" }}>
+                    <View style={{ height: "10%", paddingHorizontal: 32, justifyContent: "flex-start", backgroundColor: "#FFF" }}>
                         <LinearGradient
                             colors={[global.gradientprimary, global.gradientsecondry]}
                             start={{ x: 0, y: 1 }}
@@ -721,10 +730,12 @@ class HomeScreen extends Component {
                                 style={[{ justifyContent: "center", alignItems: "center", height: 50 }]}
                                 onPress={() => this.conformQuestionSelection()}
                             >
-                                <Text style={[styles.answerTxt, { color: '#FFF', fontFamily: 'Avenir-Heavy' }]} numberOfLines={1}>{"Save"}</Text>
+                                <Text style={[styles.answerTxt, { color: '#FFF', fontFamily: 'Avenir-Heavy' }]} numberOfLines={1}>{i18n.t('save_button')}</Text>
                             </TouchableOpacity>
                         </LinearGradient>
                     </View>
+                    </SafeAreaView>
+
                 </Modal>
             </View>
         );
@@ -869,6 +880,13 @@ mapStateToProps = (state) => {
         token: state.auth.token
     }
 }
+mapDispatchToProps = (dispatch) => {
+    return bindActionCreators({ 
+        logout: actions.logout,
+        saveuserProifileimage :actions.savelocalimage
+     }, dispatch);
+}
+
 export default connect(mapStateToProps, mapDispatchToProps)(HomeScreen);
                 // <Modal
                 //     backdropOpacity={0.3}

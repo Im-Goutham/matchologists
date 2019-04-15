@@ -19,14 +19,11 @@ import LinearGradient from 'react-native-linear-gradient';
 import i18n from 'react-native-i18n'
 import Header from '../Common/Header'
 import AllEventsList from './AllEventsList';
-// import Loading from '../Loading/index'
 import Apirequest from '../Common/Apirequest'
-const IS_ANDROID = Platform.OS === 'android';
 import metrics from '../../config/metrics';
-import { reject } from 'rsvp';
+const IS_ANDROID = Platform.OS === 'android';
 const IMAGE_WIDTH = metrics.DEVICE_WIDTH * 0.05;
 const header_height = metrics.DEVICE_HEIGHT * 0.1;
-
 class EventsList extends Component {
     constructor(props) {
         super(props);
@@ -175,7 +172,7 @@ class EventsList extends Component {
                             }
                             right={
                                 <TouchableOpacity
-                                    onPress={() => alert("rsvp should be done before 48 hours of starting")}
+                                    onPress={() => navigate('eventrules') }//alert("rsvp should be done before 48 hours of starting")}
                                     style={{
                                         width: "15%",
                                         backgroundColor: "transparent",

@@ -10,7 +10,8 @@ import {
     RefreshControl,
     TouchableOpacity
 } from 'react-native';
-import moment from 'moment'
+import moment from 'moment';
+import I18n from 'react-native-i18n'
 import Apirequest from '../Common/Apirequest';
 import Loading from '../Loading/index';
 import LinearGradient from 'react-native-linear-gradient';
@@ -111,52 +112,110 @@ export default class NotificationsList extends Component {
         // console.log("date2", date2 )
         // console.log("getTimeFormat", moment(date1).from(moment(date2)) )
         // if (diffDays >= 1) {
-            return moment(date1).from(moment(date2));
+        return moment(date1).from(moment(date2));
         // } else {
         //     return Math.ceil(timeDiff / (1000 * 3600)) + " " + "Hours Ago"
         // }
     }
+    // noactionPerform(item){
+    //     var token = this.props.token;
+    //     var Data = {
+    //         "notificationIds": [item._id]
+    //     };
+    //     Apirequest.updateNotificationStatus(token, Data, resolve => {
+    //         console.log("updateNotificationStatus_resolve", resolve)
+    //     }, reject => {
+    //         console.log("updateNotificationStatus_reject", reject)
+    //     })
+
+    // }
+    rsvpevent(item) {
+        console.log("rsvpevent_item", item)
+        Alert.alert(
+            I18n.t('appname'),
+            item.notificationText,
+            [
+                {
+                    text: 'No',
+                    onPress: () => this.props.updateNotificationStatus(item),
+                    style: 'cancel',
+                },
+                { text: 'Yes', onPress: () => this.props.rsvpForSpeedDating(item) },
+            ],
+            { cancelable: false },
+        );
+    }
+    speeddatingnotification(item) {
+        return (
+            <View style={{ height: 44 }}>
+                <LinearGradient
+                    colors={['#DB3D88', '#273174']}
+                    start={{ x: 0, y: 1 }}
+                    end={{ x: 1, y: 1 }}
+                    style={[{
+                        overflow: "hidden",
+                        borderRadius: 22,
+                        flex: 1,
+                    }]}>
+                    <TouchableOpacity
+                        disabled={item.isSeen ? true : false}
+                        style={{
+                            borderRadius: 22,
+                            padding: 1,
+                            alignItems:"center",
+                            justifyContent:"center",
+                            flex: 1
+                         }}
+                        onPress={() => this.rsvpevent(item)}>
+                        <Text style={[ styles.answerTxt, { alignSelf: "center", color: "#FFF" }]}>{I18n.t('rsvp_label')}</Text>
+                    </TouchableOpacity>
+                </LinearGradient>
+            </View>
+        )
+    }
     speedDatingRequest(item) {
-        console.log("speedDatingRequest_item", item)
         return (
             <>
                 <Text style={{ alignSelf: "flex-end" }} > {this.getTimeFormat(item.createdAt)}</Text>
-                <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginVertical: 5 }}>
-                    <LinearGradient
-                        colors={['#DB3D88', '#273174']}
-                        start={{ x: 0, y: 1 }}
-                        end={{ x: 1, y: 1 }}
-                        style={[styles.answerBtn, { flex: 1, backgroundColor: 'white' }]}>
-                        <TouchableOpacity
-                            disabled={item.isSeen ? true : false}
-                            style={{ paddingVertical: 5, paddingHorizontal: 10, borderRadius: 15, justifyContent: "center", alignItems: "center" }}
-                            onPress={() => this.props.rsvpForSpeedDating(item)}>
-                            <Text style={{ color: "#FFF" }}>{item && item.type === "speeddatingnotification" ? "RSVP" : "Accept"}   </Text>
-                        </TouchableOpacity>
-                    </LinearGradient>
-                    <LinearGradient
-                        colors={['#DB3D88', '#273174']}
-                        start={{ x: 0, y: 1 }}
-                        end={{ x: 1, y: 1 }}
-                        style={[styles.answerBtn, { flex: 1, padding: 1 }]}>
-                        <TouchableOpacity
-                            disabled={item.isSeen ? true : false}
-                            style={[{ flex: 1, backgroundColor: 'white', borderRadius: 15, justifyContent: "center", alignItems: "center" }]}
-                            onPress={
-                                item && item.type === "speeddatingnotification" ? console.log("")
-                                    :
-                                    () => this.props.navigate('friendrequestfeedback', {
-                                        checkemitRequest: this.checkemitRequest.bind(this),
-                                        data: item,
-                                        token: this.props.token,
-                                        invitationname: item.fullname,
-                                        eventNamepoint: 'speeddatingInvitationRejectionFeedback'
-                                    })
-                            }>
-                            <Text style={[styles.answerTxt, { color: '#313138', fontFamily: 'Avenir-Heavy' }]}> {item && item.type === "speeddatingnotification" ? "Not Now" : "Decline"}</Text>
-                        </TouchableOpacity>
-                    </LinearGradient>
-                </View>
+                {
+                    item && item.type === "speeddatingnotification" ? item.isSeen ? undefined : this.speeddatingnotification(item) :
+                        <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginVertical: 5 }}>
+                            <LinearGradient
+                                colors={['#DB3D88', '#273174']}
+                                start={{ x: 0, y: 1 }}
+                                end={{ x: 1, y: 1 }}
+                                style={[styles.answerBtn, { flex: 1, backgroundColor: 'white' }]}>
+                                <TouchableOpacity
+                                    disabled={item.isSeen ? true : false}
+                                    style={{ paddingVertical: 5, paddingHorizontal: 10, borderRadius: 15, justifyContent: "center", alignItems: "center" }}
+                                    onPress={() => this.props.rsvpForSpeedDating(item)}>
+                                    <Text style={{ color: "#FFF" }}>{item && item.type === "speeddatingnotification" ? "RSVP" : "Accept"}   </Text>
+                                </TouchableOpacity>
+                            </LinearGradient>
+                            <LinearGradient
+                                colors={['#DB3D88', '#273174']}
+                                start={{ x: 0, y: 1 }}
+                                end={{ x: 1, y: 1 }}
+                                style={[styles.answerBtn, { flex: 1, padding: 1 }]}>
+                                <TouchableOpacity
+                                    disabled={item.isSeen ? true : false}
+                                    style={[{ flex: 1, backgroundColor: 'white', borderRadius: 15, justifyContent: "center", alignItems: "center" }]}
+                                    onPress={
+                                        item && item.type === "speeddatingnotification" ? console.log("")
+                                            :
+                                            () => this.props.navigate('friendrequestfeedback', {
+                                                checkemitRequest: this.checkemitRequest.bind(this),
+                                                data: item,
+                                                token: this.props.token,
+                                                invitationname: item.fullname,
+                                                eventNamepoint: 'speeddatingInvitationRejectionFeedback'
+                                            })
+                                    }>
+                                    <Text style={[styles.answerTxt, { color: '#313138', fontFamily: 'Avenir-Heavy' }]}> {item && item.type === "speeddatingnotification" ? "Not Now" : "Decline"}</Text>
+                                </TouchableOpacity>
+                            </LinearGradient>
+                        </View>
+                }
             </>
         )
     }
@@ -181,12 +240,7 @@ export default class NotificationsList extends Component {
         notification_time = new Date(item.createdAt)
         return (
             <>
-                {
-                    (currenttime.getHours() - notification_time.getHours()) <= 0 ?
-                        <Text style={{ alignSelf: "flex-end" }}> {currenttime.getMinutes() - notification_time.getMinutes()} min ago</Text>
-                        :
-                        <Text style={{ alignSelf: "flex-end" }}> {currenttime.getHours() - notification_time.getHours()} hour ago</Text>
-                }
+                <Text style={{ alignSelf: "flex-end" }} > {this.getTimeFormat(item.createdAt)}</Text>
                 <View style={{ flexDirection: "row", justifyContent: "space-between", height: 44 }}>
                     <LinearGradient
                         colors={['#DB3D88', '#273174']}
@@ -221,13 +275,7 @@ export default class NotificationsList extends Component {
         notification_time = new Date(item.createdAt)
         return (
             <>
-                {
-                    (currenttime.getHours() - notification_time.getHours()) <= 0 ?
-                        <Text style={{ alignSelf: "flex-end" }}> {currenttime.getMinutes() - notification_time.getMinutes()} min ago</Text>
-                        :
-                        <Text style={{ alignSelf: "flex-end" }}> {currenttime.getHours() - notification_time.getHours()} hour ago</Text>
-
-                }
+                <Text style={{ alignSelf: "flex-end" }} > {this.getTimeFormat(item.createdAt)}</Text>
                 <View style={{ flexDirection: "row", justifyContent: "space-between", height: 44 }}>
                     <LinearGradient
                         colors={['#DB3D88', '#273174']}
@@ -313,8 +361,8 @@ export default class NotificationsList extends Component {
                     //     :
                     //     (currenttime.getHours() - notification_time.getHours()) <= 0 ?
                     //         <Text style={{ alignSelf: "flex-end" }}> {currenttime.getMinutes() - notification_time.getMinutes()} min ago</Text>
-                            // :
-                            <Text style={{ alignSelf: "flex-end" }}> {this.getTimeFormat(item.createdAt)}</Text>
+                    // :
+                    <Text style={{ alignSelf: "flex-end" }}> {this.getTimeFormat(item.createdAt)}</Text>
                 }
             </>
         )
@@ -345,16 +393,33 @@ export default class NotificationsList extends Component {
             </TouchableOpacity>
         </>
     }
+    speeddatingcallupdate(item) {
+        console.log("speeddatingcallupdate_item", item)
+        var token = this.props.token;
+        var Data = {
+            "notificationIds": [item._id]
+        };
+        console.log("updateNotificationStatus_Data", Data)
+
+        Apirequest.updateNotificationStatus(token, Data, resolve => {
+            console.log("updateNotificationStatus_resolve", resolve)
+            this.props.navigate('speeddatinglivecall', {
+                speedDatingEventDayId: item && item.eventInfo && item.eventInfo.eventDayId ? item.eventInfo.eventDayId : '',
+                notificationDateandTime: item && item.updatedAt ? item.updatedAt : '',
+                usereventData: item
+            })
+        }, reject => {
+            console.log("updateNotificationStatus_reject", reject)
+        })
+    }
     renderRow(item) {
         return (<>
             {
                 item && item.type === 'speeddatingcall' ?
                     <TouchableOpacity disabled={item && item.isSeen ? true : false}
-                    activeOpacity={1} 
-                    style={{ backgroundColor: item.isSeen ? "#FFF" : "#F5F5F5", flexDirection: "row", paddingHorizontal: 15, paddingVertical: 16 }}
-                    onPress={() => this.props.navigate('speeddatinglivecall', {
-                        speedDatingEventDayId: item && item.eventInfo && item.eventInfo.eventDayId ? item.eventInfo.eventDayId : ''
-                    })}>
+                        activeOpacity={1}
+                        style={{ backgroundColor: item.isSeen ? "#FFF" : "#F5F5F5", flexDirection: "row", paddingHorizontal: 15, paddingVertical: 16 }}
+                        onPress={() => this.speeddatingcallupdate(item)}>
 
                         <View style={{ flex: 2, justifyContent: "center", alignItems: "center", backgroundColor: "transparent" }}>
                             <Image source={item.uri ? { uri: item.uri } : require('../../images/applogo.png')} style={{ width: 60, height: 60, borderRadius: 30 }} />
@@ -363,13 +428,11 @@ export default class NotificationsList extends Component {
                             flex: 8, backgroundColor: "transparent", justifyContent: "center",
                             justifyContent: "center", paddingHorizontal: 15
                         }}>
-                            <Text style={{ color: "#3E3E47", fontSize: 17, fontFamily: "Avenir-Heavy", lineHeight: 22, }}>
-                                {item.notificationText ? item.notificationText : ''}
-                            </Text>
-                            {
-                            item && item.isSeen ? this.showtime(item) : undefined
+                            <Text style={{ color: "#3E3E47", fontSize: 17, fontFamily: "Avenir-Heavy", lineHeight: 22, }}>{item.notificationText ? item.notificationText : ''}</Text>
+                            {this.showtime(item)
+                                // item && item.isSeen ? this.showtime(item) : undefined
 
-                        }
+                            }
 
                         </View>
                     </TouchableOpacity>
@@ -415,6 +478,10 @@ const styles = StyleSheet.create({
     container: {
         // flex: 1,
         backgroundColor: "#FFF"
+    },
+    answerTxt:{
+        fontFamily:"Avenir-Medium",
+        fontSize:14
     },
     answerBtn: {
         overflow: "hidden",

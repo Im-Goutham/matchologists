@@ -66,6 +66,7 @@ class BaseFormComponent extends BaseComponent {
             message: req_msg,
             description: man_msg,
             icon: { icon: "auto", position: "left" },
+            duration:3000,
             type,
             ...props,
         };

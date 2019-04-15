@@ -218,7 +218,7 @@ class LoginForm extends BaseFormComponent {
                 is_loginSuccess: !this.state.is_loginSuccess
             })
             let password = '';
-            AsyncStorage.setItem("userId", JSON.stringify(data))
+            AsyncStorage.multiSet([["userId",  JSON.stringify(data)], ["token",  JSON.stringify(token)]])
             this.props.login(details.emailId, password, token, data);
             this.props.saveuserProifileimage(userimage)
             this.timeOutCall()
@@ -274,7 +274,7 @@ class LoginForm extends BaseFormComponent {
                     data = response && response.data ? response.data : [],
                     userSettings={};
                     console.log("response callwebservice login", data)
-                    AsyncStorage.setItem("userId", JSON.stringify(data))
+                    AsyncStorage.multiSet([["userId",  JSON.stringify(data)], ["token",  JSON.stringify(token)]])
                     // let userimage=   "" ;
                 if (response.status === 0) {
                     this.showSimpleMessage("danger", { backgroundColor: "#DC6666" }, response.message, response.message)

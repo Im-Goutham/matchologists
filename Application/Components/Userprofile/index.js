@@ -184,9 +184,14 @@ class UserProfile extends BaseFormComponent {
         })
 
     }
-    sendFriendRequest = async () => {
+    sendFriendRequest = async (isPoke = false) => {
         const { state } = this.props.navigation;
-        ApiRequest.sendFriendRequest(this.props.token, state.params.userId, (resolve) => {
+        let data = {
+            "profileUserId": state.params.userId,
+            "isPoke": isPoke
+        };
+        console.log("sendFriendRequest", data)
+        ApiRequest.sendFriendRequest(this.props.token, data, (resolve) => {
             console.log("resolve", resolve)
             this.state.datastores.isFriend = false;
             this.state.datastores.isFriendRequestPending = true
@@ -310,7 +315,7 @@ class UserProfile extends BaseFormComponent {
                                     </>
                                     :
                                     <>
-                                        <TouchableOpacity style={styles.footerButtons} onPress={() => this.sendFriendRequest()}>
+                                        <TouchableOpacity style={styles.footerButtons} onPress={() => this.sendFriendRequest(true)}>
                                             <Image
                                                 source={require('../../images/icons/smily.png')}
                                                 resizeMethod="resize"
